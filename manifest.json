@@ -1,0 +1,27 @@
+{
+  "name": "Ethereum Swarm Extension",
+  "short_name": "Swarm Extension",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "permissions": ["webRequest", "webRequestBlocking", "*://*/*"],
+  "author": "nugaon",
+  "description": "PoC for Ethereum Swarm extension",
+  "icons": {
+    "16": "assets/swarm.ico",
+    "48": "assets/swarm.ico",
+    "128": "assets/swarm.ico"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "browser_action": {},
+  "content_scripts": [
+    {
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["contentscript.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}
