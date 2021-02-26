@@ -7,9 +7,7 @@
   "author": "nugaon",
   "description": "PoC for Ethereum Swarm extension",
   "icons": {
-    "16": "assets/swarm.ico",
-    "48": "assets/swarm.ico",
-    "128": "assets/swarm.ico"
+    "48": "assets/swarm.png"
   },
   "background": {
     "scripts": ["background.js"],
