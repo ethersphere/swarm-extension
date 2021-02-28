@@ -18,18 +18,25 @@ Unfortunately, [Chrome does not have exposed function to register custom protoco
 Chrome lets you to register custom protocol in the context of the webpage, but only with prefix `web+`.
 It means you can only refer to external P2P content by `web+bzz://{content-address}`
 
-In search bar the `bzz://{content-address}` will be redirected to `http(s)://{localgateway}/bzz/{content-address}`, but now it only reacts like this if the default search engine of the browser is set to Google.
+In search bar the `bzz://{content-address}` will be redirected to `http(s)://{localgateway}/bzz/{content-address}`, but now it only reacts like this if the default search engine of the browser is set to Google. It also works the same on simple google search.
 
 ## Test
 
 There are some illustrative tests which show how these PoC ideas work.
-On test pages, if a Jinn shows up under a section that means it works as it is intended to be.
+For running tests, you need to run a Bee node.
+By default, tests are run against `http://localhost:1633`. You can change it by setting environment variable `BEE_API_URL`.
+On test pages, if a Jinn can show up under a section which means it works as it is intended to be.
 On other hand, if Jafar comes into the picture, than it points out a bad/insecure use-case.
+
+For tests, execute the following:
+
+```bash
+ $ npm run compile && npm run test
+```
+if everything went great, you can see the test pages in a Chromium browser.
 
 ### BZZ protocol test
 
 For BZZ protocol there are test pages to illustrate the functionality.
 The test page folder is located in [test/bzz-test-page](test/bzz-test-page).
-You should upload first its sub-folders [jinn-page](test/bzz-test-page/jinn-page) and [jafar-page](test/bzz-test-page/jafar-page).
-After the [index file of bzz-test-page](test/bzz-test-page/index.html) has to be amended with the previously updated content hashes.
-Finally, you can upload the [test/bzz-test-page](bzz-test-page) as well and see the effects of `BZZ custom protocol`.
+In its [index page](test/bzz-test-page/index.html), you see how you can refer to external Swarm content in HTML files without assuming any gateway host.
