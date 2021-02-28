@@ -7,7 +7,7 @@ const dappRequestUrl = 'http://localhost:1633/dapp-request'
 // also does not have effect on image loading
 // window.navigator.registerProtocolHandler('web+bzz', `${dappRequestUrl}?bzz-address=%s`, 'Swarm dApp')
 
-const images = document.getElementsByTagName('img')
+const images = document.images
 const iframes = document.getElementsByTagName('iframe')
 const links = document.getElementsByTagName('a')
 const srcElements = [...images, ...iframes]
