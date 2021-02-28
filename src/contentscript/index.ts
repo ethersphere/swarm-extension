@@ -4,8 +4,8 @@
 console.log(`Inject web+bzz protocol handling: ${document.baseURI} ; ${document.title}`)
 const dappRequestUrl = 'http://localhost:1633/dapp-request'
 // custom protocol handler is highly unconvenient to set up and cannot be enabled automaticly in puppeteer
-// also does not have effect on image loading
-// window.navigator.registerProtocolHandler('web+bzz', `${dappRequestUrl}?bzz-address=%s`, 'Swarm dApp')
+// it does not have effect on image loading
+window.navigator.registerProtocolHandler('web+bzz', `${dappRequestUrl}?bzz-address=%s`, 'Swarm dApp')
 
 const images = document.images
 const iframes = document.getElementsByTagName('iframe')
