@@ -12,7 +12,7 @@ chrome.webRequest.onBeforeRequest.addListener(
     }
     const query = urlParams.get('oq')
 
-    if (!query) return
+    if (!query || query.substr(0, 6) !== 'bzz://') return
 
     console.log('bzz address', query)
     console.log('redirect to', `${beeApiUrl}/bzz/${query.substr(6)}`)
@@ -22,7 +22,7 @@ chrome.webRequest.onBeforeRequest.addListener(
     }
   },
   {
-    urls: ['https://www.google.com/search?q=bzz%3A%2F%2F*'],
+    urls: ['https://www.google.com/search?*'],
   },
   ['blocking'],
 )
