@@ -7,20 +7,20 @@
 </head>
 
 <body>
-  <h1>
+  <h1 id="first-bzz-page-title">
     Let's roll!
   </h1>
   <h3>Local Iframe</h3>
-  <iframe src="jinn-page/index.html"></iframe>
+  <iframe id="localhost-inner-ref" src="jinn-page/index.html"></iframe>
   <h3>External Iframe refer by BZZ protocol</h3>
-    <iframe src="web+bzz://49e3dbe488d8b3fd085535e51e4a2a23e4c6fd1e4074dcdbc3845665908c47f3"></iframe>
+  <iframe id="bzz-iframe" src="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be"></iframe>
   <h3>Same External Iframe refer with localhost:1633</h3>
-  <iframe src="http://localhost:1633/bzz/9969a61356c0840fc9ac53a60edf3578d143dac7359ee70a7ed64c9654682d1b"></iframe>
+  <iframe id="localhost-iframe" src="http://localhost:1633/bzz/5f1eee1c57d03d1a423e2977875a707ed53cf72af45fdefba175f55336be1115"></iframe>
   <h3>External image refer by BZZ protocol</h3>
-  <img width="300" src="web+bzz://49e3dbe488d8b3fd085535e51e4a2a23e4c6fd1e4074dcdbc3845665908c47f3/images/jinn.png">
+  <img id="bzz-image" width="300" src="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be/images/jinn.png">
 
   <h3>Link to other page via web+bzz protocol</h3>
-  <a href="web+bzz://49e3dbe488d8b3fd085535e51e4a2a23e4c6fd1e4074dcdbc3845665908c47f3">Jinn page link 1</a>
+  <a id="bzz-ext-ref" href="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be">Jinn page link 1</a>
 </body>
 </html>
 
