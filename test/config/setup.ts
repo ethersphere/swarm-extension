@@ -10,11 +10,7 @@ module.exports = async () => {
   console.log('Setup Puppeteer')
   const browser = await puppeteer.launch({
     headless: false, // extensions only supported in full chrome.
-    args: [
-      `--disable-extensions-except=${EXTENSION_PATH}`,
-      `--load-extension=${EXTENSION_PATH}`,
-      `--unsafely-allow-protected-media-identifier-for-domain=localhost`,
-    ],
+    args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`],
   })
   // This global is not available inside tests but only in global teardown
   global.__BROWSER__ = browser
