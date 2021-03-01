@@ -4,9 +4,9 @@ import rimraf from 'rimraf'
 
 const DIR = path.join(os.tmpdir(), 'jest_puppeteer_global_setup')
 
-module.exports = () => {
+module.exports = async () => {
   // close the browser instance
-  //await global.__BROWSER_GLOBAL__.close()
+  if (!process.argv.includes('--demo=true')) await global.__BROWSER__.close()
 
   // clean-up the wsEndpoint file
   rimraf.sync(DIR)

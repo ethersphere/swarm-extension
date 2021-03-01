@@ -33,6 +33,10 @@ For tests, execute the following:
 ```bash
  $ npm run compile && npm run test
 ```
+In order to present or interact with functionalities of `swarm-extension`, run command
+```bash
+ $ npm run compile && npm run test:demo
+```
 if everything went great, you can see the test pages in a Chromium browser.
 
 ### BZZ protocol test
