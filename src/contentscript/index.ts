@@ -12,18 +12,18 @@ const iframes = document.getElementsByTagName('iframe')
 const links = document.getElementsByTagName('a')
 const srcElements = [...images, ...iframes]
 // change images' source
-for (let i = 0; i < srcElements.length; i++) {
-  const bzzElementSrc = srcElements[i].src.split('web+bzz://')
+for (const srcElement of srcElements) {
+  const bzzElementSrc = srcElement.src.split('web+bzz://')
 
   if (bzzElementSrc.length === 2) {
-    srcElements[i].src = `${dappRequestUrl}?bzz-resource=${bzzElementSrc[1]}`
+    srcElement.src = `${dappRequestUrl}?bzz-resource=${bzzElementSrc[1]}`
   }
 }
 //change link sources
-for (let i = 0; i < links.length; i++) {
-  const bzzLinkHref = links[i].href.split('web+bzz://')
+for (const link of links) {
+  const bzzLinkHref = link.href.split('web+bzz://')
 
   if (bzzLinkHref.length === 2) {
-    links[i].href = `${dappRequestUrl}?bzz-resource=${bzzLinkHref[1]}`
+    link.href = `${dappRequestUrl}?bzz-resource=${bzzLinkHref[1]}`
   }
 }
