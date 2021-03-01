@@ -12,7 +12,7 @@ chrome.webRequest.onBeforeRequest.addListener(
     }
     const query = urlParams.get('oq')
 
-    if (!query || query.substr(0, 6) !== 'bzz://') return
+    if (!query || !query.startsWith('bzz://')) return
 
     console.log('bzz address', query)
     console.log('redirect to', `${beeApiUrl}/bzz/${query.substr(6)}`)
@@ -31,14 +31,14 @@ chrome.webRequest.onBeforeRequest.addListener(
 chrome.webRequest.onBeforeRequest.addListener(
   details => {
     const urlArray = details.url.split('web%2Bbzz%3A%2F%2F')
+
+    // no match
+    if (urlArray.length === 1) return
+
     const redirectUrl = `${beeApiUrl}/bzz/${urlArray[1]}`
     console.log(`BZZ redirect to ${redirectUrl} from ${details.url}`)
 
-    if (urlArray.length > 1) {
-      return {
-        redirectUrl,
-      }
-    }
+    return { redirectUrl }
   },
   { urls: [`${beeApiUrl}/dapp-request?bzz-address=*`] },
   ['blocking'],
