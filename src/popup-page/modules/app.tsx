@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { getItem, setItem } from '../../utils/storage'
+import { GlobalContext } from '../context/global'
 
 export function App(): JSX.Element {
-  const [beeApiUrl, setBeeApiUrl] = useState('http://localhost:1633')
+  const globalStateContext = useContext(GlobalContext)
+  const { dispatch, state: globalState } = globalStateContext
 
   const asyncInit = async (): Promise<void> => {
-    setBeeApiUrl(await getItem('beeApiUrl'))
+    dispatch({ type: 'BEE_API_URL_CHANGE', newValue: (await getItem('beeApiUrl')) || 'http://localhost:1633' })
   }
 
   useEffect(() => {
@@ -14,18 +16,18 @@ export function App(): JSX.Element {
 
   const handleSubmit = async (event: React.FormEvent<HTMLElement>): Promise<void> => {
     event.preventDefault()
-    await setItem('beeApiUrl', beeApiUrl)
+    await setItem('beeApiUrl', globalState.beeApiUrl)
   }
 
   const handleBzzApiUrlChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setBeeApiUrl(event.target.value)
+    dispatch({ type: 'BEE_API_URL_CHANGE', newValue: event.target.value })
   }
 
   return (
     <form id="form-bee-api-url-change" onSubmit={handleSubmit}>
       <label>
         Bee node API address:
-        <input type="text" value={beeApiUrl} onChange={handleBzzApiUrlChange} />
+        <input type="text" value={globalState.beeApiUrl} onChange={handleBzzApiUrlChange} />
       </label>
       <input type="submit" value="Change" />
     </form>
