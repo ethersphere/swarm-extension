@@ -1,47 +1,35 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { getItem, setItem } from '../../utils/storage'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface Props {}
-interface State {
-  beeApiUrl: string
-}
+export function App(): JSX.Element {
+  const [beeApiUrl, setBeeApiUrl] = useState('http://localhost:1633')
 
-class App extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = { beeApiUrl: 'http://localhost:1633' }
-    this.asyncInit()
-
-    // bindings
-    this.handleBzzApiUrlChange = this.handleBzzApiUrlChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
+  const asyncInit = async (): Promise<void> => {
+    setBeeApiUrl(await getItem('beeApiUrl'))
   }
 
-  handleBzzApiUrlChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    this.setState({ beeApiUrl: event.target.value })
-  }
+  useEffect(() => {
+    asyncInit()
+  }, [])
 
-  async handleSubmit(event: React.FormEvent<HTMLElement>): Promise<void> {
+  const handleSubmit = async (event: React.FormEvent<HTMLElement>): Promise<void> => {
     event.preventDefault()
-    await setItem('beeApiUrl', this.state.beeApiUrl)
+    await setItem('beeApiUrl', beeApiUrl)
   }
 
-  async asyncInit(): Promise<void> {
-    this.setState({ beeApiUrl: await getItem('beeApiUrl') })
+  const handleBzzApiUrlChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setBeeApiUrl(event.target.value)
   }
 
-  render(): JSX.Element {
-    return (
-      <form id="form-bee-api-url-change" onSubmit={this.handleSubmit}>
-        <label>
-          Bee node API address:
-          <input type="text" value={this.state.beeApiUrl} onChange={this.handleBzzApiUrlChange} />
-        </label>
-        <input type="submit" value="Change" />
-      </form>
-    )
-  }
+  return (
+    <form id="form-bee-api-url-change" onSubmit={handleSubmit}>
+      <label>
+        Bee node API address:
+        <input type="text" value={beeApiUrl} onChange={handleBzzApiUrlChange} />
+      </label>
+      <input type="submit" value="Change" />
+    </form>
+  )
 }
 
 export default App
