@@ -77,7 +77,8 @@ export class BeeApiListener {
   }
 
   private addStoreListeners(): void {
-    this.storeObserver.addSubscriber('beeApiUrl', newValue => {
+    this.storeObserver.addListener('beeApiUrl', newValue => {
+      console.log('Bee API URL changed to', newValue)
       this.beeApiUrl = newValue
     })
   }

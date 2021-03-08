@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events'
+
 interface Store {
   beeApiUrl: string
 }
@@ -21,33 +23,28 @@ export async function setItem<T extends StoreKey>(key: T, value: Store[T]): Prom
 
 type StoreChangeCallback<T> = (newValue: T, oldValue: T, namespace: 'sync' | 'local' | 'managed', key: string) => void
 
-export class StoreObserver {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  subscribers: Partial<Record<StoreKey, Array<StoreChangeCallback<any>>>>
+export class StoreObserver extends EventEmitter {
   constructor() {
-    this.subscribers = {}
+    super()
     this.listener()
   }
 
-  public addSubscriber<T = string>(key: StoreKey, callback: StoreChangeCallback<T>): void {
-    if (!this.subscribers[key]) {
-      this.subscribers[key] = [callback]
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.subscribers[key]!.push(callback)
-    }
+  public addListener<T = string>(key: StoreKey, callback: StoreChangeCallback<T>): this {
+    super.addListener(key, callback)
+
+    return this
+  }
+
+  public removeListener<T = string>(key: StoreKey, callback: StoreChangeCallback<T>): this {
+    super.removeListener(key, callback)
+
+    return this
   }
 
   private listener() {
     chrome.storage.onChanged.addListener((changes, namespace) => {
       for (const [key, storageChange] of Object.entries(changes)) {
-        const subscribersOfKey = this.subscribers[key as StoreKey]
-
-        if (!subscribersOfKey) return
-
-        for (const subscriberOfKey of subscribersOfKey) {
-          subscriberOfKey(storageChange.newValue, storageChange.oldValue, namespace, key)
-        }
+        this.emit(key, storageChange.newValue, storageChange.oldValue, namespace, key)
       }
     })
   }
