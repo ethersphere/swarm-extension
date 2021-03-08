@@ -1,5 +1,5 @@
 import React from 'react'
-import { getItem, StoreObserver, setItem } from '../../utils/storage'
+import { getItem, setItem } from '../../utils/storage'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Props {}
