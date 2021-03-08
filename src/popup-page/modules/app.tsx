@@ -7,7 +7,9 @@ export function App(): JSX.Element {
   const { dispatch, state: globalState } = globalStateContext
 
   const asyncInit = async (): Promise<void> => {
-    dispatch({ type: 'BEE_API_URL_CHANGE', newValue: (await getItem('beeApiUrl')) || 'http://localhost:1633' })
+    const beeApiUrl = await getItem('beeApiUrl')
+
+    if (beeApiUrl) dispatch({ type: 'BEE_API_URL_CHANGE', newValue: beeApiUrl })
   }
 
   useEffect(() => {
