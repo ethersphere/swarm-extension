@@ -11,21 +11,21 @@ export class GlobalStateActionError extends Error {
   }
 }
 
-interface IState {
+interface State {
   beeApiUrl: string
 }
 
-interface IAction<T = string> {
+interface Action<T = string> {
   type: 'BEE_API_URL_CHANGE'
   newValue?: T
 }
 
 interface ContextValue {
-  state: IState
-  dispatch: React.Dispatch<IAction<string>>
+  state: State
+  dispatch: React.Dispatch<Action<string>>
 }
 
-const initialState: IState = {
+const initialState: State = {
   beeApiUrl: 'http://localhost:1633',
 }
 const GlobalContext = createContext<ContextValue>({
@@ -36,7 +36,7 @@ const GlobalContext = createContext<ContextValue>({
 const { Provider } = GlobalContext
 
 const GlobalStateProvider = ({ children }: { children: React.ReactElement }): React.ReactElement => {
-  const [state, dispatch] = useReducer((state: IState, action: IAction): IState => {
+  const [state, dispatch] = useReducer((state: State, action: Action): State => {
     switch (action.type) {
       case 'BEE_API_URL_CHANGE':
         if (!action.newValue || typeof action.newValue !== 'string') {
