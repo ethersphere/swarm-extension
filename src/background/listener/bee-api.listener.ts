@@ -36,7 +36,7 @@ export class BeeApiListener {
       ['blocking'],
     )
 
-    //redirect from web+bzz custom protocol
+    // Redirects 'web+bzz://' custom protocol
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
         const urlArray = details.url.split('web%2Bbzz%3A%2F%2F')
