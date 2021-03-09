@@ -2,12 +2,12 @@ import React, { createContext, useReducer } from 'react'
 
 export class GlobalStateActionError extends Error {
   public action: string
-  public message: string
-  constructor(action: string, message: string) {
-    const formattedMessage = `Error happened on action "${action}": ${message} `
+  public description: string
+  constructor(action: string, description: string) {
+    const formattedMessage = `Error happened on action "${action}": ${description} `
     super(formattedMessage)
     this.action = action
-    this.message = message
+    this.description = description
   }
 }
 
@@ -43,8 +43,11 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
           throw new GlobalStateActionError(action.type, 'No "newValue" property has been passed')
         }
 
-        if (!/^https?:\/\/[a-zA-Z0-9\.]+/i.test(action.newValue)) {
-          throw new GlobalStateActionError(action.type, '"newValue" is not a valid HTTP URL address')
+        if (!/^https?:\/\/.*/i.test(action.newValue)) {
+          throw new GlobalStateActionError(
+            action.type,
+            `"newValue" does not start with either "http://" or "https://". Got: ${action.type}'`,
+          )
         }
 
         return { ...state, beeApiUrl: action.newValue }
