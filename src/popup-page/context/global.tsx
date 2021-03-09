@@ -1,5 +1,12 @@
 import React, { createContext, useReducer } from 'react'
 
+export class GlobalStateActionError extends Error {
+  constructor(action: string, message: string) {
+    const formattedMessage = `Error happened on action "${action}": ${message} `
+    super(formattedMessage)
+  }
+}
+
 interface IState {
   beeApiUrl: string
 }
@@ -28,13 +35,15 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
   const [state, dispatch] = useReducer((state: IState, action: IAction): IState => {
     switch (action.type) {
       case 'BEE_API_URL_CHANGE':
-        if (action.newValue === undefined) {
-          throw new Error('No "newValue" property has been given on "BEE_API_URL_CHANGE" action')
+        if (!action.newValue || typeof action.newValue !== 'string') {
+          throw new GlobalStateActionError(action.type, 'No "newValue" property has been passed')
+        } else if (action.newValue.startsWith('http://') || action.newValue.startsWith('https://')) {
+          throw new GlobalStateActionError(action.type, '"newValue" is not start with either "http://" or "https://"')
         }
 
         return { ...state, beeApiUrl: action.newValue }
       default:
-        throw new Error(`No valid action type given. Got: "${action.type}"`)
+        throw new GlobalStateActionError(action.type, `No valid action type given`)
     }
   }, initialState)
 
