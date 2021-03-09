@@ -10,8 +10,8 @@ export class BeeApiListener {
   }
 
   private addBzzListeners() {
-    // typed in 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
-    // only react if google search has been set for searching
+    // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
+    // NOTE: works only if google search is set as default search engine
     chrome.webRequest.onBeforeRequest.addListener(
       (details: chrome.webRequest.WebRequestBodyDetails) => {
         console.log('Original BZZ Url', details.url)
@@ -36,7 +36,7 @@ export class BeeApiListener {
       ['blocking'],
     )
 
-    //redirect from web+bzz custom protocol
+    // Redirects 'web+bzz://' custom protocol
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
         const urlArray = details.url.split('web%2Bbzz%3A%2F%2F')

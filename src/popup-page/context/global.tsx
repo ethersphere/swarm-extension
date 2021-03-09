@@ -41,8 +41,10 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
       case 'BEE_API_URL_CHANGE':
         if (!action.newValue || typeof action.newValue !== 'string') {
           throw new GlobalStateActionError(action.type, 'No "newValue" property has been passed')
-        } else if (action.newValue.startsWith('http://') || action.newValue.startsWith('https://')) {
-          throw new GlobalStateActionError(action.type, '"newValue" is not start with either "http://" or "https://"')
+        }
+
+        if (!/^https?:\/\/[a-zA-Z0-9\.]+/i.test(action.newValue)) {
+          throw new GlobalStateActionError(action.type, '"newValue" is not a valid HTTP URL address')
         }
 
         return { ...state, beeApiUrl: action.newValue }

@@ -9,7 +9,6 @@ type StoreKey = keyof Store
 export function getItem<T extends StoreKey>(key: T): Promise<Store[T]> {
   return new Promise(resolve => {
     chrome.storage.local.get(key, items => {
-      console.log('items', items)
       resolve(items[key])
     })
   })
