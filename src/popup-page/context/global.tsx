@@ -1,9 +1,13 @@
 import React, { createContext, useReducer } from 'react'
 
 export class GlobalStateActionError extends Error {
+  public action: string
+  public message: string
   constructor(action: string, message: string) {
     const formattedMessage = `Error happened on action "${action}": ${message} `
     super(formattedMessage)
+    this.action = action
+    this.message = message
   }
 }
 
