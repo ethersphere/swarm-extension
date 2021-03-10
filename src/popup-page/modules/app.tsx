@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react'
-import { getItem, setItem } from '../../utils/storage'
+import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 
 export function App(): JSX.Element {
@@ -23,7 +23,6 @@ export function App(): JSX.Element {
   const handleSubmit = async (event: React.FormEvent<HTMLElement>): Promise<void> => {
     event.preventDefault()
     await changeGlobalState({ type: 'BEE_API_URL_CHANGE', newValue: beeApiUrl })
-    // await setItem('beeApiUrl', beeApiUrl)
   }
 
   return (

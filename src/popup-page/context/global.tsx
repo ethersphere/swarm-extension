@@ -1,5 +1,5 @@
 import React, { createContext, useReducer } from 'react'
-import { getItem, setItem, StoreObserver } from '../../utils/storage'
+import { setItem, StoreObserver } from '../../utils/storage'
 
 export class ActionError extends Error {
   public action: string
@@ -24,6 +24,7 @@ interface Action<T = string> {
 interface ContextValue {
   state: State
   dispatch: (action: Action<string>) => Promise<void> | void
+  storeObserver: StoreObserver
 }
 
 /** Checks dispatched actions have correct values */
@@ -52,18 +53,21 @@ async function localStoreDispatch<T = string>(action: Action<T>): Promise<void> 
       await setItem('beeApiUrl', (action.newValue as unknown) as string)
       break
     default:
-      return
+      return // maybe it doesn't have store key
   }
 }
 
 const initialState: State = {
   beeApiUrl: 'http://localhost:1633',
 }
+const storeObserver = new StoreObserver()
 const GlobalContext = createContext<ContextValue>({
   state: initialState,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   dispatch: () => {},
+  storeObserver,
 })
+
 const { Provider } = GlobalContext
 
 const GlobalStateProvider = ({ children }: { children: React.ReactElement }): React.ReactElement => {
@@ -84,7 +88,14 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
     uiStateDispatch(action)
   }
 
-  return <Provider value={{ state, dispatch }}>{children}</Provider>
+  // localstore changes effect back the handled state
+  storeObserver.addListener('beeApiUrl', (newValue, oldValue) => {
+    if (newValue !== oldValue && newValue !== state.beeApiUrl) {
+      dispatch({ type: 'BEE_API_URL_CHANGE', newValue })
+    }
+  })
+
+  return <Provider value={{ state, dispatch, storeObserver }}>{children}</Provider>
 }
 
 export { GlobalContext, GlobalStateProvider }
