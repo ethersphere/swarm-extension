@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react'
 import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 
-export function App(): JSX.Element {
+function BeeApiUrlChangeForm(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: changeGlobalState, state: globalState } = globalStateContext
 
@@ -37,6 +37,10 @@ export function App(): JSX.Element {
       <input type="submit" value="Change" />
     </form>
   )
+}
+
+export function App(): JSX.Element {
+  return <BeeApiUrlChangeForm />
 }
 
 export default App
