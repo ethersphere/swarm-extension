@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { createContext, useReducer } from 'react'
-import { setItem, StoreObserver } from '../../utils/storage'
+import { setItem } from '../../utils/storage'
 
 export class ActionError extends Error {
   public action: string
@@ -25,7 +25,6 @@ interface Action<T = string> {
 interface ContextValue {
   state: State
   dispatch: (action: Action<string>) => Promise<void> | void
-  storeObserver: StoreObserver
 }
 
 /** Checks dispatched actions have correct values */
@@ -66,13 +65,10 @@ const initialState: State = {
   beeApiUrl: 'http://localhost:1633',
 }
 
-const storeObserver = new StoreObserver()
-
 const GlobalContext = createContext<ContextValue>({
   state: initialState,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   dispatch: () => {},
-  storeObserver,
 })
 
 const { Provider } = GlobalContext
@@ -92,18 +88,11 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
   // with store write
   const dispatch: (action: Action<string>) => Promise<void> = async (action: Action<string>): Promise<void> => {
     actionCheck(action)
-    await localStoreDispatch(action)
     uiStateDispatch(action)
+    await localStoreDispatch(action)
   }
 
-  // localstore changes effect back the handled state
-  storeObserver.addListener('beeApiUrl', (newValue, oldValue) => {
-    if (newValue !== oldValue && newValue !== state.beeApiUrl) {
-      dispatch({ type: 'BEE_API_URL_CHANGE', newValue })
-    }
-  })
-
-  return <Provider value={{ state, dispatch, storeObserver }}>{children}</Provider>
+  return <Provider value={{ state, dispatch }}>{children}</Provider>
 }
 
 export { GlobalContext, GlobalStateProvider }
