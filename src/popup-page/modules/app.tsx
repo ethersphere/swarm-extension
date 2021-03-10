@@ -22,8 +22,8 @@ export function App(): JSX.Element {
 
   const handleSubmit = async (event: React.FormEvent<HTMLElement>): Promise<void> => {
     event.preventDefault()
-    changeGlobalState({ type: 'BEE_API_URL_CHANGE', newValue: beeApiUrl })
-    await setItem('beeApiUrl', beeApiUrl)
+    await changeGlobalState({ type: 'BEE_API_URL_CHANGE', newValue: beeApiUrl })
+    // await setItem('beeApiUrl', beeApiUrl)
   }
 
   return (
