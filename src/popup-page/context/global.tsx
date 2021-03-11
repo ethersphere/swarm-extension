@@ -66,7 +66,6 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
     // localstore changes effect back the handled state
     const listener = (newValue: string, oldValue: string) => {
       if (newValue !== oldValue && newValue !== state.beeApiUrl) {
-        console.log('new value for state', newValue)
         uiStateDispatch({ type: 'BEE_API_URL_SAVE', newValue })
       }
     }
