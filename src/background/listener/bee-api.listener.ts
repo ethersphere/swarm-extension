@@ -53,8 +53,8 @@ export class BeeApiListener {
       ['blocking'],
     )
 
-    // Given value of 'bzz-resource' is a bare bzz address without any prefix
-    // redirect by injected script to resources which does not handle custom protocols by default
+    // Redirects 'bzz-resource=<content_hash>'  to '<gateway>/bzz/<content_hash>
+    // Used to load page resources like images
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
         const urlArray = details.url.split('bzz-resource=')
