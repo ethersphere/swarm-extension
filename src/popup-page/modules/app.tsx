@@ -1,34 +1,34 @@
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 
 function BeeApiUrlChangeForm(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: changeGlobalState, state: globalState } = globalStateContext
-  const [beeApiUrl, setBeeApiUrl] = useState(globalState.beeApiUrl)
 
   const handleSubmit = (event: React.FormEvent<HTMLElement>): void => {
     event.preventDefault()
 
-    if (!/^https?:\/\/.*/i.test(beeApiUrl)) {
+    if (!/^https?:\/\/.*/i.test(globalState.beeApiUrl)) {
       // eslint-disable-next-line no-alert
-      alert(`"beeApiUrl" does not start with either "http://" or "https://". Got: ${beeApiUrl}'`)
+      alert(`"beeApiUrl" does not start with either "http://" or "https://". Got: ${globalState.beeApiUrl}'`)
 
       return
     }
 
-    changeGlobalState({ type: 'BEE_API_URL_SAVE', newValue: beeApiUrl })
+    changeGlobalState({ type: 'BEE_API_URL_SAVE', newValue: globalState.beeApiUrl })
   }
 
   const handleBeeApiUrlChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setBeeApiUrl(event.target.value)
+    // not async method, it just changes the ui state
+    changeGlobalState({ type: 'BEE_API_URL_CHANGE', newValue: event.target.value })
   }
 
   return (
     <form id="form-bee-api-url-change" onSubmit={handleSubmit}>
       <label>
         Bee node API address:
-        <input type="text" value={beeApiUrl} onChange={handleBeeApiUrlChange} />
+        <input type="text" value={globalState.beeApiUrl} onChange={handleBeeApiUrlChange} />
       </label>
       <input type="submit" value="Change" />
     </form>
