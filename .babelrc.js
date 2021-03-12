@@ -17,7 +17,8 @@ module.exports = function (api) {
           bugfixes: true,
           targets
         }
-      ]
+      ],
+      '@babel/preset-react'
     ],
     plugins: [
       '@babel/plugin-proposal-class-properties',

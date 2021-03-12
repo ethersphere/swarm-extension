@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { join } from 'path'
 import { ElementHandle, Page } from 'puppeteer'
-import { BEE_API_URL } from './utils'
+import { BEE_API_URL, bzzReferenceByGoogle, getElementBySelector, getExtensionId, replaceInputValue } from './utils'
 import { Bee } from '@ethersphere/bee-js'
 
 describe('BZZ protocol', () => {
   let page: Page
   let bee: Bee
   let rootFolderReference: string
+  let extensionId: string
+
   const checkJinnIframePage = async (element: ElementHandle<Element> | null) => {
     expect(element).toBeTruthy()
 
@@ -30,6 +32,8 @@ describe('BZZ protocol', () => {
     rootFolderReference = await bee.uploadFilesFromDirectory(join(__dirname, 'bzz-test-page'), true, uploadOptions)
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
+
+    extensionId = await getExtensionId()
 
     done()
   })
@@ -59,13 +63,41 @@ describe('BZZ protocol', () => {
 
   test('reference content with bzz://{content-id} with default search engine Google', async () => {
     const bzzPage = await global.__BROWSER__.newPage()
-    await bzzPage.goto(
-      `https://www.google.com/search?&q=bzz%3A%2F%2F${rootFolderReference}&oq=bzz%3A%2F%2F${rootFolderReference}`,
-      { waitUntil: 'networkidle0' },
-    )
+    await bzzPage.goto(bzzReferenceByGoogle(rootFolderReference), { waitUntil: 'networkidle0' })
 
     const bzzPageTitle = await bzzPage.$('#first-bzz-page-title')
 
     expect(bzzPageTitle).toBeTruthy()
+  })
+
+  test('Change Bee API URL', async done => {
+    const extensionPage = await global.__BROWSER__.newPage()
+    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+      waitUntil: 'networkidle0',
+    })
+
+    // change api url to http://localhost:9999
+    const testUrlValue = 'http://localhost:9999'
+    const formId = 'form-bee-api-url-change'
+    const inputSelector = `form[id="${formId}"] input[type="text"]`
+    const inputText = await getElementBySelector(inputSelector, extensionPage)
+    const submitSelector = `form[id="${formId}"] input[type="submit"]`
+    const submitButton = await getElementBySelector(submitSelector, extensionPage)
+    const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
+    const changeUrl = async (changeValue: string) => {
+      await extensionPage.focus(inputSelector)
+      await replaceInputValue(changeValue, extensionPage)
+      await submitButton.click()
+    }
+    await changeUrl(testUrlValue)
+    //test whether it had affect on routing
+    const bzzPage = await global.__BROWSER__.newPage()
+    const errorRegExp = /^net::ERR_CONNECTION_REFUSED/
+    await expect(bzzPage.goto(bzzReferenceByGoogle('nevermind-value'))).rejects.toThrowError(errorRegExp)
+    await bzzPage.close()
+    //set back the original value
+    await changeUrl(originalUrlValue as string)
+
+    done()
   })
 })

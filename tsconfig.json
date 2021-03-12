@@ -5,11 +5,13 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "commonjs", // Specify module code generation
     "strict": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "jsx": "react", // Support JSX in .tsx files
+    "skipLibCheck": true, // Skip type checking of all declaration files
   },
   "exclude": [
       "dist",
