@@ -4,7 +4,7 @@ import { GlobalContext } from '../context/global'
 
 function BeeApiUrlChangeForm(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
-  const { dispatch: changeGlobalState, state: globalState } = globalStateContext
+  const { dispatch: dispatchGlobalState, state: globalState } = globalStateContext
 
   const handleSubmit = (event: React.FormEvent<HTMLElement>): void => {
     event.preventDefault()
@@ -16,12 +16,12 @@ function BeeApiUrlChangeForm(): JSX.Element {
       return
     }
 
-    changeGlobalState({ type: 'BEE_API_URL_SAVE', newValue: globalState.beeApiUrl })
+    dispatchGlobalState({ type: 'BEE_API_URL_SAVE', newValue: globalState.beeApiUrl })
   }
 
   const handleBeeApiUrlChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     // not async method, it just changes the ui state
-    changeGlobalState({ type: 'BEE_API_URL_CHANGE', newValue: event.target.value })
+    dispatchGlobalState({ type: 'BEE_API_URL_CHANGE', newValue: event.target.value })
   }
 
   return (
