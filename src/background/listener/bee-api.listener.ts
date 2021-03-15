@@ -1,12 +1,16 @@
 import { StoreObserver, getItem } from '../../utils/storage'
 export class BeeApiListener {
-  private beeApiUrl: string
+  private _beeApiUrl: string
 
   public constructor(private storeObserver: StoreObserver) {
-    this.beeApiUrl = 'http://localhost:1633'
+    this._beeApiUrl = 'http://localhost:1633'
     this.addStoreListeners()
     this.asyncInit()
     this.addBzzListeners()
+  }
+
+  public get beeApiUrl(): string {
+    return this._beeApiUrl
   }
 
   private addBzzListeners() {
@@ -24,10 +28,10 @@ export class BeeApiListener {
         if (!query || !query.startsWith('bzz://')) return
 
         console.log('bzz address', query)
-        console.log('redirect to', `${this.beeApiUrl}/bzz/${query.substr(6)}`)
+        console.log('redirect to', `${this._beeApiUrl}/bzz/${query.substr(6)}`)
 
         return {
-          redirectUrl: `${this.beeApiUrl}/bzz/${query.substr(6)}`,
+          redirectUrl: `${this._beeApiUrl}/bzz/${query.substr(6)}`,
         }
       },
       {
@@ -44,12 +48,12 @@ export class BeeApiListener {
         // no match
         if (urlArray.length === 1) return
 
-        const redirectUrl = `${this.beeApiUrl}/bzz/${urlArray[1]}`
+        const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
         console.log(`BZZ redirect to ${redirectUrl} from ${details.url}`)
 
         return { redirectUrl }
       },
-      { urls: [`${this.beeApiUrl}/dapp-request?bzz-address=*`] },
+      { urls: [`${this._beeApiUrl}/dapp-request?bzz-address=*`] },
       ['blocking'],
     )
 
@@ -58,14 +62,14 @@ export class BeeApiListener {
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
         const urlArray = details.url.split('bzz-resource=')
-        const redirectUrl = `${this.beeApiUrl}/bzz/${urlArray[1]}`
+        const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
         console.log(`BZZ resource redirect to ${redirectUrl} from ${details.url}`)
 
         return {
           redirectUrl,
         }
       },
-      { urls: [`${this.beeApiUrl}/dapp-request?bzz-resource=*`] },
+      { urls: [`${this._beeApiUrl}/dapp-request?bzz-resource=*`] },
       ['blocking'],
     )
   }
@@ -73,13 +77,13 @@ export class BeeApiListener {
   private async asyncInit() {
     const storedBeeApiUrl = await getItem('beeApiUrl')
 
-    if (storedBeeApiUrl) this.beeApiUrl = storedBeeApiUrl
+    if (storedBeeApiUrl) this._beeApiUrl = storedBeeApiUrl
   }
 
   private addStoreListeners(): void {
     this.storeObserver.addListener('beeApiUrl', newValue => {
       console.log('Bee API URL changed to', newValue)
-      this.beeApiUrl = newValue
+      this._beeApiUrl = newValue
     })
   }
 }
