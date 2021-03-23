@@ -17,7 +17,7 @@ function injectScript(content: string) {
     scriptTag.id = 'swarm-injected'
     scriptTag.textContent = content
     container.insertBefore(scriptTag, container.children[0])
-    // container.removeChild(scriptTag)
+    container.removeChild(scriptTag)
     console.log('Swarm-Extension: swarm-library is available via "window.swarm"')
   } catch (error) {
     console.error('Swarm-Extension: Provider injection failed.', error)
