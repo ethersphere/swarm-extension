@@ -40,7 +40,7 @@ export class Web2HelperInpage implements IWeb2HelperMessage {
       }
 
       window.addEventListener('message', handler)
-      window.postMessage(message, '*') //TODO message to local window
+      window.postMessage(message, window.location.origin)
     })
   }
 }

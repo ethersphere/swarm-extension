@@ -3,7 +3,7 @@ import {
   InterceptorReqMessageFormat,
   InterceptorResMessageFormat,
 } from '../../utils/message/message-handler'
-import { MessagerInterceptor } from './messager.interceptor'
+import { MessagerInterceptor } from './messenger.interceptor'
 
 export class Web2HelperInterceptor extends MessagerInterceptor {
   constructor() {
@@ -41,11 +41,11 @@ export class Web2HelperInterceptor extends MessagerInterceptor {
           const responseMessage = this.deserializeResponseMessage<string>(response)
 
           messageToInpage.answer = responseMessage.answer
-          window.postMessage(messageToInpage, '*') //TODO only response for sender
+          window.postMessage(messageToInpage, this.inpageOrigin)
         } catch (e) {
           messageToInpage.error = e.message
           console.error('Web2HelperInterceptor Error', messageToInpage.error)
-          window.postMessage(messageToInpage, '*') //TODO only response for sender
+          window.postMessage(messageToInpage, this.inpageOrigin)
         }
       })
     })
