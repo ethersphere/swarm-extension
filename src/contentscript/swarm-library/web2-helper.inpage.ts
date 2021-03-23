@@ -23,8 +23,9 @@ export class Web2HelperInpage extends MessengerInpage implements IWeb2HelperMess
         if (response.data.error) reject(response.data.error)
 
         if (response.data.answer === undefined) {
-          console.error('bad responseeee', response)
-          reject(`Web2Helper inpage request failed. It didn't get any answer. ID: ${response.data.eventId}`)
+          const errorMessage = `Web2Helper inpage request failed. It didn't get any answer. ID: ${response.data.eventId}`
+          console.error(errorMessage, response)
+          reject(errorMessage)
         } else {
           resolve(response.data.answer)
         }
