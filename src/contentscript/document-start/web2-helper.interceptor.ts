@@ -3,9 +3,9 @@ import {
   InterceptorReqMessageFormat,
   InterceptorResMessageFormat,
 } from '../../utils/message/message-handler'
-import { MessagerInterceptor } from './messenger.interceptor'
+import { MessengerInterceptor } from './messenger.interceptor'
 
-export class Web2HelperInterceptor extends MessagerInterceptor {
+export class Web2HelperInterceptor extends MessengerInterceptor {
   constructor() {
     super()
     this.serveEvents()

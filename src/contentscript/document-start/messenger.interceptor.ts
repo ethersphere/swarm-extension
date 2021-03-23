@@ -1,6 +1,6 @@
 import { ResponseMessageFormat, ResponseWithMessage } from '../../utils/message/message-handler'
 
-export class MessagerInterceptor {
+export class MessengerInterceptor {
   protected readonly inpageOrigin = window.location.origin
 
   protected deserializeResponseMessage<T>(message: ResponseMessageFormat<T>): ResponseWithMessage<T> {
