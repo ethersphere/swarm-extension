@@ -10,6 +10,8 @@ interface WebpackEnvParams {
   debug: boolean
   mode: 'production' | 'development'
   fileName: string
+  /** Build extension's dependencies */
+  buildDeps: boolean
 }
 
 const base = (env?: Partial<WebpackEnvParams>): Configuration => {
@@ -200,10 +202,13 @@ const background = (env?: Partial<WebpackEnvParams>): Configuration => {
   }
 }
 
-const contentscript = (env?: Partial<WebpackEnvParams>): Configuration => {
+const contentscript = (
+  scriptType: 'document-idle' | 'document-start' | 'swarm-library',
+  env?: Partial<WebpackEnvParams>,
+): Configuration => {
   const isProduction = env?.mode === 'production'
-  const filename = 'contentscript.js'
-  const entry = Path.resolve(__dirname, 'src', 'contentscript')
+  const filename = `${scriptType}.js`
+  const entry = Path.resolve(__dirname, 'src', 'contentscript', scriptType)
   const path = Path.resolve(__dirname, 'dist')
   const target = 'web'
   const plugins: WebpackPluginInstance[] = [
@@ -229,11 +234,21 @@ const contentscript = (env?: Partial<WebpackEnvParams>): Configuration => {
     module: {
       rules: [
         {
-          test: /\.(ts|js)$/,
-          // include: entry,
+          test: /(?<!\.string)\.(ts|js)$/,
           use: {
             loader: 'babel-loader',
           },
+        },
+        {
+          test: /\.string\.(ts|js)$/,
+          use: [
+            {
+              loader: 'raw-loader',
+            },
+            {
+              loader: 'babel-loader',
+            },
+          ],
         },
       ],
     },
@@ -408,19 +423,31 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
   }
 }
 
-export default async (env?: Partial<WebpackEnvParams>): Promise<Configuration[]> => {
+export default (env?: Partial<WebpackEnvParams>): Configuration[] => {
   // eslint-disable-next-line no-console
   console.log('env', env)
 
-  if (env?.debug) {
-    const config = {
-      ...(await base(env)),
-      plugins: [new BundleAnalyzerPlugin()],
-      profile: true,
-    }
+  let baseConfig: Configuration[]
 
-    return [config, contentscript(env), popupPage(env)]
+  if (env?.buildDeps) {
+    baseConfig = [contentscript('swarm-library', env)]
+  } else {
+    baseConfig = [
+      base(env),
+      background(env),
+      contentscript('document-idle', env),
+      contentscript('document-start', env),
+      popupPage(env),
+    ]
   }
 
-  return [base(env), background(env), contentscript(env), popupPage(env)]
+  if (env?.debug) {
+    baseConfig.forEach(config => {
+      if (config.plugins) config.plugins.push(new BundleAnalyzerPlugin())
+      else config.plugins = [new BundleAnalyzerPlugin()]
+      config.profile = true
+    })
+  }
+
+  return baseConfig
 }

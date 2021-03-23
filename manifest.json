@@ -20,8 +20,14 @@
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
-      "js": ["contentscript.js"],
+      "js": ["document-idle.js"],
       "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["document-start.js"],
+      "run_at": "document_start",
       "all_frames": true
     }
   ]
