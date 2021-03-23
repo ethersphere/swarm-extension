@@ -14,15 +14,7 @@ export class Web2HelperInterceptor extends MessengerInterceptor {
     console.log('Register Web2HelperInterceptor event listeners...')
 
     window.addEventListener('message', (message: MessageEvent<InpageReqMessageFormat<undefined>>) => {
-      if (
-        message.data === undefined ||
-        !message.data.eventId ||
-        !message.data.key ||
-        message.data.sender !== 'inpage' ||
-        message.data.target !== 'content'
-      ) {
-        return
-      }
+      if (!this.validInpageMessage(message)) return
 
       console.log('Web2HelperInterceptor content script got aimed message', message.data)
       const messageToBackground: InterceptorReqMessageFormat = {
