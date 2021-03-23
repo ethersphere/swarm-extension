@@ -1,8 +1,9 @@
 import { IWeb2HelperMessage } from '../../utils/message/web2-helper/web2-helper.message'
 import { InterceptorResMessageFormat, InpageReqMessageFormat } from '../../utils/message/message-handler'
 import { nanoid } from 'nanoid'
+import { MessengerInpage } from './messenger.inpage'
 
-export class Web2HelperInpage implements IWeb2HelperMessage {
+export class Web2HelperInpage extends MessengerInpage implements IWeb2HelperMessage {
   public beeApiUrl(): Promise<string> {
     const message: InpageReqMessageFormat<undefined> = {
       key: 'beeApiUrl',
@@ -13,17 +14,7 @@ export class Web2HelperInpage implements IWeb2HelperMessage {
 
     return new Promise<string>((resolve, reject) => {
       const handler = (response: MessageEvent<InterceptorResMessageFormat<string>>) => {
-        // validate message
-        if (
-          response.origin !== location.origin ||
-          response.source !== window ||
-          message.eventId !== response.data.eventId ||
-          response.data.target !== 'inpage' ||
-          response.data.sender !== 'content' ||
-          !response.data
-        ) {
-          return
-        }
+        if (!this.validMessage(response, message.eventId)) return
 
         // Remove listener since this was the response that we were looking for at this point
         window.removeEventListener('message', handler)
