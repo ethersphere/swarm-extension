@@ -2,7 +2,7 @@
 // import { assignSwarmLibraryToWindow } from '../swarm-library'
 
 import SwarmLibrary from 'raw-loader!../../../dist/swarm-library.js'
-import { Web2HelperInterceptor } from './web2-helper.interceptor'
+import { MessengerInterceptor } from './messenger.interceptor'
 
 /**
  * Injects a script tag into the current document
@@ -33,4 +33,4 @@ injectScript(SwarmLibrary)
 // window.navigator.registerProtocolHandler('web+bzz', `${dappRequestUrl}?bzz-address=%s`, 'Swarm dApp')
 
 //listen to events which come from inpage side
-new Web2HelperInterceptor()
+new MessengerInterceptor()
