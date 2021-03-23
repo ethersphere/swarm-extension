@@ -227,8 +227,6 @@ const contentscript = (
       path,
       filename,
       sourceMapFilename: filename + '.map',
-      library: PackageJson.name,
-      libraryTarget: 'umd',
       globalObject: 'this',
     },
     module: {
