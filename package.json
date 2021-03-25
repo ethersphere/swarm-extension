@@ -19,7 +19,7 @@
   },
   "types": "dist/index.d.ts",
   "scripts": {
-    "compile": "webpack --progress --mode development",
+    "compile": "webpack --progress --mode development --env buildDeps=true && webpack --progress --mode development",
     "compile:types": "tsc --project tsconfig.d.json",
     "test": "jest --config=jest.config.ts",
     "test:demo": "npm run test -- --demo=true",
@@ -66,6 +66,7 @@
     "jest-puppeteer": "^4.4.0",
     "prettier": "^2.2.1",
     "puppeteer": "^5.5.0",
+    "raw-loader": "^4.0.2",
     "style-loader": "^2.0.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3",
@@ -74,6 +75,7 @@
     "webpack-cli": "^4.3.0"
   },
   "dependencies": {
+    "nanoid": "^3.1.22",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   }
