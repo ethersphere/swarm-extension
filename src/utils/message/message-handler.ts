@@ -45,28 +45,3 @@ export type ResponseMessageFormat<T = string> = BaseMessageFormat & {
 export type ResponseWithMessage<T = string> = {
   [Property in keyof ResponseMessageFormat<T> as Exclude<Property, 'error'>]-?: ResponseMessageFormat<T>[Property]
 }
-
-export type EventReturnType<T extends (...args: any[]) => any> = T extends (...args: any[]) => Promise<infer R>
-  ? Promise<R>
-  : never
-
-export interface EventInterceptor<Events extends { [eventName: string]: (...args: any[]) => Promise<any> }> {
-  callEvent<E extends keyof Events>(eventName: E, ...args: Parameters<Events[E]>): EventReturnType<Events[E]>
-}
-
-export function deserializeResponseMessage<T>(message: ResponseMessageFormat<T>): ResponseWithMessage<T> {
-  if (message.error) {
-    throw new Error(message.error)
-  }
-
-  if (!message.answer) {
-    throw new Error(`No answer from message handler at key "${message.key}"`)
-  }
-
-  return {
-    key: message.key,
-    answer: message.answer,
-    target: 'content',
-    sender: 'background',
-  }
-}
