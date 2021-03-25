@@ -1,9 +1,10 @@
-import { IWeb2HelperMessage } from '../../utils/message/web2-helper/web2-helper.message'
-import { InterceptorResMessageFormat, InpageReqMessageFormat } from '../../utils/message/message-handler'
+import { IWeb2HelperMessage } from '../utils/message/web2-helper/web2-helper.message'
+import { InterceptorResMessageFormat, InpageReqMessageFormat } from '../utils/message/message-handler'
 import { nanoid } from 'nanoid'
-import { MessengerInpage } from './messenger.inpage'
+import { MessengerInpage } from './swarm-library/messenger.inpage'
+import { fakeUrl } from '../utils/fake-url'
 
-export class Web2HelperInpage extends MessengerInpage implements IWeb2HelperMessage {
+export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMessage {
   public beeApiUrl(): Promise<string> {
     const message: InpageReqMessageFormat<undefined> = {
       key: 'beeApiUrl',
@@ -35,4 +36,14 @@ export class Web2HelperInpage extends MessengerInpage implements IWeb2HelperMess
       window.postMessage(message, window.location.origin)
     })
   }
+
+  public webBzzAddress(contentHash: string): string {
+    return `${fakeUrl.webBzzProtocol}/${contentHash}`
+  }
+
+  public bzzAddress(contentHash: string): string {
+    return `${fakeUrl.bzzProtocol}/${contentHash}`
+  }
 }
+
+export const web2HelperContent = new Web2HelperContent()
