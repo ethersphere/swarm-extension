@@ -1,3 +1,5 @@
+import { web2HelperContent } from '../web2-helper.content'
+
 // Unfortunately I didn't find better solution first to register custom protocols in chromium based browsers
 // So his script will solve this problem as is in order to use swarm protocols
 // web+ prefix is needed for custom protocols
@@ -12,8 +14,6 @@ window.addEventListener(
   false,
 )
 
-const dappRequestUrl = 'http://localhost:1633/dapp-request'
-
 const images = document.images
 const iframes = document.getElementsByTagName('iframe')
 const links = document.getElementsByTagName('a')
@@ -23,7 +23,7 @@ for (const srcElement of srcElements) {
   const bzzElementSrc = srcElement.src.split('web+bzz://')
 
   if (bzzElementSrc.length === 2) {
-    srcElement.src = `${dappRequestUrl}?bzz-resource=${bzzElementSrc[1]}`
+    srcElement.src = web2HelperContent.bzzAddress(bzzElementSrc[1])
   }
 }
 //change link sources
@@ -31,6 +31,6 @@ for (const link of links) {
   const bzzLinkHref = link.href.split('web+bzz://')
 
   if (bzzLinkHref.length === 2) {
-    link.href = `${dappRequestUrl}?bzz-resource=${bzzLinkHref[1]}`
+    link.href = web2HelperContent.bzzAddress(bzzLinkHref[1])
   }
 }

@@ -1,4 +1,5 @@
 import { StoreObserver, getItem } from '../../utils/storage'
+import { fakeUrl } from '../../utils/fake-url'
 export class BeeApiListener {
   private _beeApiUrl: string
 
@@ -49,11 +50,11 @@ export class BeeApiListener {
         if (urlArray.length === 1) return
 
         const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
-        console.log(`BZZ redirect to ${redirectUrl} from ${details.url}`)
+        console.log(`web+bzz redirect to ${redirectUrl} from ${details.url}`)
 
         return { redirectUrl }
       },
-      { urls: [`${this._beeApiUrl}/dapp-request?bzz-address=*`] },
+      { urls: [`${fakeUrl.webBzzProtocol}/*`] },
       ['blocking'],
     )
 
@@ -61,15 +62,15 @@ export class BeeApiListener {
     // Used to load page resources like images
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
-        const urlArray = details.url.split('bzz-resource=')
+        const urlArray = details.url.split(`${fakeUrl.bzzProtocol}/`)
         const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
-        console.log(`BZZ resource redirect to ${redirectUrl} from ${details.url}`)
+        console.log(`bzz redirect to ${redirectUrl} from ${details.url}`)
 
         return {
           redirectUrl,
         }
       },
-      { urls: [`${this._beeApiUrl}/dapp-request?bzz-resource=*`] },
+      { urls: [`${fakeUrl.bzzProtocol}/*`] },
       ['blocking'],
     )
   }

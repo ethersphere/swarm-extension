@@ -1,7 +1,7 @@
-import { Web2HelperInpage } from './web2-helper.inpage'
+import { web2HelperContent } from '../web2-helper.content'
 
 window.swarm = {
-  web2Helper: new Web2HelperInpage(),
+  web2Helper: web2HelperContent,
 }
 
 console.log('window.swarm has been inited')
