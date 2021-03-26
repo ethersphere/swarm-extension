@@ -17,10 +17,9 @@
     "type": "git",
     "url": "https://github.com/nugaon/swarm-extension.git"
   },
-  "types": "dist/index.d.ts",
+  "types": "types/index.d.ts",
   "scripts": {
     "compile": "webpack --progress --mode development --env buildDeps=true && webpack --progress --mode development",
-    "compile:types": "tsc --project tsconfig.d.json",
     "test": "jest --config=jest.config.ts",
     "test:demo": "npm run test -- --demo=true",
     "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
