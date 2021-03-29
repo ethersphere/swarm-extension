@@ -58,7 +58,6 @@ export class BeeApiListener {
       ['blocking'],
     )
 
-    // Redirects 'bzz-resource=<content_hash>'  to '<gateway>/bzz/<content_hash>
     // Used to load page resources like images
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
@@ -71,6 +70,22 @@ export class BeeApiListener {
         }
       },
       { urls: [`${fakeUrl.bzzProtocol}/*`] },
+      ['blocking'],
+    )
+
+    // Forward requests to the Bee client with the corresponding keys
+    // TODO add API key here to the request if it will be available in the Bee client
+    chrome.webRequest.onBeforeRequest.addListener(
+      details => {
+        const urlArray = details.url.split(fakeUrl.beeApiAddress)
+        const redirectUrl = `${this._beeApiUrl}${urlArray[1]}`
+        console.log(`Bee API client request redirect to ${redirectUrl} from ${details.url}`)
+
+        return {
+          redirectUrl,
+        }
+      },
+      { urls: [`${fakeUrl.beeApiAddress}*`] },
       ['blocking'],
     )
   }

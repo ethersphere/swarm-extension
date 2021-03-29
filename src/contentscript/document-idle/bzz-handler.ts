@@ -23,7 +23,7 @@ for (const srcElement of srcElements) {
   const bzzElementSrc = srcElement.src.split('web+bzz://')
 
   if (bzzElementSrc.length === 2) {
-    srcElement.src = web2HelperContent.bzzAddress(bzzElementSrc[1])
+    srcElement.src = web2HelperContent.fakeBzzAddress(bzzElementSrc[1])
   }
 }
 //change link sources
@@ -31,6 +31,6 @@ for (const link of links) {
   const bzzLinkHref = link.href.split('web+bzz://')
 
   if (bzzLinkHref.length === 2) {
-    link.href = web2HelperContent.bzzAddress(bzzLinkHref[1])
+    link.href = web2HelperContent.fakeBzzAddress(bzzLinkHref[1])
   }
 }

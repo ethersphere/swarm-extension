@@ -9,6 +9,9 @@ class FakeUrl {
 
   public readonly bzzProtocol: string
 
+  /** Append neccessary keys to the Bee client requests in the future */
+  public readonly beeApiAddress: string
+
   constructor() {
     // bee default API address, which is reserved on this localhost port number,
     // should not overlap with any other service
@@ -18,6 +21,7 @@ class FakeUrl {
     this.baseUrl = 'http://localhost:1633/fake-url'
     this.webBzzProtocol = `${this.baseUrl}/web-bzz`
     this.bzzProtocol = `${this.baseUrl}/bzz`
+    this.beeApiAddress = `${this.baseUrl}/bee`
   }
 }
 
