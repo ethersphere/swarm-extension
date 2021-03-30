@@ -41,23 +41,6 @@ export class BeeApiListener {
       ['blocking'],
     )
 
-    // Redirects 'web+bzz://' custom protocol
-    chrome.webRequest.onBeforeRequest.addListener(
-      details => {
-        const urlArray = details.url.split('web%2Bbzz%3A%2F%2F')
-
-        // no match
-        if (urlArray.length === 1) return
-
-        const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
-        console.log(`web+bzz redirect to ${redirectUrl} from ${details.url}`)
-
-        return { redirectUrl }
-      },
-      { urls: [`${fakeUrl.webBzzProtocol}/*`] },
-      ['blocking'],
-    )
-
     // Used to load page resources like images
     chrome.webRequest.onBeforeRequest.addListener(
       details => {

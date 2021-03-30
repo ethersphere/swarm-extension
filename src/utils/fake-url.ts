@@ -5,8 +5,6 @@ class FakeUrl {
    * */
   private readonly baseUrl: string
 
-  public readonly webBzzProtocol: string
-
   public readonly bzzProtocol: string
 
   /** Append neccessary keys to the Bee client requests in the future */
@@ -19,9 +17,8 @@ class FakeUrl {
     // does not need to change even if the client set other URL for bzz protocol
     // does not change during the workflow
     this.baseUrl = 'http://localhost:1633/fake-url'
-    this.webBzzProtocol = `${this.baseUrl}/web-bzz`
     this.bzzProtocol = `${this.baseUrl}/bzz`
-    this.beeApiAddress = `${this.baseUrl}/bee`
+    this.beeApiAddress = `${this.baseUrl}/bee-api`
   }
 }
 
