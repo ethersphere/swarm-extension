@@ -44,3 +44,9 @@ if everything went great, you can see the test pages in a Chromium browser.
 For BZZ protocol there are test pages to illustrate the functionality.
 The test page folder is located in [test/bzz-test-page](test/bzz-test-page).
 In its [index page](test/bzz-test-page/index.html), you see how you can refer to external Swarm content in HTML files without assuming any gateway host.
+
+### Maintainers
+
+- [nugaon](https://github.com/nugaon)
+- [Cafe137](https://github.com/Cafe137)
+
