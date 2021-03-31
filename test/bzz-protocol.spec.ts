@@ -50,6 +50,45 @@ describe('BZZ protocol', () => {
     checkJinnIframePage(ref)
   })
 
+  test('Fetch Real Bee API URL', async done => {
+    await page.click('#button-fetch-real-bee-api-url')
+    const placeHolderSelector = '#bee-api-url-placeholder'
+    await page.waitForSelector(placeHolderSelector)
+    const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
+    expect(value).toBe('http://localhost:1633') //default value of Bee API URL in the extension
+
+    done()
+  })
+
+  test('Upload file through Fake URL', async done => {
+    await page.click('#button-upload-fake-url-file')
+    const placeHolderSelector = '#fake-bzz-url-content-1 > a:first-child'
+    await page.waitForSelector(placeHolderSelector)
+    await page.click(placeHolderSelector)
+    const bzzPageTitle = await page.$('h1')
+    expect(bzzPageTitle).toBeTruthy()
+    await page.goBack()
+
+    done()
+  })
+
+  test('Fetch image via Fake URL', async done => {
+    await page.click('#button-fetch-jinn-page')
+    const placeHolderSelector = '#fake-url-fetch-jinn > img:first-child'
+    await page.waitForSelector(placeHolderSelector)
+    const completedImageLoad = await page.evaluate(async placeHolderSelector => {
+      const image = document.querySelector(placeHolderSelector)
+
+      return await new Promise(resolve => {
+        image.addEventListener('load', resolve(true))
+        image.addEventListener('error', resolve(false))
+      })
+    }, placeHolderSelector)
+    expect(completedImageLoad).toBeTruthy()
+
+    done()
+  })
+
   test('click on web+bzz link reference', async () => {
     // perform navigation
     await page.click('#bzz-ext-ref')
@@ -62,10 +101,10 @@ describe('BZZ protocol', () => {
   })
 
   test('reference content with bzz://{content-id} with default search engine Google', async () => {
-    const bzzPage = await global.__BROWSER__.newPage()
-    await bzzPage.goto(bzzReferenceByGoogle(rootFolderReference), { waitUntil: 'networkidle0' })
+    const page = await global.__BROWSER__.newPage()
+    await page.goto(bzzReferenceByGoogle(rootFolderReference), { waitUntil: 'networkidle0' })
 
-    const bzzPageTitle = await bzzPage.$('#first-bzz-page-title')
+    const bzzPageTitle = await page.$('#first-bzz-page-title')
 
     expect(bzzPageTitle).toBeTruthy()
   })
