@@ -1,4 +1,5 @@
 import { StoreObserver, getItem } from '../../utils/storage'
+import { fakeUrl } from '../../utils/fake-url'
 export class BeeApiListener {
   private _beeApiUrl: string
 
@@ -40,36 +41,34 @@ export class BeeApiListener {
       ['blocking'],
     )
 
-    // Redirects 'web+bzz://' custom protocol
-    chrome.webRequest.onBeforeRequest.addListener(
-      details => {
-        const urlArray = details.url.split('web%2Bbzz%3A%2F%2F')
-
-        // no match
-        if (urlArray.length === 1) return
-
-        const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
-        console.log(`BZZ redirect to ${redirectUrl} from ${details.url}`)
-
-        return { redirectUrl }
-      },
-      { urls: [`${this._beeApiUrl}/dapp-request?bzz-address=*`] },
-      ['blocking'],
-    )
-
-    // Redirects 'bzz-resource=<content_hash>'  to '<gateway>/bzz/<content_hash>
     // Used to load page resources like images
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
-        const urlArray = details.url.split('bzz-resource=')
+        const urlArray = details.url.split(`${fakeUrl.bzzProtocol}/`)
         const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
-        console.log(`BZZ resource redirect to ${redirectUrl} from ${details.url}`)
+        console.log(`bzz redirect to ${redirectUrl} from ${details.url}`)
 
         return {
           redirectUrl,
         }
       },
-      { urls: [`${this._beeApiUrl}/dapp-request?bzz-resource=*`] },
+      { urls: [`${fakeUrl.bzzProtocol}/*`] },
+      ['blocking'],
+    )
+
+    // Forward requests to the Bee client with the corresponding keys
+    // TODO add API key here to the request if it will be available in the Bee client
+    chrome.webRequest.onBeforeRequest.addListener(
+      details => {
+        const urlArray = details.url.split(fakeUrl.beeApiAddress)
+        const redirectUrl = `${this._beeApiUrl}${urlArray[1]}`
+        console.log(`Bee API client request redirect to ${redirectUrl} from ${details.url}`)
+
+        return {
+          redirectUrl,
+        }
+      },
+      { urls: [`${fakeUrl.beeApiAddress}*`] },
       ['blocking'],
     )
   }

@@ -6,10 +6,43 @@ This extension is a Chromium based extension since this platform seems the be th
 The whole project is a hack. It only points out the current problems within dApp ecosystem in regular Web2 browsers,
 but on the other hand its goal to show alternatives how to build a real Web3 environment for dApps in structural sense.
 
+## Fake URL
+
+There is a need to separate dApp context from the user context in order to restrict dApp actions work with keys and resources of the user.
+In a web3 environment the browser acts like a backend server. To accomplish this desired role it has to introduce endpoints that dApps can interact with.
+These endpoints are called `Fake URLs`.
+The naming came from these URLs should not point to any real existing endpoint that a common server could serve,
+so the host part of the URL (probably) is not the real destination.
+
+Web applications can make requests to other decentralized application APIs in the scope of the user
+by aiming its corresponding Fake URLs that basically make redirect to these real API address.
+It is neccessary, because the targeted services may need additional headers and keys to perform the action that **should not be handled on dApp side**.
+The extension can keep this keys and configurations on the side of the user
+and it does not expose the secrets to the applications that initialize the call.
+In this sense it also works like a `proxy`.
+
+During the redirect, the extension can create separated context for `root content IDs` and perform the action according to that.
+(E.g. restrict calls towards the targeted service, cache the returned cookies from the response in the content context, etc.)
+This architecture also allows for used decentralized services to change its default URLs to any arbitrary one,
+meanwhile dApps do not have to guess this address.
+For example Bee client has default `http://localhost:1633`, user can change it to any other port or even other gateway host,
+the dApps will call it in the same way.
+
+### Callable Endpoints
+
+For any action the Fake URL host is `http://localhost:1633`.
+As it is written earlier, it is not the address of the Bee client,
+it is just a reserved host address that the extension took and built its Fake URL paths on it.
+If the user changes their Bee API address, these callings still remain the same from dApp side.
+
+- `http://localhost:1633/fake-url/bzz/*` - `BZZ protocol` redirects to this fake URL, thereby in `*` can be not only content reference with its path, but any BZZ protocol compatible reference. It will be redirected to `bzz` endpoint of the Bee client.
+- `http://localhost:1633/fake-url/bee-api/*` - it will be forwarded to the Bee API. `*` has to be valid Bee API path
+
 ## Custom Protocol
 
-Only supported Swarm protocol currently is `bzz`. It makes a redirect to the BZZ endpoint of the Bee node(, which is fixed `localhost:1633`, will be changeable later).
-There will be need for other Swarm specific protocols, which handles different type of feeds and mutable content.
+Only supported Swarm protocol currently is `bzz` (in HTML files `web+bzz`).
+It makes a redirect to the BZZ endpoint of the Bee node by calling its corresponding Fake URL.
+There will be need for other Swarm specific protocols (or extend the current one), which handles different type of feeds and mutable content.
 
 The extension currently [injects a script](src/contentscript/index.ts) on document load in order to dApp pages could refer other P2P resources.
 It is injected to every page basically, because in [manifest.json](manifest.json) you need to define where the injection happens by a fixed pattern for URLs and the host can be determenistic and changeable in this case.

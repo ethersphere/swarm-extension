@@ -4,23 +4,58 @@
 <head>
   <meta charset="utf-8">
   <title>First Direct BZZ address</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="https://unpkg.com/@ethersphere/bee-js/dist/index.browser.min.js"></script>
+  <script src="index.js"></script>
 </head>
 
 <body>
   <h1 id="first-bzz-page-title">
     Let's roll!
   </h1>
-  <h3>Local Iframe</h3>
-  <iframe id="localhost-inner-ref" src="jinn-page/index.html"></iframe>
-  <h3>External Iframe refer by BZZ protocol</h3>
-  <iframe id="bzz-iframe" src="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be"></iframe>
-  <h3>Same External Iframe refer with localhost:1633</h3>
-  <iframe id="localhost-iframe" src="http://localhost:1633/bzz/5f1eee1c57d03d1a423e2977875a707ed53cf72af45fdefba175f55336be1115"></iframe>
-  <h3>External image refer by BZZ protocol</h3>
-  <img id="bzz-image" width="300" src="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be/images/jinn.png">
-
-  <h3>Link to other page via web+bzz protocol</h3>
-  <a id="bzz-ext-ref" href="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be">Jinn page link 1</a>
+  <div id="test-cases">
+    <h2>BZZ Protocol samples</h2>
+    <div>
+      <h4>Local Iframe</h4>
+      <iframe id="localhost-inner-ref" src="jinn-page/index.html"></iframe>
+    </div>
+    <div>
+      <h4>BZZ Protocol Iframe</h4>
+      <iframe id="bzz-iframe" src="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be"></iframe>
+    </div>
+    <div>
+      <h4>Same External Iframe refer with localhost:1633</h4>
+      <iframe id="localhost-iframe" src="http://localhost:1633/bzz/5f1eee1c57d03d1a423e2977875a707ed53cf72af45fdefba175f55336be1115"></iframe>
+    </div>
+    <div>
+      <h4>External image refer by BZZ protocol</h4>
+      <img id="bzz-image" width="300" src="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be/images/jinn.png" />
+    </div>
+    <div>
+      <h4>Link to other page via web+bzz protocol</h4>
+      <a id="bzz-ext-ref" href="web+bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be">Jinn page link 1</a>
+    </div>
+    <h2>Injected Swarm Script and Fake URL samples</h2>
+    <div>
+      <h4>Fetch Real Bee API URL</h4>
+      <button id="button-fetch-real-bee-api-url" onclick="fetchBeeApiUrl()">Fetch</button>
+      <label id="bee-api-url-placeholder">[Bee API URL Placeholder]</label>
+    </div>
+    <div>
+      <h4>Link to the other page via Fake URL</h4>
+      <a id="fake-url-ref" href="http://localhost:1633/fake-url/bzz/45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be">Jinn page link 2</a>
+    </div>
+    <div>
+      <h4>Fetch Jinn image via Fake URL with JavaScript</h4>
+      <button id="button-fetch-jinn-page" onclick="fetchJinnImage()">Fetch</button>
+      <div id="fake-url-fetch-jinn"></div>
+    </div>
+    <div>
+      <h4>Upload a file with BeeJS which is initialized by Fake URL</h4>
+      <button id="button-upload-fake-url-file" onclick="uploadFileWithBeeJs()">Upload</button>
+      <div id="fake-bzz-url-content-1"></div>
+    </div>
+  </div>
 </body>
 </html>
 
