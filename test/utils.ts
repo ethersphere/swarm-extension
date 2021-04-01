@@ -32,10 +32,10 @@ export async function getExtensionId(): Promise<string> {
 }
 
 export async function replaceInputValue(newValue: string, page: Page): Promise<void> {
-  await page.keyboard.down('Control')
-  await page.keyboard.press('A')
-  await page.keyboard.up('Control')
+  await page.keyboard.down('Shift')
+  await page.keyboard.press('Home')
   await page.keyboard.press('Backspace')
+  await page.keyboard.up('Shift')
   await page.keyboard.type(newValue)
 }
 
