@@ -6,6 +6,22 @@ type BaseMessageFormat = {
   key: string
 }
 
+type BaseDirectMessage = BaseMessageFormat & {
+  trusted: true
+}
+
+/** Direct message from Content script to Background script */
+export type DirectMessageReq<T, K extends keyof T> = BaseDirectMessage & {
+  key: K
+  payload: T[K] extends (...args: any[]) => any ? Parameters<T[K]> : undefined
+}
+
+/** Response for Content script direct message from Background script */
+export type DirectMessageRes<T, K extends keyof T> = BaseDirectMessage & {
+  key: K
+  payload: T[K] extends (...args: any[]) => any ? ReturnType<T[K]> : never
+}
+
 /** Used message type where window.postMessage call happens */
 export type BroadcastMessageFormat = BaseMessageFormat & {
   eventId: string
@@ -44,4 +60,10 @@ export type ResponseMessageFormat<T = string> = BaseMessageFormat & {
 /** Background script -> Content script with answer */
 export type ResponseWithMessage<T = string> = {
   [Property in keyof ResponseMessageFormat<T> as Exclude<Property, 'error'>]-?: ResponseMessageFormat<T>[Property]
+}
+
+export function assertMessage<T extends BaseMessageFormat, K extends keyof T>(message: T, method: K): message is T {
+  if (message.key === method) return true
+
+  return false
 }
