@@ -139,6 +139,11 @@ const background = (env?: Partial<WebpackEnvParams>): Configuration => {
       'process.env.ENV': env?.mode || 'development',
       'process.env.IS_WEBPACK_BUILD': 'true',
     }),
+    ExtraActionsPlugin(() => {
+      liveReloadServer.clients.forEach(client => {
+        client.send('ping')
+      })
+    }),
   ]
 
   return {
@@ -229,6 +234,11 @@ const contentscript = (
     new DefinePlugin({
       'process.env.ENV': env?.mode || 'development',
       'process.env.IS_WEBPACK_BUILD': 'true',
+    }),
+    ExtraActionsPlugin(() => {
+      liveReloadServer.clients.forEach(client => {
+        client.send('ping')
+      })
     }),
   ]
 
@@ -349,6 +359,11 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
           },
         },
       ],
+    }),
+    ExtraActionsPlugin(() => {
+      liveReloadServer.clients.forEach(client => {
+        client.send('ping')
+      })
     }),
   ]
 
