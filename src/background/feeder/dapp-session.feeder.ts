@@ -34,9 +34,10 @@ export class DappSessionFeeder {
     return sender.tab.id
   }
 
+  /** If context is not in iframe it returns back -1 */
   private senderFrameId(sender: chrome.runtime.MessageSender) {
     if (!sender.frameId) {
-      throw new ErrorWithConsoleLog(`DappSessionFeeder: sender does not have "frameId" property`, sender)
+      return -1
     }
 
     return sender.frameId
