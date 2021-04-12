@@ -1,5 +1,10 @@
 class DappSecurityContext {
-  public constructor(private tabId: number, private frameId: number) {}
+  public constructor(
+    private tabId: number,
+    private frameId: number,
+    private frameContentRoot: string,
+    private originContentRoot: string,
+  ) {}
 }
 
 export class DappSessionManager {
@@ -13,10 +18,12 @@ export class DappSessionManager {
     sender: {
       tabId: number
       frameId: number
+      frameContentRoot: string
+      originContentRoot: string
     },
   ): void {
-    const { tabId, frameId } = sender
-    this.securityContexts[sessionId] = new DappSecurityContext(tabId, frameId)
-    console.log(`dApp session "${sessionId}" has been initialized`)
+    const { tabId, frameId, frameContentRoot, originContentRoot } = sender
+    this.securityContexts[sessionId] = new DappSecurityContext(tabId, frameId, frameContentRoot, originContentRoot)
+    console.log(`dApp session "${sessionId}" has been initialized`, this.securityContexts[sessionId])
   }
 }

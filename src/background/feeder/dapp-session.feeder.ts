@@ -19,6 +19,8 @@ export class DappSessionFeeder {
         this.manager.register(message.payload[0], {
           tabId: this.senderTabId(sender),
           frameId: this.senderFrameId(sender),
+          originContentRoot: this.senderContentOrigin(sender),
+          frameContentRoot: this.senderFrameOrigin(sender),
         })
       }
     })
@@ -41,6 +43,35 @@ export class DappSessionFeeder {
     }
 
     return sender.frameId
+  }
+
+  /** Gives back the original content reference of the sender */
+  private senderContentOrigin(sender: chrome.runtime.MessageSender) {
+    if (!sender.tab) throw new ErrorWithConsoleLog(`DappSessionFeeder: sender does not have "tab" property`, sender)
+
+    if (!sender.tab!.url) {
+      throw new ErrorWithConsoleLog(`DappSessionFeeder: sender does not have "tab.url" property`, sender)
+    }
+
+    return this.extractContentRoot(sender.tab.url)
+  }
+
+  /** Gives back the frame content reference of the sender */
+  private senderFrameOrigin(sender: chrome.runtime.MessageSender) {
+    if (!sender.url) throw new ErrorWithConsoleLog(`DappSessionFeeder: sender does not have "url" property`, sender)
+
+    return this.extractContentRoot(sender.url)
+  }
+
+  private extractContentRoot(url: string): string {
+    const urlParts = url.split('/') // http(s)://{bee-client-host}/bzz/{>content-root<}(/whatever)
+
+    if (urlParts.length < 4 || urlParts[2] === 'bzz') {
+      throw new Error(`DappSessionFeeder: source URL is not a valid content refence ${url}`)
+    }
+
+    // TODO: check configurated bee api/debug address
+    return urlParts[4]
   }
 
   private isDappSessionMessage<K extends keyof IDappSessionMessage>(
