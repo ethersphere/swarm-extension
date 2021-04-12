@@ -1,10 +1,13 @@
 /* eslint-disable no-console */
-import Path from 'path'
-import { DefinePlugin, Configuration, WebpackPluginInstance } from 'webpack'
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
-import TerserPlugin from 'terser-webpack-plugin'
-import PackageJson from './package.json'
 import CopyPlugin from 'copy-webpack-plugin'
+import Path from 'path'
+import TerserPlugin from 'terser-webpack-plugin'
+import { Compiler, Configuration, DefinePlugin, WebpackPluginInstance } from 'webpack'
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+import { Server } from 'ws'
+import PackageJson from './package.json'
+
+const liveReloadServer = new Server({ port: 16667 })
 
 interface WebpackEnvParams {
   debug: boolean
@@ -13,6 +16,12 @@ interface WebpackEnvParams {
   /** Build extension's dependencies */
   buildDeps: boolean
 }
+
+const ExtraActionsPlugin = (callback: () => void) => ({
+  apply: (compiler: Compiler) => {
+    compiler.hooks.afterEmit.tap('ExtraActionsPlugin', callback)
+  },
+})
 
 const base = (env?: Partial<WebpackEnvParams>): Configuration => {
   const isProduction = env?.mode === 'production'
@@ -36,6 +45,11 @@ const base = (env?: Partial<WebpackEnvParams>): Configuration => {
           to: path,
         },
       ],
+    }),
+    ExtraActionsPlugin(() => {
+      liveReloadServer.clients.forEach(client => {
+        client.send('ping')
+      })
     }),
   ]
 
@@ -124,6 +138,11 @@ const background = (env?: Partial<WebpackEnvParams>): Configuration => {
     new DefinePlugin({
       'process.env.ENV': env?.mode || 'development',
       'process.env.IS_WEBPACK_BUILD': 'true',
+    }),
+    ExtraActionsPlugin(() => {
+      liveReloadServer.clients.forEach(client => {
+        client.send('ping')
+      })
     }),
   ]
 
@@ -215,6 +234,11 @@ const contentscript = (
     new DefinePlugin({
       'process.env.ENV': env?.mode || 'development',
       'process.env.IS_WEBPACK_BUILD': 'true',
+    }),
+    ExtraActionsPlugin(() => {
+      liveReloadServer.clients.forEach(client => {
+        client.send('ping')
+      })
     }),
   ]
 
@@ -335,6 +359,11 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
           },
         },
       ],
+    }),
+    ExtraActionsPlugin(() => {
+      liveReloadServer.clients.forEach(client => {
+        client.send('ping')
+      })
     }),
   ]
 
