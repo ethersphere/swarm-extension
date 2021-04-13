@@ -61,9 +61,3 @@ export type ResponseMessageFormat<T = string> = BaseMessageFormat & {
 export type ResponseWithMessage<T = string> = {
   [Property in keyof ResponseMessageFormat<T> as Exclude<Property, 'error'>]-?: ResponseMessageFormat<T>[Property]
 }
-
-export function assertMessage<T extends BaseMessageFormat, K extends keyof T>(message: T, method: K): message is T {
-  if (message.key === method) return true
-
-  return false
-}
