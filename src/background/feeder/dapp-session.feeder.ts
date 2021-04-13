@@ -27,9 +27,7 @@ export class DappSessionFeeder {
   }
 
   private senderTabId(sender: chrome.runtime.MessageSender) {
-    if (!sender.tab) throw new ErrorWithConsoleLog(`DappSessionFeeder: sender does not have "tab" property`, sender)
-
-    if (!sender.tab!.id) {
+    if (!sender.tab?.id) {
       throw new ErrorWithConsoleLog(`DappSessionFeeder: sender does not have "tab.id" property`, sender)
     }
 
