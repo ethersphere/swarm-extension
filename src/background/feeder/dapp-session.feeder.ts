@@ -82,8 +82,6 @@ export class DappSessionFeeder {
   }
 
   private isInternalMessage(sender: chrome.runtime.MessageSender): boolean {
-    if (sender.id === chrome.runtime.id) return true
-
-    return false
+    return sender.id === chrome.runtime.id
   }
 }
