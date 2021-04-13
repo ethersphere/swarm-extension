@@ -1,7 +1,7 @@
 import { InterceptorResMessageFormat } from '../../utils/message/message-handler'
 
 export class MessengerInpage {
-  protected readonly contentPageOrigin = window.location.origin
+  protected readonly contentPageOrigin = window.origin
 
   protected validMessage(response: MessageEvent<InterceptorResMessageFormat<unknown>>, eventId: string): boolean {
     if (

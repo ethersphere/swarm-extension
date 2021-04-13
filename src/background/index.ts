@@ -1,4 +1,6 @@
 import { StoreObserver } from '../utils/storage'
+import { DappSessionManager } from './dapp-session.manager'
+import { DappSessionFeeder } from './feeder/dapp-session.feeder'
 import { Web2HelperFeeder } from './feeder/web2-helper.feeder'
 import { BeeApiListener } from './listener/bee-api.listener'
 import { DebugListener } from './listener/debug.listener'
@@ -7,6 +9,8 @@ import { setupLiveReload } from './live-reload/live-reload'
 console.log('Swarm Backend script started...')
 const storeObserver = new StoreObserver()
 const beeApiListener = new BeeApiListener(storeObserver)
+const dappSessionManager = new DappSessionManager()
+new DappSessionFeeder(dappSessionManager)
 new DebugListener()
 new Web2HelperFeeder(beeApiListener)
 setupLiveReload()

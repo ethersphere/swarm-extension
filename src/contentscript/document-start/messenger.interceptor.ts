@@ -7,10 +7,11 @@ import {
 } from '../../utils/message/message-handler'
 
 export class MessengerInterceptor {
-  private readonly inpageOrigin = window.location.origin
+  private readonly inpageOrigin = window.origin !== 'null' ? window.origin : '*'
 
   constructor() {
     this.serveEvents()
+    console.log('message interceptor has been initialized.', this.inpageOrigin)
   }
   serveEvents(): void {
     console.log('Register Web2HelperInterceptor event listeners...')

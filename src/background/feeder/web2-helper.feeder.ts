@@ -9,9 +9,8 @@ export class Web2HelperFeeder {
     console.log('Register Web2HelperFeeder event listeners...')
 
     chrome.runtime.onMessage.addListener((message: InterceptorReqMessageFormat<string>, sender, sendResponse) => {
-      console.log('Web2HelperFeeder beeApiUrl got aimed message from content script', message)
-
       if (message.key === 'beeApiUrl') {
+        console.log('Web2HelperFeeder:beeApiUrl got aimed message from content script', message)
         const response: ResponseMessageFormat = {
           key: message.key,
           sender: 'background',

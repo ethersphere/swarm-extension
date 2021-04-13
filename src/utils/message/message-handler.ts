@@ -6,6 +6,22 @@ type BaseMessageFormat = {
   key: string
 }
 
+type BaseDirectMessage = BaseMessageFormat & {
+  trusted: true
+}
+
+/** Direct message from Content script to Background script */
+export type DirectMessageReq<T, K extends keyof T> = BaseDirectMessage & {
+  key: K
+  payload: T[K] extends (...args: any[]) => any ? Parameters<T[K]> : undefined
+}
+
+/** Response for Content script direct message from Background script */
+export type DirectMessageRes<T, K extends keyof T> = BaseDirectMessage & {
+  key: K
+  payload: T[K] extends (...args: any[]) => any ? ReturnType<T[K]> : never
+}
+
 /** Used message type where window.postMessage call happens */
 export type BroadcastMessageFormat = BaseMessageFormat & {
   eventId: string
