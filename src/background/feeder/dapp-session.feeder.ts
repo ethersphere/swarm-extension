@@ -45,9 +45,7 @@ export class DappSessionFeeder {
 
   /** Gives back the original content reference of the sender */
   private senderContentOrigin(sender: chrome.runtime.MessageSender) {
-    if (!sender.tab) throw new ErrorWithConsoleLog(`DappSessionFeeder: sender does not have "tab" property`, sender)
-
-    if (!sender.tab!.url) {
+    if (!sender.tab?.url) {
       throw new ErrorWithConsoleLog(`DappSessionFeeder: sender does not have "tab.url" property`, sender)
     }
 
