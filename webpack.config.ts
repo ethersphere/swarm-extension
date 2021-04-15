@@ -6,8 +6,11 @@ import { Compiler, Configuration, DefinePlugin, WebpackPluginInstance } from 'we
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import { Server } from 'ws'
 import PackageJson from './package.json'
+import { execSync } from 'child_process'
 
-const liveReloadServer = new Server({ port: 16667 })
+const MAIN_RELOAD_PORT = 16667
+const DEPS_RELOAD_PORT = 16668
+let liveReloadServer: Server
 
 interface WebpackEnvParams {
   debug: boolean
@@ -22,6 +25,26 @@ const ExtraActionsPlugin = (callback: () => void) => ({
     compiler.hooks.afterEmit.tap('ExtraActionsPlugin', callback)
   },
 })
+
+/**
+ * Send reload signal for the extension on change
+ *
+ * @param plugins webpack plugins that the extraAction plugin will be added
+ * @param dependency if true, main codebase will be compiled on every change, because the main codebase dependent on the given compilation
+ */
+const addExtraActionPlugin = (plugins: WebpackPluginInstance[], dependency?: boolean) => {
+  if (liveReloadServer === undefined) return //if liveReloadServer has been not initialized, then it is in production mode
+
+  plugins.push(
+    ExtraActionsPlugin(() => {
+      if (dependency) execSync('npm run compile:main')
+
+      liveReloadServer.clients.forEach(client => {
+        client.send('ping')
+      })
+    }),
+  )
+}
 
 const base = (env?: Partial<WebpackEnvParams>): Configuration => {
   const isProduction = env?.mode === 'production'
@@ -46,12 +69,8 @@ const base = (env?: Partial<WebpackEnvParams>): Configuration => {
         },
       ],
     }),
-    ExtraActionsPlugin(() => {
-      liveReloadServer.clients.forEach(client => {
-        client.send('ping')
-      })
-    }),
   ]
+  addExtraActionPlugin(plugins)
 
   return {
     bail: Boolean(isProduction),
@@ -139,12 +158,8 @@ const background = (env?: Partial<WebpackEnvParams>): Configuration => {
       'process.env.ENV': env?.mode || 'development',
       'process.env.IS_WEBPACK_BUILD': 'true',
     }),
-    ExtraActionsPlugin(() => {
-      liveReloadServer.clients.forEach(client => {
-        client.send('ping')
-      })
-    }),
   ]
+  addExtraActionPlugin(plugins)
 
   return {
     bail: Boolean(isProduction),
@@ -225,6 +240,7 @@ const contentscript = (
   scriptType: 'document-start' | 'swarm-library' | 'swarm-html',
   env?: Partial<WebpackEnvParams>,
 ): Configuration => {
+  const dependencies = ['swarm-library', 'swarm-html']
   const isProduction = env?.mode === 'production'
   const filename = `${scriptType}.js`
   const entry = Path.resolve(__dirname, 'src', 'contentscript', scriptType)
@@ -235,12 +251,8 @@ const contentscript = (
       'process.env.ENV': env?.mode || 'development',
       'process.env.IS_WEBPACK_BUILD': 'true',
     }),
-    ExtraActionsPlugin(() => {
-      liveReloadServer.clients.forEach(client => {
-        client.send('ping')
-      })
-    }),
   ]
+  addExtraActionPlugin(plugins, dependencies.includes(scriptType))
 
   return {
     bail: Boolean(isProduction),
@@ -360,12 +372,9 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
         },
       ],
     }),
-    ExtraActionsPlugin(() => {
-      liveReloadServer.clients.forEach(client => {
-        client.send('ping')
-      })
-    }),
   ]
+
+  addExtraActionPlugin(plugins)
 
   return {
     bail: Boolean(isProduction),
@@ -457,8 +466,12 @@ export default (env?: Partial<WebpackEnvParams>): Configuration[] => {
   let baseConfig: Configuration[]
 
   if (env?.buildDeps) {
+    if (env?.mode === 'development') liveReloadServer = new Server({ port: DEPS_RELOAD_PORT })
+
     baseConfig = [contentscript('swarm-library', env), contentscript('swarm-html', env)]
   } else {
+    if (env?.mode === 'development') liveReloadServer = new Server({ port: MAIN_RELOAD_PORT })
+
     baseConfig = [base(env), background(env), contentscript('document-start', env), popupPage(env)]
   }
 
