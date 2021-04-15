@@ -13,4 +13,5 @@ const dappSessionManager = new DappSessionManager()
 new DappSessionFeeder(dappSessionManager)
 new DebugListener()
 new Web2HelperFeeder(beeApiListener)
-setupLiveReload()
+
+if (process.env.SWARM_DEVELOPMENT) setupLiveReload()
