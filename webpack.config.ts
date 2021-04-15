@@ -2,7 +2,7 @@
 import CopyPlugin from 'copy-webpack-plugin'
 import Path from 'path'
 import TerserPlugin from 'terser-webpack-plugin'
-import { Compiler, Configuration, DefinePlugin, WebpackPluginInstance } from 'webpack'
+import { Compiler, Configuration, DefinePlugin, WebpackPluginInstance, EnvironmentPlugin } from 'webpack'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import { Server } from 'ws'
 import PackageJson from './package.json'
@@ -157,6 +157,9 @@ const background = (env?: Partial<WebpackEnvParams>): Configuration => {
     new DefinePlugin({
       'process.env.ENV': env?.mode || 'development',
       'process.env.IS_WEBPACK_BUILD': 'true',
+    }),
+    new EnvironmentPlugin({
+      SWARM_DEVELOPMENT: !isProduction,
     }),
   ]
   addExtraActionPlugin(plugins)
