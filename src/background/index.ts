@@ -13,4 +13,4 @@ const dappSessionManager = new DappSessionManager()
 new DappSessionFeeder(dappSessionManager)
 new DebugListener()
 new Web2HelperFeeder(beeApiListener)
-setupLiveReload()
+setupLiveReload() //TODO only run in dev mode
