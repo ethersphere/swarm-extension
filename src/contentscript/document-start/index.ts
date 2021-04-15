@@ -3,6 +3,7 @@ import { injectSessionId } from './inject/session-id'
 import { injectSwarmLibrary } from './inject/swarm-library'
 import { nanoid } from 'nanoid'
 import { dappSessionRegister } from './dapp-session.register'
+import { injectSwarmHtml } from './inject/swarm-html'
 
 // custom protocol handler is highly unconvenient to set up on client side and cannot be enabled automaticly in puppeteer
 // it does not have effect on image loading
@@ -14,6 +15,7 @@ import { dappSessionRegister } from './dapp-session.register'
 const sessionId = nanoid()
 dappSessionRegister(sessionId)
 injectSessionId(sessionId)
+injectSwarmHtml()
 injectSwarmLibrary()
 
 //listen to events which come from inpage side

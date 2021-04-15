@@ -222,7 +222,7 @@ const background = (env?: Partial<WebpackEnvParams>): Configuration => {
 }
 
 const contentscript = (
-  scriptType: 'document-idle' | 'document-start' | 'swarm-library',
+  scriptType: 'document-start' | 'swarm-library' | 'swarm-html',
   env?: Partial<WebpackEnvParams>,
 ): Configuration => {
   const isProduction = env?.mode === 'production'
@@ -457,15 +457,9 @@ export default (env?: Partial<WebpackEnvParams>): Configuration[] => {
   let baseConfig: Configuration[]
 
   if (env?.buildDeps) {
-    baseConfig = [contentscript('swarm-library', env)]
+    baseConfig = [contentscript('swarm-library', env), contentscript('swarm-html', env)]
   } else {
-    baseConfig = [
-      base(env),
-      background(env),
-      contentscript('document-idle', env),
-      contentscript('document-start', env),
-      popupPage(env),
-    ]
+    baseConfig = [base(env), background(env), contentscript('document-start', env), popupPage(env)]
   }
 
   if (env?.debug) {
