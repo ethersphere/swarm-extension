@@ -1,4 +1,5 @@
 import { fakeUrl } from '../../utils/fake-url'
+import { appendSwarmSessionId } from '../../utils/swarm-session-id'
 
 export class SwarmImage extends HTMLImageElement {
   static get observedAttributes(): string[] {
@@ -21,7 +22,8 @@ export class SwarmImage extends HTMLImageElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
-      this.src = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      this.src = appendSwarmSessionId(fakeUrlRef)
     }
   }
 }
@@ -47,7 +49,8 @@ export class SwarmFrame extends HTMLIFrameElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
-      this.src = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      this.src = appendSwarmSessionId(fakeUrlRef)
     }
   }
 }
@@ -73,7 +76,8 @@ export class SwarmAnchor extends HTMLAnchorElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
-      this.href = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      this.href = appendSwarmSessionId(fakeUrlRef)
     }
   }
 }
