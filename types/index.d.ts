@@ -12,5 +12,6 @@ declare global {
     swarm: {
       web2Helper: Web2HelperContent
     }
+    swarmSessionId: string
   }
 }
