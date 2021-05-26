@@ -3,7 +3,7 @@
   "short_name": "Swarm Extension",
   "version": "0.0.1",
   "manifest_version": 2,
-  "permissions": ["webRequest", "webRequestBlocking", "webNavigation", "storage", "*://*/*"],
+  "permissions": ["webRequest", "webRequestBlocking", "tabs", "storage", "*://*/*"],
   "author": "nugaon",
   "description": "PoC for Ethereum Swarm extension",
   "icons": {
