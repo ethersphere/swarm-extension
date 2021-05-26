@@ -11,7 +11,7 @@ export const SWARM_SESSION_ID_KEY = 'swarm-session-id'
  * @param bzzUrl BZZ URL with arbitrary query parameters, e.g. http://.../1231abcd.../valami.html?swarm-session-id=vmi&smth=5
  * @returns url without the SwarmSessionID
  */
-export function removeSwarmSessionIdFromURL(bzzUrl: string): string {
+export function removeSwarmSessionIdFromUrl(bzzUrl: string): string {
   const queryIndex = bzzUrl.indexOf('?')
 
   if (queryIndex === -1) return bzzUrl

@@ -1,6 +1,6 @@
 import { StoreObserver, getItem } from '../../utils/storage'
 import { fakeUrl } from '../../utils/fake-url'
-import { SWARM_SESSION_ID_KEY, removeSwarmSessionIdFromURL } from '../../utils/swarm-session-id'
+import { SWARM_SESSION_ID_KEY, removeSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
 
 export class BeeApiListener {
   private _beeApiUrl: string
@@ -72,7 +72,7 @@ export class BeeApiListener {
           }
         }
         // Delete swarm session id from the url
-        url = removeSwarmSessionIdFromURL(url)
+        url = removeSwarmSessionIdFromUrl(url)
         // get the full referenced BZZ address from the modified url (without bzz address)
         const urlArray = url.toString().split(`${fakeUrl.bzzProtocol}/`)
         const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
@@ -101,7 +101,7 @@ export class BeeApiListener {
             cancel: true,
           }
         }
-        url = removeSwarmSessionIdFromURL(url)
+        url = removeSwarmSessionIdFromUrl(url)
 
         // get the full referenced BZZ address from the modified url (without bzz address)
         const urlArray = url.split(`${fakeUrl.beeApiAddress}/`)
