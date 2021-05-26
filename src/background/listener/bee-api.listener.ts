@@ -17,12 +17,27 @@ export class BeeApiListener {
   }
 
   private addBzzListeners() {
-    chrome.webNavigation.onBeforeNavigate.addListener(details => {
-      console.log('WEBNAVIGATION', details)
-    })
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-      console.log('CHANGEINFO', changeInfo, tab)
-    })
+    /**
+     * New Swarm page load request
+     *
+     * it listens on a fake URL which will redirect the current tab
+     * to the desired address.
+     * it will attach the API key later
+     */
+    chrome.webRequest.onBeforeRequest.addListener(
+      (details: chrome.webRequest.WebRequestBodyDetails) => {
+        const urlArray = details.url.split(`${fakeUrl.openDapp}/`)
+
+        if (urlArray.length !== 2) {
+          console.error(`Invalid Fake URL usage. Got: ${details.url}`)
+
+          return // invalid fake url usage
+        }
+
+        this.redirectToBzzReference(urlArray[1], details.tabId)
+      },
+      { urls: [`${fakeUrl.openDapp}/*`] },
+    )
 
     // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
     // NOTE: works only if google search is set as default search engine
@@ -34,17 +49,11 @@ export class BeeApiListener {
 
         if (!query || !query.startsWith('bzz://')) return
 
-        console.log('bzz address', query)
-        console.log('redirect to', `${this._beeApiUrl}/bzz/${query.substr(6)}`)
-
-        return {
-          redirectUrl: `${this._beeApiUrl}/bzz/${query.substr(6)}`,
-        }
+        this.redirectToBzzReference(query.substr(6), details.tabId)
       },
       {
         urls: ['https://www.google.com/search?*'],
       },
-      ['blocking'],
     )
 
     // Used to load page resources like images
@@ -149,5 +158,19 @@ export class BeeApiListener {
       console.log('Bee API URL changed to', newValue)
       this._beeApiUrl = newValue
     })
+  }
+
+  /**
+   * Redirects the tab or create a new tab for the dApp under the given BZZ reference
+   *
+   * @param bzzReference in form of $ROOT_HASH<$PATH><$QUERY>
+   * @param tabId the tab will be navigated to the dApp page
+   */
+  private redirectToBzzReference(bzzReference: string, tabId: number) {
+    const url = `${this._beeApiUrl}/bzz/${bzzReference}`
+
+    console.log(`Fake URL redirection to ${url} on tabId ${tabId}`)
+
+    chrome.tabs.update(tabId, { active: true, url })
   }
 }

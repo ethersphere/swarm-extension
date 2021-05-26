@@ -5,6 +5,14 @@ class FakeUrl {
    * */
   private readonly baseUrl: string
 
+  /**
+   * used when the a tab has to navigate to new dApp page
+   *
+   * Swarm Session ID is not requried
+   * it will redirect the current tab
+   */
+  public readonly openDapp: string
+
   public readonly bzzProtocol: string
 
   /** Append neccessary keys to the Bee client requests in the future */
@@ -19,6 +27,7 @@ class FakeUrl {
     this.baseUrl = 'http://localhost:1633/fake-url'
     this.bzzProtocol = `${this.baseUrl}/bzz`
     this.beeApiAddress = `${this.baseUrl}/bee-api`
+    this.openDapp = `${this.baseUrl}/open-dapp`
   }
 }
 

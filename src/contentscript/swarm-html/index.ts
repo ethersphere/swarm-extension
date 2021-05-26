@@ -65,7 +65,7 @@ export class SwarmAnchor extends HTMLAnchorElement {
     console.log(`swarm-html: loaded. href ${this.href}`)
 
     this.addEventListener('load', () => {
-      if (!this.href.startsWith(fakeUrl.bzzProtocol)) {
+      if (!this.href.startsWith(fakeUrl.openDapp)) {
         console.error(
           `Swarm element with ID "${this.id}" does not have valid bzz reference in the "href" attribute. Got ${this.href}`,
         )
@@ -76,8 +76,8 @@ export class SwarmAnchor extends HTMLAnchorElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
-      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
-      this.href = appendSwarmSessionId(fakeUrlRef)
+      const fakeUrlRef = `${fakeUrl.openDapp}/${bzzReference}`
+      this.href = fakeUrlRef
     }
   }
 }
