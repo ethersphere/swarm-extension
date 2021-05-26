@@ -89,7 +89,7 @@ describe('BZZ protocol', () => {
     done()
   })
 
-  test('click on web+bzz link reference', async () => {
+  xtest('click on web+bzz link reference', async () => {
     // perform navigation
     await page.click('#bzz-ext-ref')
 
@@ -100,7 +100,7 @@ describe('BZZ protocol', () => {
     await page.close()
   })
 
-  test('reference content with bzz://{content-id} with default search engine Google', async () => {
+  xtest('reference content with bzz://{content-id} with default search engine Google', async () => {
     const page = await global.__BROWSER__.newPage()
     await page.goto(bzzReferenceByGoogle(rootFolderReference), { waitUntil: 'networkidle0' })
 
@@ -131,7 +131,7 @@ describe('BZZ protocol', () => {
     await changeUrl(testUrlValue)
     //test whether it had affect on routing
     const bzzPage = await global.__BROWSER__.newPage()
-    const errorRegExp = /^net::ERR_CONNECTION_REFUSED/
+    const errorRegExp = /^net::ERR_/
     await expect(bzzPage.goto(bzzReferenceByGoogle('nevermind-value'))).rejects.toThrowError(errorRegExp)
     await bzzPage.close()
     //set back the original value
