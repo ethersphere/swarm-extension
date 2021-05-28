@@ -4,6 +4,31 @@ import { ElementHandle, Page } from 'puppeteer'
 import { BEE_API_URL, bzzReferenceByGoogle, getElementBySelector, getExtensionId, replaceInputValue } from './utils'
 import { Bee } from '@ethersphere/bee-js'
 
+async function getLastBzzPage(): Promise<Page> {
+  await new Promise(resolve => setTimeout(() => resolve(true), 500))
+  const pages = await global.__BROWSER__.pages()
+
+  return pages[pages.length - 1]
+}
+
+function newBzzpage(url: string): Promise<Page> {
+  return new Promise(async (resolve, reject) => {
+    const page = await global.__BROWSER__.newPage()
+    page.once('requestfailed', async request => {
+      const errorText = request.failure()?.errorText
+
+      if (errorText === 'net::ERR_ABORTED') resolve(await getLastBzzPage())
+      else reject(errorText)
+    })
+
+    try {
+      await page.goto(url, { waitUntil: 'domcontentloaded' })
+    } catch {
+      //
+    }
+  })
+}
+
 describe('BZZ protocol', () => {
   let page: Page
   let bee: Bee
@@ -89,22 +114,24 @@ describe('BZZ protocol', () => {
     done()
   })
 
-  xtest('click on web+bzz link reference', async () => {
-    // perform navigation
-    await page.click('#bzz-ext-ref')
+  test('click on web+bzz link reference', async () => {
+    try {
+      // perform navigation
+      await page.click('#bzz-ext-ref')
+    } catch (e) {
+      const currentPage = await getLastBzzPage()
+      const jinnPage = await currentPage.$('#jinn-page-title')
 
-    const jinnPage = await page.$('#jinn-page-title')
+      expect(jinnPage).toBeTruthy()
 
-    expect(jinnPage).toBeTruthy()
-
-    await page.close()
+      await currentPage.close()
+    }
   })
 
-  xtest('reference content with bzz://{content-id} with default search engine Google', async () => {
-    const page = await global.__BROWSER__.newPage()
-    await page.goto(bzzReferenceByGoogle(rootFolderReference), { waitUntil: 'networkidle0' })
-
-    const bzzPageTitle = await page.$('#first-bzz-page-title')
+  test('reference content with bzz://{content-id} with default search engine Google', async () => {
+    const page2 = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
+    console.log('page title', await page2.title())
+    const bzzPageTitle = await page2.$('#first-bzz-page-title')
 
     expect(bzzPageTitle).toBeTruthy()
   })
@@ -130,9 +157,8 @@ describe('BZZ protocol', () => {
     }
     await changeUrl(testUrlValue)
     //test whether it had affect on routing
-    const bzzPage = await global.__BROWSER__.newPage()
-    const errorRegExp = /^net::ERR_/
-    await expect(bzzPage.goto(bzzReferenceByGoogle('nevermind-value'))).rejects.toThrowError(errorRegExp)
+    const bzzPage = await newBzzpage(bzzReferenceByGoogle('nevermind-value'))
+    expect(bzzPage.url()).toBe('chrome-error://chromewebdata/')
     await bzzPage.close()
     //set back the original value
     await changeUrl(originalUrlValue as string)

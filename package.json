@@ -24,7 +24,7 @@
     "compile:deps": "webpack --env buildDeps=true",
     "compile:main": "webpack",
     "test": "jest --config=jest.config.ts",
-    "test:demo": "npm run test -- --demo=true",
+    "test:demo": "npm run test -- --demo=true --runInBand",
     "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\""
   },
