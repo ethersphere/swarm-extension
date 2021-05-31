@@ -6,9 +6,9 @@ class FakeUrl {
   private readonly baseUrl: string
 
   /**
-   * used when the a tab has to navigate to new dApp page
+   * Used when a tab has to navigate to new dApp page
    *
-   * Swarm Session ID is not requried
+   * Swarm Session ID is not required
    * it will redirect the current tab
    */
   public readonly openDapp: string
