@@ -115,25 +115,22 @@ describe('BZZ protocol', () => {
   })
 
   test('click on web+bzz link reference', async () => {
-    try {
-      // perform navigation
-      await page.click('#bzz-ext-ref')
-    } catch (e) {
-      const currentPage = await getLastBzzPage()
-      const jinnPage = await currentPage.$('#jinn-page-title')
+    // perform navigation
+    await page.click('#bzz-ext-ref')
+    const currentPage = await getLastBzzPage()
+    const jinnPage = await currentPage.$('#jinn-page-title')
 
-      expect(jinnPage).toBeTruthy()
-
-      await currentPage.close()
-    }
+    expect(jinnPage).toBeTruthy()
+    await currentPage.close()
   })
 
   test('reference content with bzz://{content-id} with default search engine Google', async () => {
     const page2 = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
-    console.log('page title', await page2.title())
-    const bzzPageTitle = await page2.$('#first-bzz-page-title')
+    const title = await page2.title()
+    const bzzPageTitleElement = await page2.$('#first-bzz-page-title')
 
-    expect(bzzPageTitle).toBeTruthy()
+    expect(title).toBe('First Direct BZZ address')
+    expect(bzzPageTitleElement).toBeTruthy()
   })
 
   test('Change Bee API URL', async done => {
