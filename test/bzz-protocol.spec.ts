@@ -155,6 +155,7 @@ describe('BZZ protocol', () => {
     await changeUrl(testUrlValue)
     //test whether it had affect on routing
     const bzzPage = await newBzzpage(bzzReferenceByGoogle('nevermind-value'))
+    // the expected error page URL is 'chrome-error://chromewebdata/' on wrong reference.
     expect(bzzPage.url()).toBe('chrome-error://chromewebdata/')
     await bzzPage.close()
     //set back the original value
