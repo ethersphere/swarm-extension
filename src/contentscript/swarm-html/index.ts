@@ -1,4 +1,5 @@
 import { fakeUrl } from '../../utils/fake-url'
+import { appendSwarmSessionId } from '../../utils/swarm-session-id'
 
 export class SwarmImage extends HTMLImageElement {
   static get observedAttributes(): string[] {
@@ -21,7 +22,8 @@ export class SwarmImage extends HTMLImageElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
-      this.src = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      this.src = appendSwarmSessionId(fakeUrlRef)
     }
   }
 }
@@ -47,7 +49,8 @@ export class SwarmFrame extends HTMLIFrameElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
-      this.src = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      this.src = appendSwarmSessionId(fakeUrlRef)
     }
   }
 }
@@ -62,7 +65,7 @@ export class SwarmAnchor extends HTMLAnchorElement {
     console.log(`swarm-html: loaded. href ${this.href}`)
 
     this.addEventListener('load', () => {
-      if (!this.href.startsWith(fakeUrl.bzzProtocol)) {
+      if (!this.href.startsWith(fakeUrl.openDapp)) {
         console.error(
           `Swarm element with ID "${this.id}" does not have valid bzz reference in the "href" attribute. Got ${this.href}`,
         )
@@ -73,7 +76,8 @@ export class SwarmAnchor extends HTMLAnchorElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
-      this.href = `${fakeUrl.bzzProtocol}/${bzzReference}`
+      const fakeUrlRef = `${fakeUrl.openDapp}/${bzzReference}`
+      this.href = fakeUrlRef
     }
   }
 }

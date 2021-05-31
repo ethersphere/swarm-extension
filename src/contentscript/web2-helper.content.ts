@@ -3,6 +3,7 @@ import { InterceptorResMessageFormat, InpageReqMessageFormat } from '../utils/me
 import { nanoid } from 'nanoid'
 import { MessengerInpage } from './swarm-library/messenger.inpage'
 import { fakeUrl } from '../utils/fake-url'
+import { appendSwarmSessionId } from '../utils/swarm-session-id'
 
 export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMessage {
   /** The real Bee API address that shouldn't be called directly by dApps */
@@ -51,7 +52,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
    * @returns Fake URL pointing to the BZZ endpoint of the Bee client
    */
   public fakeBzzAddress(reference: string): string {
-    return `${fakeUrl.bzzProtocol}/${reference}`
+    return appendSwarmSessionId(`${fakeUrl.bzzProtocol}/${reference}`)
   }
 
   /**
@@ -63,7 +64,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
    * @returns Fake Bee API URL that is directly callable from dApp side
    */
   public fakeBeeApiAddress(): string {
-    return fakeUrl.beeApiAddress
+    return appendSwarmSessionId(fakeUrl.beeApiAddress)
   }
 }
 

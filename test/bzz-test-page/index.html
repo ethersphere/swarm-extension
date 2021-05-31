@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <title>First Direct BZZ address</title>
   <link rel="stylesheet" href="index.css">
-  <script src="https://unpkg.com/@ethersphere/bee-js/dist/index.browser.min.js"></script>
+  <script src="bee-js.min.js"></script>
   <script src="index.js"></script>
 </head>
 
@@ -25,7 +25,7 @@
     </div>
     <div>
       <h4>Same External Iframe refer with localhost:1633</h4>
-      <iframe id="localhost-iframe" is="swarm-frame" referrerpolicy="unsafe-url" sandbox="allow-scripts" src="http://localhost:1633/bzz/5f1eee1c57d03d1a423e2977875a707ed53cf72af45fdefba175f55336be1115"></iframe>
+      <iframe id="localhost-iframe" referrerpolicy="unsafe-url" sandbox="allow-scripts" src="http://localhost:1633/bzz/5f1eee1c57d03d1a423e2977875a707ed53cf72af45fdefba175f55336be1115"></iframe>
     </div>
     <div>
       <h4>External image refer by BZZ protocol</h4>
@@ -40,10 +40,6 @@
     <div>
       <h4>Link to other page via BZZ protocol</h4>
       <a id="bzz-ext-ref" is="swarm-a" href="bzz://45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be">Jinn page link 1</a>
-    </div>
-    <div>
-      <h4>Link to the other page via Fake URL</h4>
-      <a id="fake-url-ref" href="http://localhost:1633/fake-url/bzz/45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be">Jinn page link 2</a>
     </div>
     <div>
       <h4>Fetch Jinn image via Fake URL with JavaScript</h4>

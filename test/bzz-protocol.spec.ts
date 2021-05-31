@@ -4,6 +4,31 @@ import { ElementHandle, Page } from 'puppeteer'
 import { BEE_API_URL, bzzReferenceByGoogle, getElementBySelector, getExtensionId, replaceInputValue } from './utils'
 import { Bee } from '@ethersphere/bee-js'
 
+async function getLastBzzPage(): Promise<Page> {
+  await new Promise(resolve => setTimeout(() => resolve(true), 500))
+  const pages = await global.__BROWSER__.pages()
+
+  return pages[pages.length - 1]
+}
+
+function newBzzpage(url: string): Promise<Page> {
+  return new Promise(async (resolve, reject) => {
+    const page = await global.__BROWSER__.newPage()
+    page.once('requestfailed', async request => {
+      const errorText = request.failure()?.errorText
+
+      if (errorText === 'net::ERR_ABORTED') resolve(await getLastBzzPage())
+      else reject(errorText)
+    })
+
+    try {
+      await page.goto(url, { waitUntil: 'domcontentloaded' })
+    } catch {
+      //
+    }
+  })
+}
+
 describe('BZZ protocol', () => {
   let page: Page
   let bee: Bee
@@ -92,21 +117,20 @@ describe('BZZ protocol', () => {
   test('click on web+bzz link reference', async () => {
     // perform navigation
     await page.click('#bzz-ext-ref')
-
-    const jinnPage = await page.$('#jinn-page-title')
+    const currentPage = await getLastBzzPage()
+    const jinnPage = await currentPage.$('#jinn-page-title')
 
     expect(jinnPage).toBeTruthy()
-
-    await page.close()
+    await currentPage.close()
   })
 
   test('reference content with bzz://{content-id} with default search engine Google', async () => {
-    const page = await global.__BROWSER__.newPage()
-    await page.goto(bzzReferenceByGoogle(rootFolderReference), { waitUntil: 'networkidle0' })
+    const currentPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
+    const title = await currentPage.title()
+    const bzzPageTitleElement = await currentPage.$('#first-bzz-page-title')
 
-    const bzzPageTitle = await page.$('#first-bzz-page-title')
-
-    expect(bzzPageTitle).toBeTruthy()
+    expect(title).toBe('First Direct BZZ address')
+    expect(bzzPageTitleElement).toBeTruthy()
   })
 
   test('Change Bee API URL', async done => {
@@ -130,9 +154,9 @@ describe('BZZ protocol', () => {
     }
     await changeUrl(testUrlValue)
     //test whether it had affect on routing
-    const bzzPage = await global.__BROWSER__.newPage()
-    const errorRegExp = /^net::ERR_CONNECTION_REFUSED/
-    await expect(bzzPage.goto(bzzReferenceByGoogle('nevermind-value'))).rejects.toThrowError(errorRegExp)
+    const bzzPage = await newBzzpage(bzzReferenceByGoogle('nevermind-value'))
+    // the expected error page URL is 'chrome-error://chromewebdata/' on wrong reference.
+    expect(bzzPage.url()).toBe('chrome-error://chromewebdata/')
     await bzzPage.close()
     //set back the original value
     await changeUrl(originalUrlValue as string)
