@@ -125,9 +125,9 @@ describe('BZZ protocol', () => {
   })
 
   test('reference content with bzz://{content-id} with default search engine Google', async () => {
-    const page2 = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
-    const title = await page2.title()
-    const bzzPageTitleElement = await page2.$('#first-bzz-page-title')
+    const currentPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
+    const title = await currentPage.title()
+    const bzzPageTitleElement = await currentPage.$('#first-bzz-page-title')
 
     expect(title).toBe('First Direct BZZ address')
     expect(bzzPageTitleElement).toBeTruthy()
