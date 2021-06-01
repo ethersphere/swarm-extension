@@ -15,23 +15,29 @@ export class ActionError extends Error {
 
 interface State {
   beeApiUrl: string
+  postageBatchId: string | null
+  globalPostageBatchEnabled: boolean
 }
 
-interface Action<T = string> {
-  type: 'BEE_API_URL_SAVE' | 'BEE_API_URL_CHANGE'
-  newValue?: T
+interface Action {
+  type: 'BEE_API_URL_SAVE' | 'BEE_API_URL_CHANGE' | 'GLOBAL_POSTAGE_BATCH_SAVE' | 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE'
+  newValue?: unknown
 }
 
 interface ContextValue {
   state: State
-  dispatch: (action: Action<string>) => Promise<void> | void
+  dispatch: (action: Action) => Promise<void> | void
 }
 
-async function localStoreDispatch<T = string>(action: Action<T>): Promise<void> {
+async function localStoreDispatch(action: Action): Promise<void> {
   switch (action.type) {
     case 'BEE_API_URL_SAVE':
-      await setItem('beeApiUrl', (action.newValue as unknown) as string)
+      await setItem('beeApiUrl', action.newValue as string)
       break
+    case 'GLOBAL_POSTAGE_BATCH_SAVE':
+      await setItem('globalPostageBatch', action.newValue as string)
+    case 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE':
+      await setItem('globalPostageStampEnabled', action.newValue as boolean)
     default:
       return // maybe it doesn't have store key
   }
@@ -39,6 +45,8 @@ async function localStoreDispatch<T = string>(action: Action<T>): Promise<void> 
 
 const initialState: State = {
   beeApiUrl: 'http://localhost:1633',
+  postageBatchId: null,
+  globalPostageBatchEnabled: false,
 }
 
 const GlobalContext = createContext<ContextValue>({
@@ -53,9 +61,12 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
   const [state, uiStateDispatch] = useReducer((state: State, action: Action): State => {
     switch (action.type) {
       case 'BEE_API_URL_CHANGE':
-        return { ...state, beeApiUrl: action.newValue! }
       case 'BEE_API_URL_SAVE':
-        return { ...state, beeApiUrl: action.newValue! }
+        return { ...state, beeApiUrl: action.newValue! as string }
+      case 'GLOBAL_POSTAGE_BATCH_SAVE':
+        return { ...state, postageBatchId: action.newValue! as string }
+      case 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE':
+        return { ...state, globalPostageBatchEnabled: Boolean(action.newValue!) }
       default:
         throw new ActionError(action.type, `No valid action type given`)
     }
@@ -64,20 +75,36 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
   useEffect(() => {
     const storeObserver = new StoreObserver()
     // localstore changes effect back the handled state
-    const listener = (newValue: string, oldValue: string) => {
+    const beeApiUrlListener = (newValue: string, oldValue: string) => {
       if (newValue !== oldValue && newValue !== state.beeApiUrl) {
         uiStateDispatch({ type: 'BEE_API_URL_SAVE', newValue })
       }
     }
-    storeObserver.addListener('beeApiUrl', listener)
+    // localstore changes effect back the handled state
+    const globalPostageBatchListener = (newValue: string, oldValue: string) => {
+      if (newValue !== oldValue && newValue !== state.postageBatchId) {
+        uiStateDispatch({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue })
+      }
+    }
+    // localstore changes effect back the handled state
+    const globalPostageBatchEnabledListener = (newValue: boolean, oldValue: boolean) => {
+      if (newValue !== oldValue && newValue !== state.globalPostageBatchEnabled) {
+        uiStateDispatch({ type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE', newValue })
+      }
+    }
+    storeObserver.addListener('beeApiUrl', beeApiUrlListener)
+    storeObserver.addListener('globalPostageBatch', globalPostageBatchListener)
+    storeObserver.addListener('globalPostageStampEnabled', globalPostageBatchEnabledListener)
 
     return () => {
-      storeObserver.removeListener('beeApiUrl', listener)
+      storeObserver.removeListener('beeApiUrl', beeApiUrlListener)
+      storeObserver.removeListener('globalPostageBatch', globalPostageBatchListener)
+      storeObserver.removeListener('globalPostageStampEnabled', globalPostageBatchEnabledListener)
     }
   }, [])
 
   // with store write
-  const dispatch: (action: Action<string>) => Promise<void> = async (action: Action<string>): Promise<void> => {
+  const dispatch: (action: Action) => Promise<void> = async (action: Action): Promise<void> => {
     uiStateDispatch(action)
     await localStoreDispatch(action)
   }
