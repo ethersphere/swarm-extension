@@ -5,7 +5,7 @@ function fetchBeeApiUrl() {
 }
 
 function fetchJinnImage() {
-  const bzzContentAddress = '45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be/images/jinn.png'
+  const bzzContentAddress = '82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5/images/jinn.png'
   const jinnFakeUrl = web2Helper.fakeBzzAddress(bzzContentAddress)
   const imageNode = document.createElement('img')
   imageNode.src = jinnFakeUrl
