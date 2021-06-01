@@ -2,6 +2,8 @@ import { EventEmitter } from 'events'
 
 interface Store {
   beeApiUrl: string
+  globalPostageBatch: string
+  globalPostageStampEnabled: boolean
 }
 
 type StoreKey = keyof Store
