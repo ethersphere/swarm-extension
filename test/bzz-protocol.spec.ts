@@ -107,6 +107,28 @@ describe('BZZ protocol', () => {
     done()
   })
 
+  test('Allow Global Postage Stamp ID', async done => {
+    const extensionPage = await global.__BROWSER__.newPage()
+    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+      waitUntil: 'networkidle0',
+    })
+
+    const checkboxSelector = '#global-postage-stamp-enabled'
+    const checkbox = await getElementBySelector(checkboxSelector, extensionPage)
+    await checkbox.click()
+    const firstPostageBatchSelector = '#postage-batch-list tbody tr:nth-child(1) td:nth-child(3) a'
+    const firstPostageBatchSelectButton = await getElementBySelector(firstPostageBatchSelector, extensionPage)
+    await firstPostageBatchSelectButton.click()
+    const globalPostageBatchIdSelector = '#global-postage-batch-id'
+    const globalPostageBatchId = await extensionPage.$eval(globalPostageBatchIdSelector, e => e.innerHTML)
+
+    expect(globalPostageBatchId).toHaveLength(64) // valid postage batch ID
+
+    await extensionPage.close()
+
+    done()
+  })
+
   test('Upload file through Fake URL', async done => {
     await page.click('#button-upload-fake-url-file')
     const placeHolderSelector = '#fake-bzz-url-content-1 > a:first-child'

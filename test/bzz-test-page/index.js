@@ -14,15 +14,19 @@ function fetchJinnImage() {
   document.getElementById('fake-url-fetch-jinn')?.appendChild(imageNode)
 }
 
-function uploadFileWithBeeJs() {
+async function uploadFileWithBeeJs() {
   const beeUrl = web2Helper.fakeBeeApiAddress()
   const bee = new window.BeeJs.Bee(beeUrl)
+  const postageStampAddress = '0000000000000000000000000000000000000000000000000000000000000000' // arbitrary value
   const files = [new File(['<h1>Uploaded File through Fake URL!</h1>'], 'index.html', { type: 'text/html' })]
 
-  bee.uploadFiles(files, { indexDocument: 'index.html' }).then(hash => {
+  try {
+    const hash = await bee.uploadFiles(postageStampAddress, files, { indexDocument: 'index.html' })
     const referenceNode = document.createElement('a')
     referenceNode.href = web2Helper.fakeBzzAddress(hash)
     referenceNode.innerHTML = hash
     document.getElementById('fake-bzz-url-content-1')?.appendChild(referenceNode)
-  })
+  } catch (e) {
+    console.error('Error happened on file upload (uploadFileWithBeeJs)', e)
+  }
 }
