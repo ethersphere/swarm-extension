@@ -95,6 +95,7 @@ function PostageBatchElement(): JSX.Element {
         <div className="margin-top">
           <label>
             <input
+              id="global-postage-stamp-enabled"
               type="checkbox"
               onChange={handleUseGlobalPostageBatch}
               checked={globalState.globalPostageBatchEnabled}
@@ -105,10 +106,12 @@ function PostageBatchElement(): JSX.Element {
         <div id="global-postage-batch-details" className="margin-top" hidden={!globalState.globalPostageBatchEnabled}>
           <div>
             <div>Global Postage Batch ID: </div>
-            <div>{globalState.postageBatchId ? globalState.postageBatchId : '<no-chosen-id>'}</div>
+            <div id="global-postage-batch-id">
+              {globalState.postageBatchId ? globalState.postageBatchId : '<no-chosen-id>'}
+            </div>
           </div>
-          <div id="global-postage-batch-list">
-            <table>
+          <div>
+            <table id="postage-batch-list">
               <thead>
                 <tr>
                   <th>Batch ID</th>
