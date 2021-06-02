@@ -34,15 +34,24 @@ export class BeeApiListener {
 
     if (postageBatchIdHeaderIndex === -1) return
 
+    console.log(
+      `Postage Batch: ${this._globalPostageBatchId} Batch ID will be used instead of ` +
+        details.requestHeaders[postageBatchIdHeaderIndex].value,
+    )
+
     details.requestHeaders[postageBatchIdHeaderIndex].value = this._globalPostageBatchId
 
     return { requestHeaders: details.requestHeaders }
   }
 
   private addBeeNodeListeners(beeApiUrl: string) {
-    chrome.webRequest.onBeforeSendHeaders.addListener(this.globalPostageStampHeaderListener, {
-      urls: [`${beeApiUrl}/*`],
-    })
+    chrome.webRequest.onBeforeSendHeaders.addListener(
+      this.globalPostageStampHeaderListener,
+      {
+        urls: [`${beeApiUrl}/*`],
+      },
+      ['blocking', 'requestHeaders'],
+    )
   }
 
   private removeBeeNodeListeners() {
