@@ -4,9 +4,13 @@ import { SWARM_SESSION_ID_KEY, removeSwarmSessionIdFromUrl } from '../../utils/s
 
 export class BeeApiListener {
   private _beeApiUrl: string
+  private _globalPostageBatchEnabled: boolean
+  private _globalPostageBatchId: string
 
   public constructor(private storeObserver: StoreObserver) {
     this._beeApiUrl = 'http://localhost:1633'
+    this._globalPostageBatchEnabled = false
+    this._globalPostageBatchId = 'undefined' // it is not necessary to check later, if it is enabled it will insert
     this.addStoreListeners()
     this.asyncInit()
     this.addBzzListeners()
@@ -14,6 +18,36 @@ export class BeeApiListener {
 
   public get beeApiUrl(): string {
     return this._beeApiUrl
+  }
+
+  /**
+   * Handles postage batch id header replacement with global batch id
+   */
+  private globalPostageStampHeaderListener = (
+    details: chrome.webRequest.WebRequestHeadersDetails,
+  ): void | chrome.webRequest.BlockingResponse => {
+    if (!this._globalPostageBatchEnabled || !details.requestHeaders) return
+
+    const postageBatchIdHeaderIndex = details.requestHeaders.findIndex(
+      header => header.name === 'swarm-postage-batch-id',
+    )
+
+    if (postageBatchIdHeaderIndex === -1) return
+
+    details.requestHeaders[postageBatchIdHeaderIndex].value = this._globalPostageBatchId
+
+    return { requestHeaders: details.requestHeaders }
+  }
+
+  private addBeeNodeListeners(beeApiUrl: string) {
+    chrome.webRequest.onBeforeSendHeaders.addListener(this.globalPostageStampHeaderListener, {
+      urls: [`${beeApiUrl}/*`],
+    })
+  }
+
+  private removeBeeNodeListeners() {
+    console.log('remove bee node listeners')
+    chrome.webRequest.onBeforeSendHeaders.removeListener(this.globalPostageStampHeaderListener)
   }
 
   private addBzzListeners() {
@@ -149,14 +183,31 @@ export class BeeApiListener {
 
   private async asyncInit() {
     const storedBeeApiUrl = await getItem('beeApiUrl')
+    const storedGlobalPostageBatchEnabled = await getItem('globalPostageStampEnabled')
+    const storedGlobalPostageBatchId = await getItem('globalPostageBatch')
 
     if (storedBeeApiUrl) this._beeApiUrl = storedBeeApiUrl
+
+    if (storedGlobalPostageBatchEnabled) this._globalPostageBatchEnabled = storedGlobalPostageBatchEnabled
+
+    if (storedGlobalPostageBatchId) this._globalPostageBatchId = storedGlobalPostageBatchId
+
+    // register listeners that have to be after async init
+    this.addBeeNodeListeners(this._beeApiUrl)
   }
 
   private addStoreListeners(): void {
     this.storeObserver.addListener('beeApiUrl', newValue => {
       console.log('Bee API URL changed to', newValue)
       this._beeApiUrl = newValue
+      this.removeBeeNodeListeners()
+      this.addBeeNodeListeners(this._beeApiUrl)
+    })
+    this.storeObserver.addListener('globalPostageStampEnabled', newValue => {
+      this._globalPostageBatchEnabled = Boolean(newValue)
+    })
+    this.storeObserver.addListener('globalPostageBatch', newValue => {
+      this._globalPostageBatchId = newValue
     })
   }
 
