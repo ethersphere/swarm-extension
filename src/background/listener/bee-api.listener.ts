@@ -28,18 +28,15 @@ export class BeeApiListener {
   ): void | chrome.webRequest.BlockingResponse => {
     if (!this._globalPostageBatchEnabled || !details.requestHeaders) return
 
-    const postageBatchIdHeaderIndex = details.requestHeaders.findIndex(
-      header => header.name === 'swarm-postage-batch-id',
-    )
+    const postageBatchIdHeader = details.requestHeaders.find(header => header.name === 'swarm-postage-batch-id')
 
-    if (postageBatchIdHeaderIndex === -1) return
+    if (!postageBatchIdHeader) return
 
     console.log(
-      `Postage Batch: ${this._globalPostageBatchId} Batch ID will be used instead of ` +
-        details.requestHeaders[postageBatchIdHeaderIndex].value,
+      `Postage Batch: ${this._globalPostageBatchId} Batch ID will be used instead of ` + postageBatchIdHeader.value,
     )
 
-    details.requestHeaders[postageBatchIdHeaderIndex].value = this._globalPostageBatchId
+    postageBatchIdHeader.value = this._globalPostageBatchId
 
     return { requestHeaders: details.requestHeaders }
   }
