@@ -19,10 +19,16 @@ interface State {
   globalPostageBatchEnabled: boolean
 }
 
-interface Action {
-  type: 'BEE_API_URL_SAVE' | 'BEE_API_URL_CHANGE' | 'GLOBAL_POSTAGE_BATCH_SAVE' | 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE'
-  newValue?: unknown
+interface ActionBeeUrlSave {
+  type: 'BEE_API_URL_SAVE' | 'BEE_API_URL_CHANGE' | 'GLOBAL_POSTAGE_BATCH_SAVE'
+  newValue: string
 }
+interface ActionGlobalPostageBatchEnabledSave {
+  type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE'
+  newValue: boolean
+}
+
+type Action = ActionBeeUrlSave | ActionGlobalPostageBatchEnabledSave
 
 interface ContextValue {
   state: State
@@ -32,12 +38,13 @@ interface ContextValue {
 async function localStoreDispatch(action: Action): Promise<void> {
   switch (action.type) {
     case 'BEE_API_URL_SAVE':
-      await setItem('beeApiUrl', action.newValue as string)
+      await setItem('beeApiUrl', action.newValue)
       break
     case 'GLOBAL_POSTAGE_BATCH_SAVE':
-      await setItem('globalPostageBatch', action.newValue as string)
+      await setItem('globalPostageBatch', action.newValue)
+      break
     case 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE':
-      await setItem('globalPostageStampEnabled', action.newValue as boolean)
+      await setItem('globalPostageStampEnabled', action.newValue)
     default:
       return // maybe it doesn't have store key
   }
@@ -68,7 +75,8 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
       case 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE':
         return { ...state, globalPostageBatchEnabled: Boolean(action.newValue!) }
       default:
-        throw new ActionError(action.type, `No valid action type given`)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        throw new ActionError((action as any).type, `No valid action type given`)
     }
   }, initialState)
 
