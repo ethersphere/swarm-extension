@@ -1,5 +1,5 @@
 import { PostageBatch } from '@ethersphere/bee-js'
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext, useState, ReactElement } from 'react'
 import { getPostageBatches } from '../../utils/bee-js'
 import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
@@ -37,7 +37,7 @@ function BeeApiUrlChangeForm(): JSX.Element {
   )
 }
 
-function PostageBatchElement(): JSX.Element {
+function PostageBatchElement(): ReactElement {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: dispatchGlobalState, state: globalState } = globalStateContext
   const [fetchedPostageBatches, setFetchedPostageBatches] = useState<PostageBatch[]>([])
@@ -66,7 +66,7 @@ function PostageBatchElement(): JSX.Element {
     setFetchedPostageBatches(await getPostageBatches(globalState.beeApiUrl))
   }
 
-  const postageBatchElements = (): JSX.Element[] => {
+  const postageBatchElements = (): ReactElement[] => {
     const choosePostageBatch = (postageBatchId: string) => {
       dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue: postageBatchId })
     }
