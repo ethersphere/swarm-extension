@@ -1,6 +1,25 @@
 html,
 body {
   min-height: 50px;
-  min-width: 200px;
+  min-width: 400px;
   overflow-x: hidden;
+}
+
+.margin-top > * {
+  display: block;
+  margin-top: 12px;
+}
+
+.a-click {
+  text-decoration: underline;
+  color: #de7100;
+  cursor: pointer;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f0d57254;
 }

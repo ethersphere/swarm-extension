@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { ElementHandle, Page } from 'puppeteer'
+import { Bee } from '@ethersphere/bee-js'
 
 /**
  * Returns a url for testing the Bee API
@@ -50,4 +51,19 @@ export async function getElementBySelector(selector: string, page: Page): Promis
 
 export function bzzReferenceByGoogle(contentReference: string): string {
   return `https://www.google.com/search?&q=bzz%3A%2F%2F${contentReference}&oq=bzz%3A%2F%2F${contentReference}`
+}
+
+export function buyStamp(): Promise<string> {
+  console.log(`Buying stamp on the Bee node ${BEE_API_URL}...`)
+  const bee = new Bee(BEE_API_URL)
+
+  return bee.createPostageBatch(BigInt('1'), 20)
+}
+
+export function getStamp(): string {
+  if (!process.env.BEE_STAMP) {
+    throw Error('There is no postage stamp under "BEE_STAMP" environment varaible.')
+  }
+
+  return process.env.BEE_STAMP
 }

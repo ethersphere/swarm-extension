@@ -5,7 +5,7 @@ function fetchBeeApiUrl() {
 }
 
 function fetchJinnImage() {
-  const bzzContentAddress = '45761400d69cd972bf0bc1aaaacd809c9d2687eed3ece09836320f887143d9be/images/jinn.png'
+  const bzzContentAddress = '82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5/images/jinn.png'
   const jinnFakeUrl = web2Helper.fakeBzzAddress(bzzContentAddress)
   const imageNode = document.createElement('img')
   imageNode.src = jinnFakeUrl
@@ -14,15 +14,19 @@ function fetchJinnImage() {
   document.getElementById('fake-url-fetch-jinn')?.appendChild(imageNode)
 }
 
-function uploadFileWithBeeJs() {
+async function uploadFileWithBeeJs() {
   const beeUrl = web2Helper.fakeBeeApiAddress()
   const bee = new window.BeeJs.Bee(beeUrl)
+  const postageStampAddress = '0000000000000000000000000000000000000000000000000000000000000000' // arbitrary value
   const files = [new File(['<h1>Uploaded File through Fake URL!</h1>'], 'index.html', { type: 'text/html' })]
 
-  bee.uploadFiles(files, { indexDocument: 'index.html' }).then(hash => {
+  try {
+    const hash = await bee.uploadFiles(postageStampAddress, files, { indexDocument: 'index.html' })
     const referenceNode = document.createElement('a')
     referenceNode.href = web2Helper.fakeBzzAddress(hash)
     referenceNode.innerHTML = hash
     document.getElementById('fake-bzz-url-content-1')?.appendChild(referenceNode)
-  })
+  } catch (e) {
+    console.error('Error happened on file upload (uploadFileWithBeeJs)', e)
+  }
 }

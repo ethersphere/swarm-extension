@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { join } from 'path'
 import { ElementHandle, Page } from 'puppeteer'
-import { BEE_API_URL, bzzReferenceByGoogle, getElementBySelector, getExtensionId, replaceInputValue } from './utils'
+import {
+  BEE_API_URL,
+  bzzReferenceByGoogle,
+  getElementBySelector,
+  getExtensionId,
+  getStamp,
+  replaceInputValue,
+} from './utils'
 import { Bee } from '@ethersphere/bee-js'
 
 async function getLastBzzPage(): Promise<Page> {
@@ -51,10 +58,24 @@ describe('BZZ protocol', () => {
     bee = new Bee(BEE_API_URL)
     const uploadOptions = {
       indexDocument: 'index.html',
+      pin: true,
     }
-    await bee.uploadFilesFromDirectory(join(__dirname, 'bzz-test-page', 'jinn-page'), true, uploadOptions)
-    await bee.uploadFilesFromDirectory(join(__dirname, 'bzz-test-page', 'jafar-page'), true, uploadOptions)
-    rootFolderReference = await bee.uploadFilesFromDirectory(join(__dirname, 'bzz-test-page'), true, uploadOptions)
+    const jinnHash = await bee.uploadFilesFromDirectory(
+      getStamp(),
+      join(__dirname, 'bzz-test-page', 'jinn-page'),
+      uploadOptions,
+    )
+    const jafarHash = await bee.uploadFilesFromDirectory(
+      getStamp(),
+      join(__dirname, 'bzz-test-page', 'jafar-page'),
+      uploadOptions,
+    )
+    console.log('Jinn and Jafar page has been uploaded', jinnHash, jafarHash)
+    rootFolderReference = await bee.uploadFilesFromDirectory(
+      getStamp(),
+      join(__dirname, 'bzz-test-page'),
+      uploadOptions,
+    )
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
 
@@ -63,10 +84,11 @@ describe('BZZ protocol', () => {
     done()
   })
 
-  test('checks inner iframe reference load', async () => {
+  test('checks inner iframe reference load', async done => {
     const ref = await page.$('#localhost-inner-ref')
 
     checkJinnIframePage(ref)
+    done()
   })
 
   test('checks iframe has been loaded with web+bzz reference', async () => {
@@ -81,6 +103,28 @@ describe('BZZ protocol', () => {
     await page.waitForSelector(placeHolderSelector)
     const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
     expect(value).toBe('http://localhost:1633') //default value of Bee API URL in the extension
+
+    done()
+  })
+
+  test('Allow Global Postage Stamp ID', async done => {
+    const extensionPage = await global.__BROWSER__.newPage()
+    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+      waitUntil: 'networkidle0',
+    })
+
+    const checkboxSelector = '#global-postage-stamp-enabled'
+    const checkbox = await getElementBySelector(checkboxSelector, extensionPage)
+    await checkbox.click()
+    const firstPostageBatchSelector = '#postage-batch-list tbody tr:nth-child(1) td:nth-child(3) a'
+    const firstPostageBatchSelectButton = await getElementBySelector(firstPostageBatchSelector, extensionPage)
+    await firstPostageBatchSelectButton.click()
+    const globalPostageBatchIdSelector = '#global-postage-batch-id'
+    const globalPostageBatchId = await extensionPage.$eval(globalPostageBatchIdSelector, e => e.innerHTML)
+
+    expect(globalPostageBatchId).toHaveLength(64) // valid postage batch ID
+
+    await extensionPage.close()
 
     done()
   })

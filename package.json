@@ -26,7 +26,8 @@
     "test": "jest --config=jest.config.ts",
     "test:demo": "npm run test -- --demo=true --runInBand",
     "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\""
+    "lint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "update:test-bee-js-browser": "cp node_modules/@ethersphere/bee-js/dist/index.browser.min.js test/bzz-test-page/bee-js.min.js"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
@@ -38,7 +39,7 @@
     "@babel/preset-typescript": "^7.12.7",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@ethersphere/bee-js": "^0.8.1",
+    "@ethersphere/bee-js": "^0.10.0",
     "@types/chrome": "0.0.128",
     "@types/copy-webpack-plugin": "^6.4.0",
     "@types/glob": "^7.1.3",

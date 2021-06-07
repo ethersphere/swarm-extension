@@ -2,10 +2,16 @@
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/en/configuration.html
  */
+import type from './types/index' //FIXME: jest does not recognize own global types without this
 import type { Config } from '@jest/types'
 import { join } from 'path'
+import { buyStamp } from './test/utils'
 
-export default (): Config.InitialOptions => {
+export default async (): Promise<Config.InitialOptions> => {
+  if (!process.env.BEE_STAMP) {
+    process.env.BEE_STAMP = await buyStamp()
+  }
+
   return {
     // Indicates whether the coverage information should be collected while executing the test
     // collectCoverage: false,
