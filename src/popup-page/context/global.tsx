@@ -69,11 +69,11 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
     switch (action.type) {
       case 'BEE_API_URL_CHANGE':
       case 'BEE_API_URL_SAVE':
-        return { ...state, beeApiUrl: action.newValue! as string }
+        return { ...state, beeApiUrl: action.newValue }
       case 'GLOBAL_POSTAGE_BATCH_SAVE':
-        return { ...state, postageBatchId: action.newValue! as string }
+        return { ...state, postageBatchId: action.newValue }
       case 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE':
-        return { ...state, globalPostageBatchEnabled: Boolean(action.newValue!) }
+        return { ...state, globalPostageBatchEnabled: action.newValue }
       default:
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         throw new ActionError((action as any).type, `No valid action type given`)
