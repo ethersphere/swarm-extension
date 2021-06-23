@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { ElementHandle, Page } from 'puppeteer'
 import { Bee } from '@ethersphere/bee-js'
+import { ElementHandle, Page } from 'puppeteer'
 
 /**
  * Returns a url for testing the Bee API
@@ -53,11 +53,15 @@ export function bzzReferenceByGoogle(contentReference: string): string {
   return `https://www.google.com/search?&q=bzz%3A%2F%2F${contentReference}&oq=bzz%3A%2F%2F${contentReference}`
 }
 
-export function buyStamp(): Promise<string> {
+export async function buyStamp(): Promise<string> {
   console.log(`Buying stamp on the Bee node ${BEE_API_URL}...`)
   const bee = new Bee(BEE_API_URL)
 
-  return bee.createPostageBatch(BigInt('1'), 20)
+  const batchId = await bee.createPostageBatch('1', 20)
+  console.log('Waiting 11 secs for batch ID settlement...')
+  await new Promise(resolve => setTimeout(() => resolve(true), 11 * 1000))
+
+  return batchId
 }
 
 export function getStamp(): string {
