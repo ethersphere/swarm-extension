@@ -2,6 +2,7 @@ import { PostageBatch } from '@ethersphere/bee-js'
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import { getPostageBatches } from '../../utils/bee-js'
 import { GlobalContext } from '../context/global'
+import { utilizationPercentage } from '../utils'
 
 export function PostageBatchElement(): ReactElement {
   const globalStateContext = useContext(GlobalContext)
@@ -27,6 +28,14 @@ export function PostageBatchElement(): ReactElement {
     }
   }
 
+  const truncatePostageBatchId = (postageBatchId: string) => {
+    const idLength = 5
+
+    return (
+      postageBatchId.substr(0, idLength) + '...' + postageBatchId.substr(postageBatchId.length - idLength, idLength)
+    )
+  }
+
   const retrievePostageBatches = async () => {
     console.log('fetch postagethings')
     setFetchedPostageBatches(await getPostageBatches(globalState.beeApiUrl))
@@ -47,8 +56,8 @@ export function PostageBatchElement(): ReactElement {
 
       return (
         <tr key={postageBatch.batchID + selected} className={selected ? 'bold' : ''}>
-          <td>{postageBatch.batchID}</td>
-          <td>{postageBatch.utilization}</td>
+          <td>{truncatePostageBatchId(postageBatch.batchID)}</td>
+          <td>{utilizationPercentage(postageBatch)}%</td>
           <td>{selected ? 'selected' : selectButton}</td>
         </tr>
       )
