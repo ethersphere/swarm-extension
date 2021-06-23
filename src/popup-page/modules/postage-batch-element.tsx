@@ -2,7 +2,7 @@ import { PostageBatch } from '@ethersphere/bee-js'
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import { getPostageBatches } from '../../utils/bee-js'
 import { GlobalContext } from '../context/global'
-import { calculateUsagePercentage } from '../utils'
+import { utilizationPercentage } from '../utils'
 
 export function PostageBatchElement(): ReactElement {
   const globalStateContext = useContext(GlobalContext)
@@ -57,7 +57,7 @@ export function PostageBatchElement(): ReactElement {
       return (
         <tr key={postageBatch.batchID + selected} className={selected ? 'bold' : ''}>
           <td>{truncatePostageBatchId(postageBatch.batchID)}</td>
-          <td>{calculateUsagePercentage(postageBatch)}%</td>
+          <td>{utilizationPercentage(postageBatch)}%</td>
           <td>{selected ? 'selected' : selectButton}</td>
         </tr>
       )
