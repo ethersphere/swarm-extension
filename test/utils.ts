@@ -59,7 +59,7 @@ export async function buyStamp(): Promise<string> {
 
   const batchId = await bee.createPostageBatch('1', 20)
   console.log('Waiting 11 secs for batch ID settlement...')
-  await new Promise(resolve => setTimeout(() => resolve(true), 11 * 1000))
+  await new Promise(resolve => setTimeout(resolve, 11 * 1000))
 
   return batchId
 }
