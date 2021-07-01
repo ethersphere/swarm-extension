@@ -31,6 +31,8 @@ export type BroadcastMessageFormat = BaseMessageFormat & {
 export type InpageReqMessageFormat<T = undefined> = BroadcastMessageFormat & {
   sender: 'inpage'
   target: 'content'
+  /** Only necessary for authorized requests */
+  sessionId?: string
   payload?: T
 }
 
@@ -38,6 +40,8 @@ export type InpageReqMessageFormat<T = undefined> = BroadcastMessageFormat & {
 export type InterceptorReqMessageFormat<T = undefined> = BaseMessageFormat & {
   sender: 'content'
   target: 'background'
+  /** Only necessary for authorized requests */
+  sessionId?: string
   payload?: T
 }
 
