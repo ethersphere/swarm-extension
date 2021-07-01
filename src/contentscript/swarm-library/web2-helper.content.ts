@@ -1,9 +1,9 @@
-import { IWeb2HelperMessage } from '../utils/message/web2-helper/web2-helper.message'
-import { InterceptorResMessageFormat, InpageReqMessageFormat } from '../utils/message/message-handler'
 import { nanoid } from 'nanoid'
-import { MessengerInpage } from './swarm-library/messenger.inpage'
-import { fakeUrl } from '../utils/fake-url'
-import { appendSwarmSessionId } from '../utils/swarm-session-id'
+import { fakeUrl } from '../../utils/fake-url'
+import { InpageReqMessageFormat, InterceptorResMessageFormat } from '../../utils/message/message-handler'
+import { IWeb2HelperMessage } from '../../utils/message/web2-helper/web2-helper.message'
+import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
+import { MessengerInpage } from './messenger.inpage'
 
 export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMessage {
   /** The real Bee API address that shouldn't be called directly by dApps */
@@ -52,7 +52,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
    * @returns Fake URL pointing to the BZZ endpoint of the Bee client
    */
   public fakeBzzAddress(reference: string): string {
-    return appendSwarmSessionId(`${fakeUrl.bzzProtocol}/${reference}`)
+    return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`)
   }
 
   /**
@@ -64,7 +64,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
    * @returns Fake Bee API URL that is directly callable from dApp side
    */
   public fakeBeeApiAddress(): string {
-    return appendSwarmSessionId(fakeUrl.beeApiAddress)
+    return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress)
   }
 }
 
