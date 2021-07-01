@@ -22,6 +22,7 @@ export class MessengerInterceptor {
       console.log('Web2HelperInterceptor content script got aimed message', message.data)
       const messageToBackground: InterceptorReqMessageFormat = {
         key: message.data.key,
+        sessionId: message.data.sessionId,
         sender: 'content',
         target: 'background',
       }
@@ -60,6 +61,8 @@ export class MessengerInterceptor {
   }
 
   private deserializeResponseMessage<T>(message: ResponseMessageFormat<T>): ResponseWithMessage<T> {
+    if (!message) throw new Error('There is no answer in the response')
+
     if (message.error) {
       throw new Error(message.error)
     }
