@@ -1,5 +1,6 @@
 import type puppeteer from 'puppeteer'
-import type { Web2HelperContent } from '../src/contentscript/web2-helper.content'
+import type { LocalStorage } from '../src/contentscript/swarm-library/local-storage'
+import type { Web2HelperContent } from '../src/contentscript/swarm-library/web2-helper.content'
 export {} //indicate it is a module type declaration
 
 declare global {
@@ -11,6 +12,7 @@ declare global {
   interface Window {
     swarm: {
       web2Helper: Web2HelperContent
+      localStorage: LocalStorage
     }
     swarmSessionId: string
   }
