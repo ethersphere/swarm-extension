@@ -7,7 +7,10 @@
     // For Stylelint
     "source.fixAll.stylelint": true
   },
-  "eslint.validate": ["javascript", "typescript"],
+  "eslint.validate": [
+    "javascript",
+    "typescript"
+  ],
   "editor.formatOnSave": true,
   "[javascript]": {
     "editor.formatOnSave": false
