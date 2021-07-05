@@ -1,3 +1,4 @@
+import browser from 'webextension-polyfill'
 import {
   InpageReqMessageFormat,
   InterceptorReqMessageFormat,
@@ -23,6 +24,7 @@ export class MessengerInterceptor {
       const messageToBackground: InterceptorReqMessageFormat = {
         key: message.data.key,
         sessionId: message.data.sessionId,
+        payload: message.data.payload,
         sender: 'content',
         target: 'background',
       }
@@ -32,7 +34,7 @@ export class MessengerInterceptor {
         sender: 'content',
         target: 'inpage',
       }
-      chrome.runtime.sendMessage(messageToBackground, response => {
+      browser.runtime.sendMessage(messageToBackground).then((response: any) => {
         try {
           const responseMessage = this.deserializeResponseMessage<string>(response)
 

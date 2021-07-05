@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill'
+import { ILocalStorageMessage } from '../../utils/message/local-storage'
 import { InterceptorReqMessageFormat, ResponseMessageFormat } from '../../utils/message/message-handler'
 import { DappSessionManager } from '../dapp-session.manager'
 import { isInternalMessage } from '../utils'
@@ -9,34 +11,65 @@ export class LocalStorageFeeder {
   serveEvents(): void {
     console.log('Register LocalStorageFeeder event listeners...')
 
-    chrome.runtime.onMessage.addListener((message: InterceptorReqMessageFormat, sender, sendResponse) => {
-      if (!isInternalMessage(sender)) return
+    browser.runtime.onMessage.addListener(
+      (message: InterceptorReqMessageFormat, sender: chrome.runtime.MessageSender) => {
+        if (!isInternalMessage(sender)) return
 
-      const { sessionId, key, payload } = message
+        const { sessionId, key } = message
 
-      if (!sessionId || !this.manager.isValidSession(sessionId, sender)) return
+        if (!sessionId || !this.manager.isValidSession(sessionId, sender)) return
 
-      const response: ResponseMessageFormat = {
-        key: message.key,
-        sender: 'background',
-        target: 'content',
-      }
+        const response: ResponseMessageFormat = {
+          key,
+          sender: 'background',
+          target: 'content',
+        }
 
-      switch (key) {
-        case 'setItem':
-          // payload: Parameters<ILocalStorageMessage['setItem']>
+        if (this.isSetItemRequest(message)) {
+          const { payload } = message
           console.log(`LocalStorageFeeder: store set -> ${payload}`)
-          sendResponse(response)
-          break
-        case 'getItem':
-          // payload: Parameters<ILocalStorageMessage['getItem']>
+
+          if (!payload || !payload[0] || !payload[1]) {
+            response.error = `LocalStorageFeeder: wrong payload: Got ${payload}`
+
+            return response
+          }
+
+          return new Promise<ResponseMessageFormat>(resolve => {
+            this.manager.setStorageItem(sessionId, payload[0], payload[1]).then(() => {
+              resolve(response)
+            })
+          })
+        } else if (this.isGetItemRequest(message)) {
+          const { payload } = message
           console.log(`LocalStorageFeeder: store get -> ${payload}`)
-          response.answer = 'Here it is!'
-          sendResponse(response)
-          break
-        default:
-          return
-      }
-    })
+
+          if (!payload || !payload[0]) {
+            response.error = `LocalStorageFeeder: wrong payload: Got ${payload}`
+
+            return response
+          }
+
+          return new Promise<ResponseMessageFormat>(resolve => {
+            this.manager.getStorageItem(sessionId, payload[0]).then(result => {
+              response.answer = result
+              resolve(response)
+            })
+          })
+        }
+      },
+    )
+  }
+
+  private isSetItemRequest(
+    message: InterceptorReqMessageFormat,
+  ): message is InterceptorReqMessageFormat<Parameters<ILocalStorageMessage['setItem']>> {
+    return message.key === 'setItem'
+  }
+
+  private isGetItemRequest(
+    message: InterceptorReqMessageFormat,
+  ): message is InterceptorReqMessageFormat<Parameters<ILocalStorageMessage['getItem']>> {
+    return message.key === 'getItem'
   }
 }
