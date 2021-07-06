@@ -84,10 +84,16 @@ export class LocalStorageFeeder {
     }
 
     return new Promise<ResponseMessageFormat>(resolve => {
-      this.manager.getStorageItem(sessionId, payload[0]).then(result => {
-        response.answer = result
-        resolve(response)
-      })
+      this.manager
+        .getStorageItem(sessionId, payload[0])
+        .then(result => {
+          response.answer = result
+          resolve(response)
+        })
+        .catch(e => {
+          response.error = e
+          resolve(response)
+        })
     })
   }
 }
