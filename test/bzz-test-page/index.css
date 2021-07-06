@@ -2,3 +2,8 @@
 #first-bzz-page-title {
   margin: 24px;
 }
+
+.block-element {
+  display: block;
+  margin: 12px 0;
+}

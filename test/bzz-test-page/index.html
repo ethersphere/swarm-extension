@@ -14,7 +14,7 @@
     Let's roll!
   </h1>
   <div id="test-cases">
-    <h2>BZZ Protocol samples</h2>
+    <h2>BZZ Protocol</h2>
     <div>
       <h4>Local Iframe</h4>
       <iframe id="localhost-inner-ref" referrerpolicy="unsafe-url" src="jinn-page/index.html"></iframe>
@@ -50,6 +50,30 @@
       <h4>Upload a file with BeeJS which is initialized by Fake URL</h4>
       <button id="button-upload-fake-url-file" onclick="uploadFileWithBeeJs()">Upload</button>
       <div id="fake-bzz-url-content-1"></div>
+    </div>
+
+    <h2>Local Storage handling</h2>
+    <div>
+      <h4>Save data with traditional and Swarm localStorage</h4>
+      <div id="form-save-localstorage">
+        <label for="save-localstorage-key-name">Key:</label>
+        <input type="text" id="save-localstorage-key-name" name="save-localstorage-key-name"/><br><br>
+        <label for="save-localstorage-key-value">Value:</label>
+        <input type="text" id="save-localstorage-key-value" name="save-localstorage-key-value">
+      </div>
+      <button id="button-save-traditional-localstorage" class="block-element" onclick="saveWithTraditionalLocalStorage()">Save with window.localStorage</button>
+      <button id="button-save-swarm-localstorage" class="block-element" onclick="saveWithSwarmLocalStorage()">Save with swarm.localStorage</button>
+    </div>
+    <div>
+      <h4>Load data with traditional and Swarm localStorage</h4>
+      <div id="form-load-localstorage">
+        <label for="load-localstorage-key-name">Key:</label>
+        <input type="text" id="load-localstorage-key-name" name="load-localstorage-key-name"/><br><br>
+        <label for="load-localstorage-key-value">Value:</label>
+        <span id="load-localstorage-key-value"></span>
+      </div>
+      <button id="button-load-traditional-localstorage" class="block-element" onclick="loadWithTraditionalLocalStorage()">Load with window.localStorage</button>
+      <button id="button-load-swarm-localstorage" class="block-element" onclick="loadWithSwarmLocalStorage()">Load with swarm.localStorage</button>
     </div>
   </div>
 </body>
