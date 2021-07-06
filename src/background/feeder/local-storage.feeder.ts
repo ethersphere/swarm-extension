@@ -27,35 +27,12 @@ export class LocalStorageFeeder {
 
         if (this.isSetItemRequest(message)) {
           const { payload } = message
-          console.log(`LocalStorageFeeder: store set -> ${payload}`)
 
-          if (!payload || !payload[0] || !payload[1]) {
-            response.error = `LocalStorageFeeder: wrong payload: Got ${payload}`
-
-            return response
-          }
-
-          return new Promise<ResponseMessageFormat>(resolve => {
-            this.manager.setStorageItem(sessionId, payload[0], payload[1]).then(() => {
-              resolve(response)
-            })
-          })
+          return this.setItem(sessionId, payload, response)
         } else if (this.isGetItemRequest(message)) {
           const { payload } = message
-          console.log(`LocalStorageFeeder: store get -> ${payload}`)
 
-          if (!payload || !payload[0]) {
-            response.error = `LocalStorageFeeder: wrong payload: Got ${payload}`
-
-            return response
-          }
-
-          return new Promise<ResponseMessageFormat>(resolve => {
-            this.manager.getStorageItem(sessionId, payload[0]).then(result => {
-              response.answer = result
-              resolve(response)
-            })
-          })
+          return this.getItem(sessionId, payload, response)
         }
       },
     )
@@ -71,5 +48,46 @@ export class LocalStorageFeeder {
     message: InterceptorReqMessageFormat,
   ): message is InterceptorReqMessageFormat<Parameters<ILocalStorageMessage['getItem']>> {
     return message.key === 'getItem'
+  }
+
+  private setItem(
+    sessionId: string,
+    payload: undefined | Parameters<ILocalStorageMessage['setItem']>,
+    response: ResponseMessageFormat,
+  ) {
+    console.log(`LocalStorageFeeder: store set -> ${payload}`)
+
+    if (!payload || !payload[0] || !payload[1]) {
+      response.error = `LocalStorageFeeder: wrong payload: Got ${payload}`
+
+      return response
+    }
+
+    return new Promise<ResponseMessageFormat>(resolve => {
+      this.manager.setStorageItem(sessionId, payload[0], payload[1]).then(() => {
+        resolve(response)
+      })
+    })
+  }
+
+  public getItem(
+    sessionId: string,
+    payload: undefined | Parameters<ILocalStorageMessage['getItem']>,
+    response: ResponseMessageFormat,
+  ): Promise<ResponseMessageFormat> | ResponseMessageFormat {
+    console.log(`LocalStorageFeeder: store get -> ${payload}`)
+
+    if (!payload || !payload[0]) {
+      response.error = `LocalStorageFeeder: wrong payload: Got ${payload}`
+
+      return response
+    }
+
+    return new Promise<ResponseMessageFormat>(resolve => {
+      this.manager.getStorageItem(sessionId, payload[0]).then(result => {
+        response.answer = result
+        resolve(response)
+      })
+    })
   }
 }
