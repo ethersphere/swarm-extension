@@ -40,7 +40,7 @@ If the user changes their Bee API address, these callings still remain the same 
 
 ## Custom Protocol
 
-Only supported Swarm protocol currently is `bzz` (in HTML files `web+bzz`).
+Only supported Swarm protocol currently is `bzz`.
 It makes a redirect to the BZZ endpoint of the Bee node by calling its corresponding Fake URL.
 There will be need for other Swarm specific protocols (or extend the current one), which handles different type of feeds and mutable content.
 
@@ -49,9 +49,24 @@ It is injected to every page basically, because in [manifest.json](manifest.json
 Unfortunately, [Chrome does not have exposed function to register custom protocol](https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/chrome/index.d.ts) in the [background script](src/background/index.ts)(, although it turned out some functionalities are not defined in this interface to keep them hidden, so analyzing the properties of `chrome` object is justified later).
 
 Chrome lets you to register custom protocol in the context of the webpage, but only with prefix `web+`.
-It means you can only refer to external P2P content by `web+bzz://{content-address}`
+Nevertheless you can refer to any `bzz` resource in html if you add attribute `is=swarm-X` to your html element like `<img is="swarm-img" src="bzz://{content-address}" />`.
+Current supported elements:
+* `a` -> `<a is="swarm-a" (...)`
+* `img` -> `<img is="swarm-image" (...)`
+* `iframe` -> `<iframe is="swarm-frame" (...)`
 
 In search bar the `bzz://{content-address}` will be redirected to `http(s)://{localgateway}/bzz/{content-address}`, but now it only reacts like this if the default search engine of the browser is set to Google. It also works the same on simple google search.
+
+## Cross-Domain Local Storage
+In Web3, several different and distinct webpages can be rendered under one particular host.
+It is a problem, because if a dApp wants to store something in the browser of the user, then other dApps will be able to read that.
+
+This unintended behaviour can be solved by the `dApp Security Context` of the extension:
+the separation of `localStorage` method between dApps happens by the `sessionId` of the dApp.
+Of course, it is not necessary to set any ID manually, just call the ordinary `localStorage` methods as so far:
+instead of `window.localStorage.setItem('swarm', 'bzz')` you can call `swarm.localStorage.setItem('swarm', 'bzz')` in order to persist data in the browser, that only the dApp can recall later.
+
+The `setItem` and `getItem` methods here are `async` methods, so these return with `Promise`.
 
 ## Test
 
