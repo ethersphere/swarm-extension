@@ -1,4 +1,4 @@
-import { ResponseMessageFormat, InterceptorReqMessageFormat } from '../../utils/message/message-handler'
+import { InterceptorReqMessageFormat, ResponseMessageFormat } from '../../utils/message/message-handler'
 import { BeeApiListener } from '../listener/bee-api.listener'
 
 export class Web2HelperFeeder {
@@ -7,6 +7,7 @@ export class Web2HelperFeeder {
   }
   serveEvents(): void {
     console.log('Register Web2HelperFeeder event listeners...')
+    //TODO check only for internal message?
 
     chrome.runtime.onMessage.addListener((message: InterceptorReqMessageFormat<string>, sender, sendResponse) => {
       if (message.key === 'beeApiUrl') {

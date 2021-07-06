@@ -30,10 +30,10 @@ export function removeSwarmSessionIdFromUrl(bzzUrl: string): string {
   return constructedUrl.toString()
 }
 
-export function appendSwarmSessionId(fakeUrlRef: string): string {
+export function appendSwarmSessionIdToUrl(fakeUrlRef: string): string {
   const fakeUrl = new URL(fakeUrlRef)
   const fakeUrlRefParams = new URLSearchParams(fakeUrl.search.slice(1))
-  fakeUrlRefParams.append(SWARM_SESSION_ID_KEY, window.swarmSessionId)
+  fakeUrlRefParams.append(SWARM_SESSION_ID_KEY, window.swarm.sessionId)
 
   return `${fakeUrlRef}?${fakeUrlRefParams.toString()}`
 }

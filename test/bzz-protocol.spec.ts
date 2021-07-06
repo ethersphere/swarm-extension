@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Bee } from '@ethersphere/bee-js'
 import { join } from 'path'
 import { ElementHandle, Page } from 'puppeteer'
 import {
@@ -9,7 +10,6 @@ import {
   getStamp,
   replaceInputValue,
 } from './utils'
-import { Bee } from '@ethersphere/bee-js'
 
 async function getLastBzzPage(): Promise<Page> {
   await new Promise(resolve => setTimeout(() => resolve(true), 500))
@@ -36,11 +36,33 @@ function newBzzpage(url: string): Promise<Page> {
   })
 }
 
+/**
+ * Change Bee API URL on the extension page
+ * @returns Previous Bee API URL
+ * */
+async function changeBeeApiUrl(extensionPage: Page, newBeeApiUrl: string): Promise<string> {
+  const formId = 'form-bee-api-url-change'
+  const inputSelector = `form[id="${formId}"] input[type="text"]`
+  const inputText = await getElementBySelector(inputSelector, extensionPage)
+  const submitSelector = `form[id="${formId}"] input[type="submit"]`
+  const submitButton = await getElementBySelector(submitSelector, extensionPage)
+  const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
+  await extensionPage.focus(inputSelector)
+  await replaceInputValue(newBeeApiUrl, extensionPage)
+  await submitButton.click()
+
+  if (typeof originalUrlValue !== 'string') throw new Error('changeBeeApiUrl: there is no valid original URL')
+
+  return originalUrlValue
+}
+
 describe('BZZ protocol', () => {
   let page: Page
+  let extensionPage: Page
   let bee: Bee
   let rootFolderReference: string
   let extensionId: string
+  let localStorageReferece: string
 
   const checkJinnIframePage = async (element: ElementHandle<Element> | null) => {
     expect(element).toBeTruthy()
@@ -60,22 +82,15 @@ describe('BZZ protocol', () => {
       indexDocument: 'index.html',
       pin: true,
     }
-    const jinnHash = await bee.uploadFilesFromDirectory(
-      getStamp(),
-      join(__dirname, 'bzz-test-page', 'jinn-page'),
-      uploadOptions,
-    )
-    const jafarHash = await bee.uploadFilesFromDirectory(
-      getStamp(),
-      join(__dirname, 'bzz-test-page', 'jafar-page'),
-      uploadOptions,
-    )
+    const uploadFilesFromDirectory = (...relativePath: string[]): Promise<string> => {
+      return bee.uploadFilesFromDirectory(getStamp(), join(__dirname, ...relativePath), uploadOptions)
+    }
+    const jinnHash = await uploadFilesFromDirectory('bzz-test-page', 'jinn-page')
+    const jafarHash = await uploadFilesFromDirectory('bzz-test-page', 'jafar-page')
     console.log('Jinn and Jafar page has been uploaded', jinnHash, jafarHash)
-    rootFolderReference = await bee.uploadFilesFromDirectory(
-      getStamp(),
-      join(__dirname, 'bzz-test-page'),
-      uploadOptions,
-    )
+    localStorageReferece = await uploadFilesFromDirectory('bzz-test-page', 'local-storage')
+    console.log('Local Storage handler page has been uploaded', localStorageReferece)
+    rootFolderReference = await uploadFilesFromDirectory('bzz-test-page')
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
 
@@ -178,32 +193,113 @@ describe('BZZ protocol', () => {
   })
 
   test('Change Bee API URL', async done => {
-    const extensionPage = await global.__BROWSER__.newPage()
+    extensionPage = await global.__BROWSER__.newPage()
     await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
       waitUntil: 'networkidle0',
     })
 
     // change api url to http://localhost:9999
     const testUrlValue = 'http://localhost:9999'
-    const formId = 'form-bee-api-url-change'
-    const inputSelector = `form[id="${formId}"] input[type="text"]`
-    const inputText = await getElementBySelector(inputSelector, extensionPage)
-    const submitSelector = `form[id="${formId}"] input[type="submit"]`
-    const submitButton = await getElementBySelector(submitSelector, extensionPage)
-    const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
-    const changeUrl = async (changeValue: string) => {
-      await extensionPage.focus(inputSelector)
-      await replaceInputValue(changeValue, extensionPage)
-      await submitButton.click()
-    }
-    await changeUrl(testUrlValue)
+    const originalUrlValue = await changeBeeApiUrl(extensionPage, testUrlValue)
     //test whether it had affect on routing
     const bzzPage = await newBzzpage(bzzReferenceByGoogle('nevermind-value'))
     // the expected error page URL is 'chrome-error://chromewebdata/' on wrong reference.
     expect(bzzPage.url()).toBe('chrome-error://chromewebdata/')
     await bzzPage.close()
     //set back the original value
-    await changeUrl(originalUrlValue as string)
+    await changeBeeApiUrl(extensionPage, originalUrlValue)
+
+    done()
+  })
+
+  test('Check traditional and swarm localStorage usage', async done => {
+    // swarm-test-worker-1
+    const newUrlValue = 'http://localhost:11633'
+    const originalUrlValue = await changeBeeApiUrl(extensionPage, newUrlValue)
+
+    // save sample data
+    const commonKeyName = 'Alan Watts'
+    const traditionalKeyValue = 'The more a thing tends to be permanent, the more it tends to be lifeless.'
+    const swarmKeyValue =
+      'The only way to make sense out of change is to plunge into it, move with it, and join the dance.'
+    const localStoragePage = await newBzzpage(bzzReferenceByGoogle(localStorageReferece))
+    // set common storage key for localstorages
+    const saveKeyNameSelector = '#save-localstorage-key-name'
+    await localStoragePage.focus(saveKeyNameSelector)
+    await replaceInputValue(commonKeyName, localStoragePage)
+    // set traditional local storage key value and then save it
+    const saveKeyValueSelector = '#save-localstorage-key-value'
+    await localStoragePage.focus(saveKeyValueSelector)
+    await replaceInputValue(traditionalKeyValue, localStoragePage)
+    const saveTraditionalSelector = '#button-save-traditional-localstorage'
+    const saveTraditional = await getElementBySelector(saveTraditionalSelector, localStoragePage)
+    await saveTraditional.click()
+    // set swarm local storage key value and then save it
+    await localStoragePage.focus(saveKeyValueSelector)
+    await replaceInputValue(swarmKeyValue, localStoragePage)
+    const saveSwarmSelector = '#button-save-swarm-localstorage'
+    const saveSwarm = await getElementBySelector(saveSwarmSelector, localStoragePage)
+    await saveSwarm.click()
+
+    // load saved localstorage elements
+    const loadKeyNameSelector = '#load-localstorage-key-name'
+    const loadKeyValueSelector = '#load-localstorage-key-value'
+    const getKeyValue = (page: Page): Promise<string> => {
+      return page.$eval(loadKeyValueSelector, element => {
+        return element.innerHTML
+      })
+    }
+    const loadAndCheckStorages = async (page: Page, traditionalKeyValue: string, swarmKeyValue: string) => {
+      // set common key for retriaval
+      await page.focus(loadKeyNameSelector)
+      await replaceInputValue(commonKeyName, page)
+
+      const loadTraditionalSelector = '#button-load-traditional-localstorage'
+      const loadTraditional = await getElementBySelector(loadTraditionalSelector, page)
+      await loadTraditional.click()
+      expect(await getKeyValue(page)).toBe(traditionalKeyValue)
+      // load swarm storage and then check
+      const loadSwarmSelector = '#button-load-swarm-localstorage'
+      const loadSwarm = await getElementBySelector(loadSwarmSelector, page)
+      await loadSwarm.click()
+      await new Promise(resolve => setTimeout(resolve, 100)) // wait for async function run on the page
+      expect(await getKeyValue(page)).toBe(swarmKeyValue)
+    }
+    // load traditional storage end then check
+    await loadAndCheckStorages(localStoragePage, traditionalKeyValue, swarmKeyValue)
+    // change back the host to the original and try to fetch again
+    await localStoragePage.close()
+    await changeBeeApiUrl(extensionPage, originalUrlValue)
+    const localStoragePage2 = await newBzzpage(bzzReferenceByGoogle(localStorageReferece))
+    // check whether the swarm storage is still retreivable on the new page
+    await loadAndCheckStorages(localStoragePage2, '', swarmKeyValue)
+
+    // check whether the localstorage is accessible from an iframe in a different dApp
+    const bzzPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
+    const parentLocalStorageIsEmpty = await bzzPage.evaluate(async (commonKeyName: string) => {
+      const iframe = document.getElementById('localstorage-iframe')
+
+      if (!iframe) {
+        throw new Error('there is no "localstorage-iframe" element')
+      }
+      const iframeWindow = (iframe as HTMLIFrameElement).contentWindow
+
+      if (!iframeWindow) {
+        throw new Error('there is no window object under "localstorage-iframe" element')
+      }
+
+      try {
+        await iframeWindow.window.swarm.localStorage.getItem(commonKeyName)
+      } catch (e) {
+        if ((e as string).endsWith(`${commonKeyName} does not exist`)) return true
+      }
+
+      return false
+    }, commonKeyName)
+
+    expect(parentLocalStorageIsEmpty).toBeTruthy()
+
+    await bzzPage.close()
 
     done()
   })

@@ -1,3 +1,4 @@
+import browser from 'webextension-polyfill'
 import {
   InpageReqMessageFormat,
   InterceptorReqMessageFormat,
@@ -22,6 +23,8 @@ export class MessengerInterceptor {
       console.log('Web2HelperInterceptor content script got aimed message', message.data)
       const messageToBackground: InterceptorReqMessageFormat = {
         key: message.data.key,
+        sessionId: message.data.sessionId,
+        payload: message.data.payload,
         sender: 'content',
         target: 'background',
       }
@@ -31,7 +34,7 @@ export class MessengerInterceptor {
         sender: 'content',
         target: 'inpage',
       }
-      chrome.runtime.sendMessage(messageToBackground, response => {
+      browser.runtime.sendMessage(messageToBackground).then((response: any) => {
         try {
           const responseMessage = this.deserializeResponseMessage<string>(response)
 
@@ -60,6 +63,8 @@ export class MessengerInterceptor {
   }
 
   private deserializeResponseMessage<T>(message: ResponseMessageFormat<T>): ResponseWithMessage<T> {
+    if (!message) throw new Error('There is no answer in the response')
+
     if (message.error) {
       throw new Error(message.error)
     }

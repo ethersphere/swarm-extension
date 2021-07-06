@@ -1,5 +1,5 @@
 import { fakeUrl } from '../../utils/fake-url'
-import { appendSwarmSessionId } from '../../utils/swarm-session-id'
+import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
 
 export class SwarmImage extends HTMLImageElement {
   static get observedAttributes(): string[] {
@@ -23,7 +23,7 @@ export class SwarmImage extends HTMLImageElement {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
       const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
-      this.src = appendSwarmSessionId(fakeUrlRef)
+      this.src = appendSwarmSessionIdToUrl(fakeUrlRef)
     }
   }
 }
@@ -50,7 +50,7 @@ export class SwarmFrame extends HTMLIFrameElement {
     if (newValue.startsWith('bzz://')) {
       const bzzReference = newValue.substr('bzz://'.length)
       const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
-      this.src = appendSwarmSessionId(fakeUrlRef)
+      this.src = appendSwarmSessionIdToUrl(fakeUrlRef)
     }
   }
 }

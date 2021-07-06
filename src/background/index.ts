@@ -1,6 +1,7 @@
 import { StoreObserver } from '../utils/storage'
 import { DappSessionManager } from './dapp-session.manager'
 import { DappSessionFeeder } from './feeder/dapp-session.feeder'
+import { LocalStorageFeeder } from './feeder/local-storage.feeder'
 import { Web2HelperFeeder } from './feeder/web2-helper.feeder'
 import { BeeApiListener } from './listener/bee-api.listener'
 import { DebugListener } from './listener/debug.listener'
@@ -11,6 +12,7 @@ const storeObserver = new StoreObserver()
 const beeApiListener = new BeeApiListener(storeObserver)
 const dappSessionManager = new DappSessionManager()
 new DappSessionFeeder(dappSessionManager)
+new LocalStorageFeeder(dappSessionManager)
 new DebugListener()
 new Web2HelperFeeder(beeApiListener)
 

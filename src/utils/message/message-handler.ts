@@ -31,13 +31,17 @@ export type BroadcastMessageFormat = BaseMessageFormat & {
 export type InpageReqMessageFormat<T = undefined> = BroadcastMessageFormat & {
   sender: 'inpage'
   target: 'content'
+  /** Only necessary for authorized requests */
+  sessionId?: string
   payload?: T
 }
 
 /** Content script -> Background script */
-export type InterceptorReqMessageFormat<T = undefined> = BaseMessageFormat & {
+export type InterceptorReqMessageFormat<T = any> = BaseMessageFormat & {
   sender: 'content'
   target: 'background'
+  /** Only necessary for authorized requests */
+  sessionId?: string
   payload?: T
 }
 
@@ -50,7 +54,7 @@ export type InterceptorResMessageFormat<T = undefined> = BroadcastMessageFormat 
 }
 
 /** Background script -> Content script */
-export type ResponseMessageFormat<T = string> = BaseMessageFormat & {
+export type ResponseMessageFormat<T = any> = BaseMessageFormat & {
   sender: 'background'
   target: 'content'
   answer?: T

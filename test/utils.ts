@@ -32,6 +32,9 @@ export async function getExtensionId(): Promise<string> {
   return extensionId
 }
 
+/**
+ * It needs to focus on the input element first
+ */
 export async function replaceInputValue(newValue: string, page: Page): Promise<void> {
   await page.keyboard.down('Shift')
   await page.keyboard.press('Home')
