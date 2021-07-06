@@ -30,27 +30,3 @@ async function uploadFileWithBeeJs() {
     console.error('Error happened on file upload (uploadFileWithBeeJs)', e)
   }
 }
-
-function saveWithTraditionalLocalStorage() {
-  const keyName = document.getElementById('save-localstorage-key-name').value
-  const keyValue = document.getElementById('save-localstorage-key-value').value
-  window.localStorage.setItem(keyName, keyValue)
-}
-
-async function saveWithSwarmLocalStorage() {
-  const keyName = document.getElementById('save-localstorage-key-name').value
-  const keyValue = document.getElementById('save-localstorage-key-value').value
-  await window.swarm.localStorage.setItem(keyName, keyValue)
-}
-
-function loadWithTraditionalLocalStorage() {
-  const keyName = document.getElementById('load-localstorage-key-name').value
-  const keyValue = window.localStorage.getItem(keyName)
-  document.getElementById('load-localstorage-key-value').innerHTML = keyValue
-}
-
-async function loadWithSwarmLocalStorage() {
-  const keyName = document.getElementById('load-localstorage-key-name').value
-  const keyValue = await window.swarm.localStorage.getItem(keyName)
-  document.getElementById('load-localstorage-key-value').innerHTML = keyValue
-}
