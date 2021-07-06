@@ -58,16 +58,16 @@ Current supported elements:
 In search bar the `bzz://{content-address}` will be redirected to `http(s)://{localgateway}/bzz/{content-address}`, but now it only reacts like this if the default search engine of the browser is set to Google. It also works the same on simple google search.
 
 ## Cross-Domain Local Storage
-In Web3, several different and distinct webpages can be rendered under one particular host.
-It is a problem, because if a dApp wants to store something in the browser of the user, then other dApps will be able to read that.
+In Web3, several different and distinct webpages can be rendered under one particular P2P client host.
+It is a problem, because if the user changes its P2P client host then they have to rebuild again the dApp state from the start.
 
 This unintended behaviour can be solved by the `dApp Security Context` of the extension:
-the separation of `localStorage` method between dApps happens by the `sessionId` of the dApp.
+the handling of `localStorage` method happens by the `sessionId` of the dApp.
 
-Thereby even if the user changes its P2P client host, the state and their session will remain - unlike at subdomain content address URLs.
+Thereby even if the user changes its P2P client host, the state and their session will remain - unlike using only subdomain content address URLs with the traditional `localStorage`.
 
-Of course, it is not necessary to set any ID manually, just call the ordinary `localStorage` methods as so far:
-instead of `window.localStorage.setItem('swarm', 'bzz')` you can call `swarm.localStorage.setItem('swarm', 'bzz')` in order to persist data in the browser, that only the dApp can recall later.
+Of course, it is not necessary to set any ID manually, just call the usual `localStorage` methods but under the `swarm` object:
+instead of `window.localStorage.setItem('swarm', 'bzz')` you can call `swarm.localStorage.setItem('swarm', 'bzz')` in order to persist data in the browser.
 
 The `setItem` and `getItem` methods here are `async` methods, so these return with `Promise`.
 
