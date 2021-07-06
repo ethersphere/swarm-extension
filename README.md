@@ -63,6 +63,9 @@ It is a problem, because if a dApp wants to store something in the browser of th
 
 This unintended behaviour can be solved by the `dApp Security Context` of the extension:
 the separation of `localStorage` method between dApps happens by the `sessionId` of the dApp.
+
+Thereby even if the user changes its P2P client host, the state and their session will remain - unlike at subdomain content address URLs.
+
 Of course, it is not necessary to set any ID manually, just call the ordinary `localStorage` methods as so far:
 instead of `window.localStorage.setItem('swarm', 'bzz')` you can call `swarm.localStorage.setItem('swarm', 'bzz')` in order to persist data in the browser, that only the dApp can recall later.
 
