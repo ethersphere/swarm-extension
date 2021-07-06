@@ -1,5 +1,5 @@
 import { injectScript } from '../utils'
 
 export function injectSessionId(sessionId: string): void {
-  injectScript(`window.swarmSessionId = '${sessionId}'`, 'swarmSessionId')
+  injectScript(`window.swarm = {...window.swarm, sessionId: '${sessionId}'}`, 'swarmSessionId')
 }

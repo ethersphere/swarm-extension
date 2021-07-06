@@ -10,7 +10,7 @@ export class LocalStorage extends MessengerInpage implements ILocalStorageMessag
       eventId: nanoid(),
       sender: 'inpage',
       target: 'content',
-      sessionId: window.swarmSessionId,
+      sessionId: window.swarm.sessionId,
       payload: [keyName, keyValue],
     }
 
@@ -39,7 +39,7 @@ export class LocalStorage extends MessengerInpage implements ILocalStorageMessag
       eventId: nanoid(),
       sender: 'inpage',
       target: 'content',
-      sessionId: window.swarmSessionId,
+      sessionId: window.swarm.sessionId,
       payload: [keyName],
     }
 

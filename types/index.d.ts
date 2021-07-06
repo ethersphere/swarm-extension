@@ -13,7 +13,7 @@ declare global {
     swarm: {
       web2Helper: Web2HelperContent
       localStorage: LocalStorage
+      sessionId: string
     }
-    swarmSessionId: string
   }
 }
