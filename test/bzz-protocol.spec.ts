@@ -275,6 +275,31 @@ describe('BZZ protocol', () => {
     await loadAndCheckStorages(localStoragePage2, '', swarmKeyValue)
 
     // check whether the localstorage is accessible from an iframe in a different dApp
+    const bzzPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
+    const parentLocalStorageIsEmpty = await bzzPage.evaluate(async (commonKeyName: string) => {
+      const iframe = document.getElementById('localstorage-iframe')
+
+      if (!iframe) {
+        throw new Error('there is no "localstorage-iframe" element')
+      }
+      const iframeWindow = (iframe as HTMLIFrameElement).contentWindow
+
+      if (!iframeWindow) {
+        throw new Error('there is no window object under "localstorage-iframe" element')
+      }
+
+      try {
+        await iframeWindow.window.swarm.localStorage.getItem(commonKeyName)
+      } catch (e) {
+        if ((e as string).endsWith(`${commonKeyName} does not exist`)) return true
+      }
+
+      return false
+    }, commonKeyName)
+
+    expect(parentLocalStorageIsEmpty).toBeTruthy()
+
+    await bzzPage.close()
 
     done()
   })
