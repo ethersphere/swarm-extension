@@ -4,7 +4,6 @@ import { InpageReqMessageFormat, InterceptorResMessageFormat } from '../../utils
 import { MessengerInpage } from './messenger.inpage'
 
 export class LocalStorage extends MessengerInpage implements ILocalStorageMessage {
-  /** The real Bee API address that shouldn't be called directly by dApps */
   public setItem(keyName: string, keyValue: unknown): Promise<void> {
     const message: InpageReqMessageFormat<Parameters<ILocalStorageMessage['setItem']>> = {
       key: 'setItem',
