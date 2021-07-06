@@ -62,6 +62,7 @@ describe('BZZ protocol', () => {
   let bee: Bee
   let rootFolderReference: string
   let extensionId: string
+  let localStorageReferece: string
 
   const checkJinnIframePage = async (element: ElementHandle<Element> | null) => {
     expect(element).toBeTruthy()
@@ -81,22 +82,15 @@ describe('BZZ protocol', () => {
       indexDocument: 'index.html',
       pin: true,
     }
-    const jinnHash = await bee.uploadFilesFromDirectory(
-      getStamp(),
-      join(__dirname, 'bzz-test-page', 'jinn-page'),
-      uploadOptions,
-    )
-    const jafarHash = await bee.uploadFilesFromDirectory(
-      getStamp(),
-      join(__dirname, 'bzz-test-page', 'jafar-page'),
-      uploadOptions,
-    )
+    const uploadFilesFromDirectory = (...relativePath: string[]): Promise<string> => {
+      return bee.uploadFilesFromDirectory(getStamp(), join(__dirname, ...relativePath), uploadOptions)
+    }
+    const jinnHash = await uploadFilesFromDirectory('bzz-test-page', 'jinn-page')
+    const jafarHash = await uploadFilesFromDirectory('bzz-test-page', 'jafar-page')
     console.log('Jinn and Jafar page has been uploaded', jinnHash, jafarHash)
-    rootFolderReference = await bee.uploadFilesFromDirectory(
-      getStamp(),
-      join(__dirname, 'bzz-test-page'),
-      uploadOptions,
-    )
+    localStorageReferece = await uploadFilesFromDirectory('bzz-test-page', 'local-storage')
+    console.log('Local Storage handler page has been uploaded', localStorageReferece)
+    rootFolderReference = await uploadFilesFromDirectory('bzz-test-page')
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
 
@@ -228,23 +222,23 @@ describe('BZZ protocol', () => {
     const traditionalKeyValue = 'The more a thing tends to be permanent, the more it tends to be lifeless.'
     const swarmKeyValue =
       'The only way to make sense out of change is to plunge into it, move with it, and join the dance.'
-    const bzzPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
+    const localStoragePage = await newBzzpage(bzzReferenceByGoogle(localStorageReferece))
     // set common storage key for localstorages
     const saveKeyNameSelector = '#save-localstorage-key-name'
-    await bzzPage.focus(saveKeyNameSelector)
-    await replaceInputValue(commonKeyName, bzzPage)
+    await localStoragePage.focus(saveKeyNameSelector)
+    await replaceInputValue(commonKeyName, localStoragePage)
     // set traditional local storage key value and then save it
     const saveKeyValueSelector = '#save-localstorage-key-value'
-    await bzzPage.focus(saveKeyValueSelector)
-    await replaceInputValue(traditionalKeyValue, bzzPage)
+    await localStoragePage.focus(saveKeyValueSelector)
+    await replaceInputValue(traditionalKeyValue, localStoragePage)
     const saveTraditionalSelector = '#button-save-traditional-localstorage'
-    const saveTraditional = await getElementBySelector(saveTraditionalSelector, bzzPage)
+    const saveTraditional = await getElementBySelector(saveTraditionalSelector, localStoragePage)
     await saveTraditional.click()
     // set swarm local storage key value and then save it
-    await bzzPage.focus(saveKeyValueSelector)
-    await replaceInputValue(swarmKeyValue, bzzPage)
+    await localStoragePage.focus(saveKeyValueSelector)
+    await replaceInputValue(swarmKeyValue, localStoragePage)
     const saveSwarmSelector = '#button-save-swarm-localstorage'
-    const saveSwarm = await getElementBySelector(saveSwarmSelector, bzzPage)
+    const saveSwarm = await getElementBySelector(saveSwarmSelector, localStoragePage)
     await saveSwarm.click()
 
     // load saved localstorage elements
@@ -272,13 +266,15 @@ describe('BZZ protocol', () => {
       expect(await getKeyValue(page)).toBe(swarmKeyValue)
     }
     // load traditional storage end then check
-    await loadAndCheckStorages(bzzPage, traditionalKeyValue, swarmKeyValue)
+    await loadAndCheckStorages(localStoragePage, traditionalKeyValue, swarmKeyValue)
     // change back the host to the original and try to fetch again
-    await bzzPage.close()
+    await localStoragePage.close()
     await changeBeeApiUrl(extensionPage, originalUrlValue)
-    const bzzPage2 = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
-    // check whether the the swarm storage is still retreivable on the new page
-    await loadAndCheckStorages(bzzPage2, '', swarmKeyValue)
+    const localStoragePage2 = await newBzzpage(bzzReferenceByGoogle(localStorageReferece))
+    // check whether the swarm storage is still retreivable on the new page
+    await loadAndCheckStorages(localStoragePage2, '', swarmKeyValue)
+
+    // check whether the localstorage is accessible from an iframe in a different dApp
 
     done()
   })
