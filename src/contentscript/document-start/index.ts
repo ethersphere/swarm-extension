@@ -1,9 +1,10 @@
-import { MessengerInterceptor } from './messenger.interceptor'
-import { injectSessionId } from './inject/session-id'
-import { injectSwarmLibrary } from './inject/swarm-library'
 import { nanoid } from 'nanoid'
 import { dappSessionRegister } from './dapp-session.register'
+import { injectSandboxPolyfill } from './inject/sandbox-polyfill'
+import { injectSessionId } from './inject/session-id'
 import { injectSwarmHtml } from './inject/swarm-html'
+import { injectSwarmLibrary } from './inject/swarm-library'
+import { MessengerInterceptor } from './messenger.interceptor'
 
 // custom protocol handler is highly unconvenient to set up on client side and cannot be enabled automaticly in puppeteer
 // it does not have effect on image loading
@@ -13,6 +14,7 @@ import { injectSwarmHtml } from './inject/swarm-html'
 
 // Generate dapp session id
 const sessionId = nanoid()
+injectSandboxPolyfill()
 dappSessionRegister(sessionId)
 injectSessionId(sessionId)
 injectSwarmHtml()
