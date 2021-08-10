@@ -101,3 +101,4 @@ In its [index page](test/bzz-test-page/index.html), you see how you can refer to
 - [nugaon](https://github.com/nugaon)
 - [Cafe137](https://github.com/Cafe137)
 
+See what "Maintainer" means [here](https://github.com/ethersphere/repo-maintainer).
