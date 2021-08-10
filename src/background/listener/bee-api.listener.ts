@@ -1,6 +1,6 @@
-import { StoreObserver, getItem } from '../../utils/storage'
 import { fakeUrl } from '../../utils/fake-url'
-import { SWARM_SESSION_ID_KEY, removeSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
+import { getItem, StoreObserver } from '../../utils/storage'
+import { removeSwarmSessionIdFromUrl, SWARM_SESSION_ID_KEY } from '../../utils/swarm-session-id'
 
 export class BeeApiListener {
   private _beeApiUrl: string
@@ -41,6 +41,22 @@ export class BeeApiListener {
     return { requestHeaders: details.requestHeaders }
   }
 
+  private sandboxListener = (
+    details: chrome.webRequest.WebResponseHeadersDetails,
+  ): void | chrome.webRequest.BlockingResponse => {
+    const urlArray = details.url.toString().split('/')
+
+    if (urlArray[3] === 'bzz' && urlArray[4]) {
+      details.responseHeaders?.push({
+        name: 'Content-Security-Policy',
+        value: 'sandbox allow-scripts allow-modals allow-popups',
+      })
+    }
+    console.log('responseHeaders', details.responseHeaders)
+
+    return { responseHeaders: details.responseHeaders }
+  }
+
   private addBeeNodeListeners(beeApiUrl: string) {
     chrome.webRequest.onBeforeSendHeaders.addListener(
       this.globalPostageStampHeaderListener,
@@ -48,6 +64,13 @@ export class BeeApiListener {
         urls: [`${beeApiUrl}/*`],
       },
       ['blocking', 'requestHeaders'],
+    )
+    chrome.webRequest.onHeadersReceived.addListener(
+      this.sandboxListener,
+      {
+        urls: [`${beeApiUrl}/*`],
+      },
+      ['blocking', 'responseHeaders', 'extraHeaders'],
     )
   }
 
