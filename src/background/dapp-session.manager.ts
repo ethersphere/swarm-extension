@@ -15,9 +15,7 @@ class DappSecurityContext {
     private originContentRoot: string,
   ) {
     this.storage = chrome.storage.local
-    this.storePrefix = this.frameContentRoot
-      ? `${this.originContentRoot}:${this.frameContentRoot}`
-      : this.originContentRoot
+    this.storePrefix = this.frameContentRoot || this.originContentRoot
   }
 
   public isValidTabId(tabId: number): boolean {
