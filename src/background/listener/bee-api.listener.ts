@@ -1,3 +1,4 @@
+import { subdomainToBzzResource } from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { removeSwarmSessionIdFromUrl, SWARM_SESSION_ID_KEY } from '../../utils/swarm-session-id'
@@ -57,6 +58,28 @@ export class BeeApiListener {
     return { responseHeaders: details.responseHeaders }
   }
 
+  /**
+   * {contentReference}.bzz.link has two ways to request:
+   *
+   * 1. typing to address bar
+   * 2. can be referred from dApp
+   *
+   * this listener only resolves the first one as the latter should be sorted out by contentscript rewriting of bzz.link URLs
+   * and the request shouldn't reach this handler
+   */
+  private bzzLinkListener = (
+    details: chrome.webRequest.WebRequestBodyDetails,
+  ): void | chrome.webRequest.BlockingResponse => {
+    const { url } = details
+    const urlObject = new URL(url)
+    const subdomain = urlObject.host.split('.')[0]
+    const pathWithParams = url.substring(urlObject.origin.length)
+    const bzzReference = subdomainToBzzResource(subdomain) + pathWithParams
+    console.log('bzz link redirect', bzzReference, url, pathWithParams)
+
+    this.redirectToBzzReference(bzzReference, details.tabId)
+  }
+
   private addBeeNodeListeners(beeApiUrl: string) {
     chrome.webRequest.onBeforeSendHeaders.addListener(
       this.globalPostageStampHeaderListener,
@@ -100,6 +123,13 @@ export class BeeApiListener {
         this.redirectToBzzReference(urlArray[1], details.tabId)
       },
       { urls: [`${fakeUrl.openDapp}/*`] },
+    )
+
+    chrome.webRequest.onBeforeRequest.addListener(
+      details => {
+        this.bzzLinkListener(details)
+      },
+      { urls: ['https://*.bzz.link/*', 'http://*.bzz.link/*'] },
     )
 
     // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
