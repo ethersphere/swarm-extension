@@ -14,6 +14,7 @@ declare global {
       web2Helper: Web2HelperContent
       localStorage: LocalStorage
       sessionId: string
+      bzzLink: typeof import('../src/contentscript/swarm-library/bzz-link')
     }
   }
 }
