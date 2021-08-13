@@ -50,6 +50,7 @@ Unfortunately, [Chrome does not have exposed function to register custom protoco
 
 Chrome lets you to register custom protocol in the context of the webpage, but only with prefix `web+`.
 Nevertheless you can refer to any `bzz` resource in html if you add attribute `is=swarm-X` to your html element like `<img is="swarm-img" src="bzz://{content-address}" />`.
+
 Current supported elements:
 * `a` -> `<a is="swarm-a" (...)`
 * `img` -> `<img is="swarm-image" (...)`
@@ -57,7 +58,17 @@ Current supported elements:
 
 In search bar the `bzz://{content-address}` will be redirected to `http(s)://{localgateway}/bzz/{content-address}`, but now it only reacts like this if the default search engine of the browser is set to Google. It also works the same on simple google search.
 
+## dApp origin instead of host-based origin
+
+All Swarm content that the extension renders will be put into _sandbox_ mode even in root level by _Content Security Policy_ headers.
+It means dApps will act like a different, distinct webpage from the Bee host that serves those.
+Therefore no traditional _cookies_ or _localStorage_ is available for dApps, but equivalent services of those are.
+
+In order to substitue these traditional stateful behaviours of the applications with something else, the Swarm Extension introduces
+the `dApp Security Context` as a new abstraction of origins.
+
 ## Cross-Domain Local Storage
+
 In Web3, several different and distinct webpages can be rendered under one particular P2P client host.
 It is a problem, because if the user changes its P2P client host then they have to rebuild again the dApp state from the start.
 

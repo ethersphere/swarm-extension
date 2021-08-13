@@ -219,7 +219,6 @@ describe('BZZ protocol', () => {
 
     // save sample data
     const commonKeyName = 'Alan Watts'
-    const traditionalKeyValue = 'The more a thing tends to be permanent, the more it tends to be lifeless.'
     const swarmKeyValue =
       'The only way to make sense out of change is to plunge into it, move with it, and join the dance.'
     const localStoragePage = await newBzzpage(bzzReferenceByGoogle(localStorageReferece))
@@ -227,13 +226,7 @@ describe('BZZ protocol', () => {
     const saveKeyNameSelector = '#save-localstorage-key-name'
     await localStoragePage.focus(saveKeyNameSelector)
     await replaceInputValue(commonKeyName, localStoragePage)
-    // set traditional local storage key value and then save it
     const saveKeyValueSelector = '#save-localstorage-key-value'
-    await localStoragePage.focus(saveKeyValueSelector)
-    await replaceInputValue(traditionalKeyValue, localStoragePage)
-    const saveTraditionalSelector = '#button-save-traditional-localstorage'
-    const saveTraditional = await getElementBySelector(saveTraditionalSelector, localStoragePage)
-    await saveTraditional.click()
     // set swarm local storage key value and then save it
     await localStoragePage.focus(saveKeyValueSelector)
     await replaceInputValue(swarmKeyValue, localStoragePage)
@@ -249,15 +242,10 @@ describe('BZZ protocol', () => {
         return element.innerHTML
       })
     }
-    const loadAndCheckStorages = async (page: Page, traditionalKeyValue: string, swarmKeyValue: string) => {
+    const loadAndCheckStorages = async (page: Page, swarmKeyValue: string) => {
       // set common key for retriaval
       await page.focus(loadKeyNameSelector)
       await replaceInputValue(commonKeyName, page)
-
-      const loadTraditionalSelector = '#button-load-traditional-localstorage'
-      const loadTraditional = await getElementBySelector(loadTraditionalSelector, page)
-      await loadTraditional.click()
-      expect(await getKeyValue(page)).toBe(traditionalKeyValue)
       // load swarm storage and then check
       const loadSwarmSelector = '#button-load-swarm-localstorage'
       const loadSwarm = await getElementBySelector(loadSwarmSelector, page)
@@ -265,18 +253,20 @@ describe('BZZ protocol', () => {
       await new Promise(resolve => setTimeout(resolve, 100)) // wait for async function run on the page
       expect(await getKeyValue(page)).toBe(swarmKeyValue)
     }
-    // load traditional storage end then check
-    await loadAndCheckStorages(localStoragePage, traditionalKeyValue, swarmKeyValue)
     // change back the host to the original and try to fetch again
     await localStoragePage.close()
     await changeBeeApiUrl(extensionPage, originalUrlValue)
     const localStoragePage2 = await newBzzpage(bzzReferenceByGoogle(localStorageReferece))
     // check whether the swarm storage is still retreivable on the new page
-    await loadAndCheckStorages(localStoragePage2, '', swarmKeyValue)
+    await loadAndCheckStorages(localStoragePage2, swarmKeyValue)
 
+    done()
+  })
+
+  test('checks window object and content document is not available of iframe because of cross-origin', async done => {
     // check whether the localstorage is accessible from an iframe in a different dApp
     const bzzPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
-    const parentLocalStorageIsEmpty = await bzzPage.evaluate(async (commonKeyName: string) => {
+    const iframeWindowIsNotReachable = await bzzPage.evaluate(() => {
       const iframe = document.getElementById('localstorage-iframe')
 
       if (!iframe) {
@@ -289,15 +279,34 @@ describe('BZZ protocol', () => {
       }
 
       try {
-        await iframeWindow.window.swarm.localStorage.getItem(commonKeyName)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const swarm = iframeWindow.window.swarm
       } catch (e) {
-        if ((e as string).endsWith(`${commonKeyName} does not exist`)) return true
+        if (
+          e.stack &&
+          typeof e.stack === 'string' &&
+          e.stack.startsWith(`Error: Blocked a frame with origin "null" from accessing a cross-origin frame.`)
+        ) {
+          return true
+        }
       }
 
       return false
-    }, commonKeyName)
+    })
+    expect(iframeWindowIsNotReachable).toBeTruthy()
 
-    expect(parentLocalStorageIsEmpty).toBeTruthy()
+    const iframeContentIsNotReachable = await bzzPage.evaluate(() => {
+      const iframe = document.getElementById('localstorage-iframe')
+
+      if (!iframe) {
+        throw new Error('there is no "localstorage-iframe" element')
+      }
+      const iframeContent = (iframe as HTMLIFrameElement).contentDocument
+
+      return iframeContent === null
+    })
+
+    expect(iframeContentIsNotReachable).toBeTruthy()
 
     await bzzPage.close()
 
