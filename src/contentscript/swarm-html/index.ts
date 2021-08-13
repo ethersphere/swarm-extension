@@ -1,5 +1,11 @@
 import { fakeUrl } from '../../utils/fake-url'
-import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
+
+/** tries to transform the given URL to fake URL or return back the original URL  */
+function tryFakeUrlTransform(url: string, newPage = false): string {
+  const bzzLink = window.swarm.bzzLink.urlToFakeUrl(url, newPage)
+
+  return bzzLink || url
+}
 
 export class SwarmImage extends HTMLImageElement {
   static get observedAttributes(): string[] {
@@ -20,11 +26,7 @@ export class SwarmImage extends HTMLImageElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    if (newValue.startsWith('bzz://')) {
-      const bzzReference = newValue.substr('bzz://'.length)
-      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
-      this.src = appendSwarmSessionIdToUrl(fakeUrlRef)
-    }
+    this.src = tryFakeUrlTransform(newValue)
   }
 }
 
@@ -47,11 +49,7 @@ export class SwarmFrame extends HTMLIFrameElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    if (newValue.startsWith('bzz://')) {
-      const bzzReference = newValue.substr('bzz://'.length)
-      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
-      this.src = appendSwarmSessionIdToUrl(fakeUrlRef)
-    }
+    this.src = tryFakeUrlTransform(newValue)
   }
 }
 
@@ -74,11 +72,7 @@ export class SwarmAnchor extends HTMLAnchorElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    if (newValue.startsWith('bzz://')) {
-      const bzzReference = newValue.substr('bzz://'.length)
-      const fakeUrlRef = `${fakeUrl.openDapp}/${bzzReference}`
-      this.href = fakeUrlRef
-    }
+    this.href = tryFakeUrlTransform(newValue, true)
   }
 }
 
