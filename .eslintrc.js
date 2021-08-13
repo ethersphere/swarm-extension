@@ -41,6 +41,7 @@ module.exports = {
     'max-nested-callbacks': ['error', 4],
     'max-depth': ['error', 4],
     'require-await': 'error',
+    '@typescript-eslint/no-non-null-assertion': 'off',
     'space-before-function-paren': [
       'error',
       {
