@@ -58,28 +58,6 @@ export class BeeApiListener {
     return { responseHeaders: details.responseHeaders }
   }
 
-  /**
-   * {contentReference}.bzz.link has two ways to request:
-   *
-   * 1. typing to address bar
-   * 2. can be referred from dApp
-   *
-   * this listener only resolves the first one as the latter should be sorted out by contentscript rewriting of bzz.link URLs
-   * and the request shouldn't reach this handler
-   */
-  private bzzLinkListener = (
-    details: chrome.webRequest.WebRequestBodyDetails,
-  ): void | chrome.webRequest.BlockingResponse => {
-    const { url } = details
-    const urlObject = new URL(url)
-    const subdomain = urlObject.host.split('.')[0]
-    const pathWithParams = url.substring(urlObject.origin.length)
-    const bzzReference = subdomainToBzzResource(subdomain) + pathWithParams
-    console.log('bzz link redirect', bzzReference, url, pathWithParams)
-
-    this.redirectToBzzReference(bzzReference, details.tabId)
-  }
-
   private addBeeNodeListeners(beeApiUrl: string) {
     chrome.webRequest.onBeforeSendHeaders.addListener(
       this.globalPostageStampHeaderListener,
@@ -125,11 +103,40 @@ export class BeeApiListener {
       { urls: [`${fakeUrl.openDapp}/*`] },
     )
 
+    /**
+     * {contentReference}.bzz.link has two ways to request:
+     *
+     * 1. typing to address bar
+     * 2. can be referred from dApp
+     */
+
+    /**
+     * this listener automatically cancels all requests towards .bzz.link URLs
+     * it relates to the 2nd scenario
+     */
     chrome.webRequest.onBeforeRequest.addListener(
-      details => {
-        this.bzzLinkListener(details)
+      () => {
+        return { cancel: true }
       },
       { urls: ['https://*.bzz.link/*', 'http://*.bzz.link/*'] },
+    )
+
+    /**
+     * it force-redirects to the fakeURL of the bzz resource.
+     * it solves the 1st scenario
+     */
+    chrome.webNavigation.onBeforeNavigate.addListener(
+      details => {
+        const { url, tabId } = details
+        const urlObject = new URL(url)
+        const subdomain = urlObject.host.split('.')[0]
+        const pathWithParams = url.substring(urlObject.origin.length)
+        const bzzReference = subdomainToBzzResource(subdomain) + pathWithParams
+        console.log('bzz link redirect', bzzReference, url, pathWithParams)
+
+        this.redirectToBzzReference(bzzReference, tabId)
+      },
+      { url: [{ hostSuffix: '.bzz.link' }] },
     )
 
     // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
