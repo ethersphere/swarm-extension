@@ -18,7 +18,7 @@ export function bzzLinkUrlToFakeUrl(bzzLinkUrl: string, newPage = false): string
 
   if (subdomain) {
     let bzzReference = subdomainToBzzResource(subdomain)
-    const firstSlash = bzzLinkUrl.indexOf('/')
+    const firstSlash = bzzLinkUrl.indexOf('/', 59) // 59th index is surely after the 'http(s)://' but before any path reference
 
     // append subpath with arbitrary query params of original url
     if (firstSlash !== -1) {

@@ -1,10 +1,8 @@
 import { fakeUrl } from '../../utils/fake-url'
 
 /** tries to transform the given URL to fake URL or return back the original URL  */
-function tryFakeUrlTransform(url: string, newPage = false): string {
-  const bzzLink = window.swarm.bzzLink.urlToFakeUrl(url, newPage)
-
-  return bzzLink || url
+function tryFakeUrlTransform(url: string, newPage = false): string | null {
+  return window.swarm.bzzLink.urlToFakeUrl(url, newPage)
 }
 
 export class SwarmImage extends HTMLImageElement {
@@ -14,7 +12,6 @@ export class SwarmImage extends HTMLImageElement {
 
   constructor() {
     super()
-    console.log(`swarm-html: loaded. src ${this.src}`)
 
     this.addEventListener('load', () => {
       if (!this.src.startsWith(fakeUrl.bzzProtocol)) {
@@ -26,7 +23,9 @@ export class SwarmImage extends HTMLImageElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    this.src = tryFakeUrlTransform(newValue)
+    const fakeUrl = tryFakeUrlTransform(newValue)
+
+    if (fakeUrl) this.src = fakeUrl
   }
 }
 
@@ -37,7 +36,6 @@ export class SwarmFrame extends HTMLIFrameElement {
 
   constructor() {
     super()
-    console.log(`swarm-html: loaded. src ${this.src}`)
 
     this.addEventListener('load', () => {
       if (!this.src.startsWith(fakeUrl.bzzProtocol)) {
@@ -49,7 +47,9 @@ export class SwarmFrame extends HTMLIFrameElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    this.src = tryFakeUrlTransform(newValue)
+    const fakeUrl = tryFakeUrlTransform(newValue)
+
+    if (fakeUrl) this.src = fakeUrl
   }
 }
 
@@ -60,7 +60,6 @@ export class SwarmAnchor extends HTMLAnchorElement {
 
   constructor() {
     super()
-    console.log(`swarm-html: loaded. href ${this.href}`)
 
     this.addEventListener('load', () => {
       if (!this.href.startsWith(fakeUrl.openDapp)) {
@@ -72,7 +71,9 @@ export class SwarmAnchor extends HTMLAnchorElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    this.href = tryFakeUrlTransform(newValue, true)
+    const fakeUrl = tryFakeUrlTransform(newValue, true)
+
+    if (fakeUrl) this.href = fakeUrl
   }
 }
 

@@ -45,9 +45,11 @@ export function isHash(input: string): boolean {
 export function getSubdomain(url: string): string | null {
   const dotArray = url.split('.')
 
-  if (dotArray[1] !== 'bzz' || dotArray[2] !== 'link') return null
+  if (dotArray[1] !== 'bzz' || !dotArray[2].startsWith('link')) return null
 
-  return dotArray[0]
+  const subdomainSlashArray = dotArray[0].split('/') // dotArray[0] -> http(s)://{subdomain}
+
+  return subdomainSlashArray[subdomainSlashArray.length - 1]
 }
 
 export function subdomainToBzzResource(subdomain: string): string {
