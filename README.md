@@ -48,6 +48,8 @@ The extension currently [injects a script](src/contentscript/index.ts) on docume
 It is injected to every page basically, because in [manifest.json](manifest.json) you need to define where the injection happens by a fixed pattern for URLs and the host can be determenistic and changeable in this case.
 Unfortunately, [Chrome does not have exposed function to register custom protocol](https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/chrome/index.d.ts) in the [background script](src/background/index.ts)(, although it turned out some functionalities are not defined in this interface to keep them hidden, so analyzing the properties of `chrome` object is justified later).
 
+### Swarm HTML
+
 Chrome lets you to register custom protocol in the context of the webpage, but only with prefix `web+`.
 Nevertheless you can refer to any `bzz` resource in html if you add attribute `is=swarm-X` to your html element like `<img is="swarm-img" src="bzz://{content-address}" />`.
 
@@ -57,6 +59,14 @@ Current supported elements:
 * `iframe` -> `<iframe is="swarm-frame" (...)`
 
 In search bar the `bzz://{content-address}` will be redirected to `http(s)://{localgateway}/bzz/{content-address}`, but now it only reacts like this if the default search engine of the browser is set to Google. It also works the same on simple google search.
+
+## CID references and Public Gateway replacement
+
+Swarm has service to get content from its network through public gateways, and you can reference any Swarm content by CIDs or their ENS names without `.eth` ending in form of `https://{cid}.bzz.link/{path}` or `https://{ens-name}.bzz.link` respectively.
+These requests can be tunneled to the configured Bee client of the user instead of using gateways.
+All requests towards the `bzz.link` gateways will be cancelled, but the it redirects to the desired Bee client will be placed on webnavigations.
+The consequence of this behaviour the dApps which use external bzz.link references in their HTML code and want to available via both bzz.link gateways and private extension connections have to use [Swarm HTML elements](###-Swarm-HTML).
+Additinonally, the extension provides an injected library `swarm.bzzLink` to get CID of a swarm content hash (and vica versa).
 
 ## dApp origin instead of host-based origin
 
