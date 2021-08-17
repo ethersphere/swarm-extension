@@ -2,6 +2,7 @@
 import { Bee } from '@ethersphere/bee-js'
 import { join } from 'path'
 import { ElementHandle, Page } from 'puppeteer'
+import { bzzResourceToSubdomain } from '../src/utils/bzz-link'
 import {
   BEE_API_URL,
   bzzReferenceByGoogle,
@@ -173,6 +174,14 @@ describe('BZZ protocol', () => {
     done()
   })
 
+  test('check {cid}.bzz.link image resource loaded', async () => {
+    const imageLoaded = await page.evaluate(() => {
+      return (document.getElementById('bzz-image-2') as HTMLImageElement).complete
+    })
+
+    expect(imageLoaded).toBe(true)
+  })
+
   test('click on web+bzz link reference', async () => {
     // perform navigation
     await page.click('#bzz-ext-ref')
@@ -183,13 +192,25 @@ describe('BZZ protocol', () => {
     await currentPage.close()
   })
 
-  test('reference content with bzz://{content-id} with default search engine Google', async () => {
+  test('type in bzz://{content-id} address into the address bar with default search engine Google', async () => {
     const currentPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
     const title = await currentPage.title()
     const bzzPageTitleElement = await currentPage.$('#first-bzz-page-title')
 
     expect(title).toBe('First Direct BZZ address')
     expect(bzzPageTitleElement).toBeTruthy()
+  })
+
+  test('type in https://{cid}.bzz.link address into the address bar', async () => {
+    const cid = bzzResourceToSubdomain(rootFolderReference)
+    expect(cid).not.toBeNull()
+    const currentPage = await newBzzpage(`https://${cid}.bzz.link`)
+    const title = await currentPage.title()
+    const bzzPageTitleElement = await currentPage.$('#first-bzz-page-title')
+
+    expect(title).toBe('First Direct BZZ address')
+    expect(bzzPageTitleElement).toBeTruthy()
+    await currentPage.close()
   })
 
   test('Change Bee API URL', async done => {
