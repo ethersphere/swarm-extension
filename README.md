@@ -111,6 +111,8 @@ In order to present or interact with functionalities of `swarm-extension`, run c
 ```
 if everything went great, you can see the test pages in a Chromium browser.
 
+For testing use Node version >= 14!
+
 ### BZZ protocol test
 
 For BZZ protocol there are test pages to illustrate the functionality.
