@@ -113,6 +113,8 @@ if everything went great, you can see the test pages in a Chromium browser.
 
 For testing use Node version >= 14!
 
+If you have timeout problems, you can always raise the global timeout limit (in milliseconds) by passing `--testTimeout=60000` for the test.
+
 ### BZZ protocol test
 
 For BZZ protocol there are test pages to illustrate the functionality.
