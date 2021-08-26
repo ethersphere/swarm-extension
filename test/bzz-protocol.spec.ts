@@ -100,6 +100,11 @@ describe('BZZ protocol', () => {
     done()
   })
 
+  beforeEach(async done => {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    done()
+  })
+
   test('checks inner iframe reference load', async done => {
     const ref = await page.$('#localhost-inner-ref')
 
