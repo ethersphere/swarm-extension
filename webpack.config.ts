@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
+import { execSync } from 'child_process'
 import CopyPlugin from 'copy-webpack-plugin'
 import Path from 'path'
 import TerserPlugin from 'terser-webpack-plugin'
-import { Compiler, Configuration, DefinePlugin, WebpackPluginInstance, EnvironmentPlugin } from 'webpack'
+import { Compiler, Configuration, DefinePlugin, EnvironmentPlugin, WebpackPluginInstance } from 'webpack'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import { Server } from 'ws'
 import PackageJson from './package.json'
-import { execSync } from 'child_process'
 
 const MAIN_RELOAD_PORT = 16667
 const DEPS_RELOAD_PORT = 16668
@@ -97,7 +97,7 @@ const base = (env?: Partial<WebpackEnvParams>): Configuration => {
       ],
     },
     resolve: {
-      extensions: ['.ts'],
+      extensions: ['.ts', '.js'],
       fallback: {
         path: false,
         fs: false,
@@ -189,7 +189,7 @@ const background = (env?: Partial<WebpackEnvParams>): Configuration => {
       ],
     },
     resolve: {
-      extensions: ['.ts'],
+      extensions: ['.ts', '.js'],
       fallback: {
         path: false,
         fs: false,
@@ -290,7 +290,7 @@ const contentscript = (
       ],
     },
     resolve: {
-      extensions: ['.ts'],
+      extensions: ['.ts', '.js'],
       fallback: {
         path: false,
         fs: false,

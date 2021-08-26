@@ -1,5 +1,9 @@
 import { fakeUrl } from '../../utils/fake-url'
-import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
+
+/** tries to transform the given URL to fake URL or return back the original URL  */
+function tryFakeUrlTransform(url: string, newPage = false): string | null {
+  return window.swarm.bzzLink.urlToFakeUrl(url, newPage)
+}
 
 export class SwarmImage extends HTMLImageElement {
   static get observedAttributes(): string[] {
@@ -8,7 +12,6 @@ export class SwarmImage extends HTMLImageElement {
 
   constructor() {
     super()
-    console.log(`swarm-html: loaded. src ${this.src}`)
 
     this.addEventListener('load', () => {
       if (!this.src.startsWith(fakeUrl.bzzProtocol)) {
@@ -20,11 +23,9 @@ export class SwarmImage extends HTMLImageElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    if (newValue.startsWith('bzz://')) {
-      const bzzReference = newValue.substr('bzz://'.length)
-      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
-      this.src = appendSwarmSessionIdToUrl(fakeUrlRef)
-    }
+    const fakeUrl = tryFakeUrlTransform(newValue)
+
+    if (fakeUrl) this.src = fakeUrl
   }
 }
 
@@ -35,7 +36,6 @@ export class SwarmFrame extends HTMLIFrameElement {
 
   constructor() {
     super()
-    console.log(`swarm-html: loaded. src ${this.src}`)
 
     this.addEventListener('load', () => {
       if (!this.src.startsWith(fakeUrl.bzzProtocol)) {
@@ -47,11 +47,9 @@ export class SwarmFrame extends HTMLIFrameElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    if (newValue.startsWith('bzz://')) {
-      const bzzReference = newValue.substr('bzz://'.length)
-      const fakeUrlRef = `${fakeUrl.bzzProtocol}/${bzzReference}`
-      this.src = appendSwarmSessionIdToUrl(fakeUrlRef)
-    }
+    const fakeUrl = tryFakeUrlTransform(newValue)
+
+    if (fakeUrl) this.src = fakeUrl
   }
 }
 
@@ -62,7 +60,6 @@ export class SwarmAnchor extends HTMLAnchorElement {
 
   constructor() {
     super()
-    console.log(`swarm-html: loaded. href ${this.href}`)
 
     this.addEventListener('load', () => {
       if (!this.href.startsWith(fakeUrl.openDapp)) {
@@ -74,11 +71,9 @@ export class SwarmAnchor extends HTMLAnchorElement {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    if (newValue.startsWith('bzz://')) {
-      const bzzReference = newValue.substr('bzz://'.length)
-      const fakeUrlRef = `${fakeUrl.openDapp}/${bzzReference}`
-      this.href = fakeUrlRef
-    }
+    const fakeUrl = tryFakeUrlTransform(newValue, true)
+
+    if (fakeUrl) this.href = fakeUrl
   }
 }
 
