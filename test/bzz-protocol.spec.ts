@@ -19,7 +19,7 @@ async function getLastBzzPage(): Promise<Page> {
   return pages[pages.length - 1]
 }
 
-function newBzzpage(url: string): Promise<Page> {
+function newBzzPage(url: string): Promise<Page> {
   return new Promise(async (resolve, reject) => {
     const page = await global.__BROWSER__.newPage()
     page.once('requestfailed', async request => {
@@ -198,7 +198,7 @@ describe('BZZ protocol', () => {
   })
 
   test('type in bzz://{content-id} address into the address bar with default search engine Google', async () => {
-    const currentPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
+    const currentPage = await newBzzPage(bzzReferenceByGoogle(rootFolderReference))
     const title = await currentPage.title()
     const bzzPageTitleElement = await currentPage.$('#first-bzz-page-title')
 
@@ -209,7 +209,7 @@ describe('BZZ protocol', () => {
   test('type in https://{cid}.bzz.link address into the address bar', async () => {
     const cid = bzzResourceToSubdomain(rootFolderReference)
     expect(cid).not.toBeNull()
-    const currentPage = await newBzzpage(`https://${cid}.bzz.link`)
+    const currentPage = await newBzzPage(`https://${cid}.bzz.link`)
     const title = await currentPage.title()
     const bzzPageTitleElement = await currentPage.$('#first-bzz-page-title')
 
@@ -228,7 +228,7 @@ describe('BZZ protocol', () => {
     const testUrlValue = 'http://localhost:9999'
     const originalUrlValue = await changeBeeApiUrl(extensionPage, testUrlValue)
     //test whether it had affect on routing
-    const bzzPage = await newBzzpage(bzzReferenceByGoogle('nevermind-value'))
+    const bzzPage = await newBzzPage(bzzReferenceByGoogle('nevermind-value'))
     // the expected error page URL is 'chrome-error://chromewebdata/' on wrong reference.
     expect(bzzPage.url()).toBe('chrome-error://chromewebdata/')
     await bzzPage.close()
@@ -247,7 +247,7 @@ describe('BZZ protocol', () => {
     const commonKeyName = 'Alan Watts'
     const swarmKeyValue =
       'The only way to make sense out of change is to plunge into it, move with it, and join the dance.'
-    const localStoragePage = await newBzzpage(bzzReferenceByGoogle(localStorageReferece))
+    const localStoragePage = await newBzzPage(bzzReferenceByGoogle(localStorageReferece))
     // set common storage key for localstorages
     const saveKeyNameSelector = '#save-localstorage-key-name'
     await localStoragePage.focus(saveKeyNameSelector)
@@ -282,7 +282,7 @@ describe('BZZ protocol', () => {
     // change back the host to the original and try to fetch again
     await localStoragePage.close()
     await changeBeeApiUrl(extensionPage, originalUrlValue)
-    const localStoragePage2 = await newBzzpage(bzzReferenceByGoogle(localStorageReferece))
+    const localStoragePage2 = await newBzzPage(bzzReferenceByGoogle(localStorageReferece))
     // check whether the swarm storage is still retreivable on the new page
     await loadAndCheckStorages(localStoragePage2, swarmKeyValue)
 
@@ -291,7 +291,7 @@ describe('BZZ protocol', () => {
 
   test('checks window object and content document is not available of iframe because of cross-origin', async done => {
     // check whether the localstorage is accessible from an iframe in a different dApp
-    const bzzPage = await newBzzpage(bzzReferenceByGoogle(rootFolderReference))
+    const bzzPage = await newBzzPage(bzzReferenceByGoogle(rootFolderReference))
     const iframeWindowIsNotReachable = await bzzPage.evaluate(() => {
       const iframe = document.getElementById('localstorage-iframe')
 
