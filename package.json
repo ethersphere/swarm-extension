@@ -1,5 +1,5 @@
 {
-  "name": "@nugaon/swarm-extension",
+  "name": "@ethersphere/swarm-extension",
   "version": "0.1.0",
   "description": "Extension to properly handle Swarm dApps in browsers",
   "keywords": [
