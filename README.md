@@ -51,12 +51,12 @@ Unfortunately, [Chrome does not have exposed function to register custom protoco
 ### Swarm HTML
 
 Chrome lets you to register custom protocol in the context of the webpage, but only with prefix `web+`.
-Nevertheless you can refer to any `bzz` resource in html if you add attribute `is=swarm-X` to your html element like `<img is="swarm-img" src="bzz://{content-address}" />`.
+Nevertheless you can refer to any `bzz` resource in html if you add attribute `is=swarm-X` to your html element, where `X` is the name of the HTML tag element, like `<img is="swarm-img" src="bzz://{content-address}" />`.
 
 Current supported elements:
 * `a` -> `<a is="swarm-a" (...)`
-* `img` -> `<img is="swarm-image" (...)`
-* `iframe` -> `<iframe is="swarm-frame" (...)`
+* `img` -> `<img is="swarm-img" (...)`
+* `iframe` -> `<iframe is="swarm-iframe" (...)`
 
 In search bar the `bzz://{content-address}` will be redirected to `http(s)://{localgateway}/bzz/{content-address}`, but now it only reacts like this if the default search engine of the browser is set to Google. It also works the same on simple google search.
 
