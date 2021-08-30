@@ -77,6 +77,6 @@ export class SwarmAnchor extends HTMLAnchorElement {
   }
 }
 
-window.customElements.define('swarm-image', SwarmImage, { extends: 'img' })
-window.customElements.define('swarm-frame', SwarmFrame, { extends: 'iframe' })
+window.customElements.define('swarm-img', SwarmImage, { extends: 'img' })
+window.customElements.define('swarm-iframe', SwarmFrame, { extends: 'iframe' })
 window.customElements.define('swarm-a', SwarmAnchor, { extends: 'a' })
