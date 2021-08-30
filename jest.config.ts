@@ -10,6 +10,9 @@ import { buyStamp } from './test/utils'
 export default async (): Promise<Config.InitialOptions> => {
   if (!process.env.BEE_STAMP) {
     process.env.BEE_STAMP = await buyStamp()
+    console.log(
+      `Bee postage stamp: ${process.env.BEE_STAMP} \n You can set it to BEE_STAMP sys env variable to don't wait again for buying one`,
+    )
   }
 
   return {

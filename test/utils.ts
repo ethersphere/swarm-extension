@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { Bee } from '@ethersphere/bee-js'
+import { BeeDebug } from '@ethersphere/bee-js'
 import { ElementHandle, Page } from 'puppeteer'
 
 /**
  * Returns a url for testing the Bee API
  */
+export const BEE_DEBUG_API_URL = process.env.BEE_DEBUG_API_URL || 'http://localhost:1635'
 export const BEE_API_URL = process.env.BEE_API_URL || 'http://localhost:1633'
 
 let extensionId: string
@@ -57,8 +58,8 @@ export function bzzReferenceByGoogle(contentReference: string): string {
 }
 
 export async function buyStamp(): Promise<string> {
-  console.log(`Buying stamp on the Bee node ${BEE_API_URL}...`)
-  const bee = new Bee(BEE_API_URL)
+  console.log(`Buying stamp on the Bee node ${BEE_DEBUG_API_URL}...`)
+  const bee = new BeeDebug(BEE_DEBUG_API_URL)
 
   const batchId = await bee.createPostageBatch('1', 20)
   console.log('Waiting 11 secs for batch ID settlement...')

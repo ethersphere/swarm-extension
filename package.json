@@ -39,7 +39,7 @@
     "@babel/preset-typescript": "^7.12.7",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@ethersphere/bee-js": "^1.0.0",
+    "@ethersphere/bee-js": "^1.2.1",
     "@types/chrome": "0.0.128",
     "@types/copy-webpack-plugin": "^6.4.0",
     "@types/glob": "^7.1.3",
