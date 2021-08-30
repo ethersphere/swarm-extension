@@ -30,13 +30,13 @@ the dApps will call it in the same way.
 
 ### Callable Endpoints
 
-For any action the Fake URL host is `http://localhost:1633`.
+For any action the Fake URL host is `http://swarm.fakeurl.localhost`.
 As it is written earlier, it is not the address of the Bee client,
 it is just a reserved host address that the extension took and built its Fake URL paths on it.
 If the user changes their Bee API address, these callings still remain the same from dApp side.
 
-- `http://localhost:1633/fake-url/bzz/*` - `BZZ protocol` redirects to this fake URL, thereby in `*` can be not only content reference with its path, but any BZZ protocol compatible reference. It will be redirected to `bzz` endpoint of the Bee client.
-- `http://localhost:1633/fake-url/bee-api/*` - it will be forwarded to the Bee API. `*` has to be valid Bee API path
+- `http://swarm.fakeurl.localhost/bzz/*` - `BZZ protocol` redirects to this fake URL, thereby in `*` can be not only content reference with its path, but any BZZ protocol compatible reference. It will be redirected to `bzz` endpoint of the Bee client.
+- `http://swarm.fakeurl.localhost/bee-api/*` - it will be forwarded to the Bee API. `*` has to be valid Bee API path
 
 ## Custom Protocol
 
