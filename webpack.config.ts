@@ -463,10 +463,15 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
 }
 
 export default (env?: Partial<WebpackEnvParams>): Configuration[] => {
+  let baseConfig: Configuration[]
+
+  // if environment node is undefined then it always build in production mode
+  if (!env?.mode) {
+    env = { ...env, mode: 'production' }
+  }
+
   // eslint-disable-next-line no-console
   console.log('env', env)
-
-  let baseConfig: Configuration[]
 
   if (env?.buildDeps) {
     if (env?.mode === 'development') liveReloadServer = new Server({ port: DEPS_RELOAD_PORT })
