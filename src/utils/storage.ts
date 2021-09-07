@@ -2,7 +2,7 @@ import { EventEmitter } from 'events'
 
 interface Store {
   beeApiUrl: string
-  globalPostageBatch: string
+  globalPostageBatch: string | null
   globalPostageStampEnabled: boolean
 }
 
