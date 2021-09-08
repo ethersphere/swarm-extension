@@ -16,6 +16,8 @@ export function BeeApiUrlChangeForm(): JSX.Element {
     }
 
     dispatchGlobalState({ type: 'BEE_API_URL_SAVE', newValue: globalState.beeApiUrl })
+    dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE', newValue: false })
+    dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue: null })
   }
 
   const handleBeeApiUrlChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
