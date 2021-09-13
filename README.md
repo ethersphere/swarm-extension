@@ -9,7 +9,7 @@ Either of the cases, users can set the connection data of the desired Bee client
 Other settings can be placed regarding how the user wants to interact with the web3 applications like using one selected postage batch for any file upload attempt of dApps.
 
 In a web3 architecture the browser is the new server-side backend, therefore frontend applications (dApps) should communicate with it.
-For that, there is a pre-defined [API](##Fake-URL) that dApps can request to and interact with the Bee client of the user in a secure and abstracted manner.
+For that, there is a pre-defined [API](##fake-URL) that dApps can request to and interact with the Bee client of the user in a secure and abstracted manner.
 By that, there is no need to assuming the user runs a Bee node on the default ports on their computer and fallback to a well-known public-gateway at referencing outside Swarm resources; just refer to the representative, fix and abstracted Bee client endpoints that the extension defines [in HTML](###Swarm-HTML) or [in JavaScript](##Custom-Protocol).
 The web2 is based on domain-centric considerations, because of that, lot of features cannot be used in a secure way when many applications are loaded from the same (Bee) host.
 That is way the extension has its [own Security Context](##dApp-origin-instead-of-host-based-origin) and separates dApps by their root content addresses.
