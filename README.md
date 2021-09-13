@@ -9,11 +9,11 @@ Either of the cases, users can set the connection data of the desired Bee client
 Other settings can be placed regarding how the user wants to interact with the web3 applications like using one selected postage batch for any file upload attempt of dApps.
 
 In a web3 architecture the browser is the new server-side backend, therefore frontend applications (dApps) should communicate with it.
-For that, there is a pre-defined [API](##-Fake-URL) that dApps can request to and interact with the Bee client of the user in a secure and abstracted manner.
-By that, there is no need to assuming the user runs a Bee node on the default ports on their computer and fallback to a well-known public-gateway at referencing outside Swarm resources; just refer to the representative, fix and abstracted Bee client endpoints that the extension defines [in HTML](###-Swarm-HTML) or [in JavaScript](##-Custom-Protocol).
+For that, there is a pre-defined [API](##Fake-URL) that dApps can request to and interact with the Bee client of the user in a secure and abstracted manner.
+By that, there is no need to assuming the user runs a Bee node on the default ports on their computer and fallback to a well-known public-gateway at referencing outside Swarm resources; just refer to the representative, fix and abstracted Bee client endpoints that the extension defines [in HTML](###Swarm-HTML) or [in JavaScript](##Custom-Protocol).
 The web2 is based on domain-centric considerations, because of that, lot of features cannot be used in a secure way when many applications are loaded from the same (Bee) host.
-That is way the extension has its [own Security Context](##-dApp-origin-instead-of-host-based-origin) and separates dApps by their root content addresses.
-With new Security Context, new governor mechanisms can emerge like [cross-domain localstorage handling](###-Cross-Domain-Local-Storage).
+That is way the extension has its [own Security Context](##dApp-origin-instead-of-host-based-origin) and separates dApps by their root content addresses.
+With new Security Context, new governor mechanisms can emerge like [cross-domain localstorage handling](###Cross-Domain-Local-Storage).
 
 ## Installation
 
@@ -92,7 +92,7 @@ These requests can be tunneled to the configured Bee client of the user instead 
 With this feature, dApps can satisfy simultaniously gateway users and others who locally run their bee node.
 All requests towards the `bzz.link` gateways will be cancelled and tunneled to the local Bee client in case of extension users.
 
-The consequence of this behaviour the dApps which use external bzz.link references in their HTML code and want to available via both bzz.link gateways and private extension connections have to use [Swarm HTML elements](###-Swarm-HTML).
+The consequence of this behaviour the dApps which use external bzz.link references in their HTML code and want to available via both bzz.link gateways and private extension connections have to use [Swarm HTML elements](##Swarm-HTML).
 
 Additinonally, the extension provides an injected library `swarm.bzzLink` to get CID of a swarm content hash (and vica versa).
 
@@ -131,7 +131,7 @@ There is a hot-reload functionality of extension compilation to react on code ch
 npm run dev
 ```
 
-if you run [test in demo mode](###-Test), the extension in the Chromium browser will be automatically reloaded.
+if you run [test in demo mode](###Test), the extension in the Chromium browser will be automatically reloaded.
 
 ### Test
 
