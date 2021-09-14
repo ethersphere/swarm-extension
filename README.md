@@ -6,7 +6,7 @@ This browser extension provides an alternative to have a web3 environment in a w
 
 Users can interact with the Swarm network in two ways: by running their own Bee client or using a gateway solution.
 Either of the cases, users can set the connection data of the desired Bee client within the extension in order to channel all Bee client request to that trusted endpoint.
-Other settings can be placed regarding how the user wants to interact with the web3 applications like using one selected postage batch for any file upload attempt of dApps.
+Other settings can be placed regarding how the user wants to interact with the web3 applications, like using one selected postage batch for any file upload attempt of dApps.
 
 In a web3 architecture the browser is the new server-side backend, therefore frontend applications (dApps) should communicate with it.
 For that, there is a pre-defined [API](#fake-url) that dApps can request to and interact with the Bee client of the user in a secure and abstracted manner.
