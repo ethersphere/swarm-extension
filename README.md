@@ -62,7 +62,7 @@ If the user changes their Bee API address, these endpoints still remain the same
 ## Custom Protocol
 
 The Swarm protocol to address other P2P content is `bzz`. It makes a redirection to the BZZ endpoint of the Bee node.
-If you type `bzz://{content-address}` into the address bar, the page will be redirected to `http(s)://{your-bzz-node-host}/bzz/{content-address}`. Currently it only reacts like this if the default search engine of the browser is set to Google.
+If you type `bzz://{content-address}` into the address bar, the page will be redirected to `http(s)://{your-bzz-node-host}/bzz/{content-address}`. This requires the default search engine of the browser to be set to Google.
 It also behaves the same on simple google searches on `https://google.com`.
 
 Additionally, The extension currently [injects a script](src/contentscript/index.ts) on document load so that dApp pages could refer any other P2P resources.
