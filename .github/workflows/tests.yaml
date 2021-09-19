@@ -62,7 +62,11 @@ jobs:
         run: npm ci
 
       - name: Run browser tests
-        run: npm run test
+        uses: mujo-code/puppeteer-headful@master
+        env:
+          CI: 'true'
+        with:
+          args: npm test
 
       - name: Debug workflow if failed
         if: failure()
