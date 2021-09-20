@@ -61,6 +61,9 @@ jobs:
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Compile
+        run: npm run compile
+
       - name: Run browser tests
         uses: mujo-code/puppeteer-headful@master
         env:
