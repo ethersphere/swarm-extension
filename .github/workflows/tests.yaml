@@ -64,10 +64,7 @@ jobs:
       - name: Compile
         run: npm run compile
 
-      - name: Tests in headless mode
-        run: npm test
-
-      - name: Run browser tests
+      - name: Run tests
         uses: mujo-code/puppeteer-headful@master
         env:
           CI: 'true'
