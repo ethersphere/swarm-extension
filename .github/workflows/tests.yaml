@@ -3,20 +3,18 @@ name: Tests
 on:
   push:
     branches:
-      - 'master'
+      - "master"
   pull_request:
     branches:
-      - '**'
+      - "**"
 
 env:
-  BEE_VERSION: '1.1.0'
-  BLOCKCHAIN_VERSION: '1.2.0'
-  BEE_ENV_PREFIX: 'swarm-test'
-  BEE_IMAGE_PREFIX: 'docker.pkg.github.com/ethersphere/bee-factory'
-  COMMIT_VERSION_TAG: 'false'
+  BEE_VERSION: "1.1.0"
+  BLOCKCHAIN_VERSION: "1.2.0"
+  BEE_ENV_PREFIX: "swarm-test"
+  BEE_IMAGE_PREFIX: "docker.pkg.github.com/ethersphere/bee-factory"
+  COMMIT_VERSION_TAG: "false"
   WORKERS: 4
-  BEE_API_URL: 'http://localhost:1633'
-  BEE_DEBUG_API_URL: 'http://localhost:1635'
 
 jobs:
   browser:
@@ -67,9 +65,9 @@ jobs:
       - name: Run tests
         uses: mujo-code/puppeteer-headful@master
         env:
-          CI: 'true'
+          CI: "true"
         with:
-          args: npm test
+          args: npm run test:ci
 
       - name: Debug workflow if failed
         if: failure()
