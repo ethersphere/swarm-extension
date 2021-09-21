@@ -3,17 +3,17 @@ name: Tests
 on:
   push:
     branches:
-      - "master"
+      - 'master'
   pull_request:
     branches:
-      - "**"
+      - '**'
 
 env:
-  BEE_VERSION: "1.1.0"
-  BLOCKCHAIN_VERSION: "1.2.0"
-  BEE_ENV_PREFIX: "swarm-test"
-  BEE_IMAGE_PREFIX: "docker.pkg.github.com/ethersphere/bee-factory"
-  COMMIT_VERSION_TAG: "false"
+  BEE_VERSION: '1.1.0'
+  BLOCKCHAIN_VERSION: '1.2.0'
+  BEE_ENV_PREFIX: 'swarm-test'
+  BEE_IMAGE_PREFIX: 'docker.pkg.github.com/ethersphere/bee-factory'
+  COMMIT_VERSION_TAG: 'false'
   WORKERS: 4
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
       # Setup Bee environment
       - name: Start Bee Factory environment
         run: |
-          git clone --depth=1 https://github.com/ethersphere/bee-factory.git
+          git clone --depth=1 --branch="feat/definable-hostname" https://github.com/ethersphere/bee-factory.git
           chmod +x -R ./bee-factory/scripts
           ./bee-factory/scripts/environment.sh start --detach --workers=$WORKERS
 
@@ -65,7 +65,7 @@ jobs:
       - name: Run tests
         uses: mujo-code/puppeteer-headful@master
         env:
-          CI: "true"
+          CI: 'true'
         with:
           args: npm run test:ci
 
