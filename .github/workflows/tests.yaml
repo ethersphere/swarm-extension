@@ -31,9 +31,10 @@ jobs:
           fetch-depth: 1
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - name: Auth to Github Package Docker Registry
         run: |
@@ -44,16 +45,6 @@ jobs:
           git clone --depth=1 https://github.com/ethersphere/bee-factory.git
           chmod +x -R ./bee-factory/scripts
           ./bee-factory/scripts/environment.sh start --detach --workers=$WORKERS --hostname=0.0.0.0
-
-      ## Try getting the node modules from cache, if failed npm ci
-      - uses: actions/cache@v2
-        id: cache-npm
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-${{ matrix.node }}-${{ env.cache-name }}-
-            ${{ runner.OS }}-node-${{ matrix.node }}-
 
       - name: Install npm deps
         if: steps.cache-npm.outputs.cache-hit != 'true'
@@ -67,7 +58,7 @@ jobs:
         env:
           CI: 'true'
         with:
-          args: npm ci && npm run test:ci
+          args: npm run test:ci
 
       - name: Debug workflow if failed
         if: failure()
