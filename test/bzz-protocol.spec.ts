@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Bee } from '@ethersphere/bee-js'
 import { join } from 'path'
 import { ElementHandle, Page } from 'puppeteer'
@@ -23,7 +22,7 @@ function newBzzPage(url: string): Promise<Page> {
   return new Promise(async (resolve, reject) => {
     const page = await global.__BROWSER__.newPage()
     page.once('requestfailed', async request => {
-      const errorText = request.failure()?.errorText
+      const errorText = request.failure() && request.failure().errorText
 
       if (errorText === 'net::ERR_ABORTED') resolve(await getLastBzzPage())
       else reject(errorText)
