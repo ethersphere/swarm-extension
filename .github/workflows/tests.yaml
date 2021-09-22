@@ -67,7 +67,7 @@ jobs:
         env:
           CI: 'true'
         with:
-          args: npm run test:ci
+          args: npm ci && npm run test:ci
 
       - name: Debug workflow if failed
         if: failure()
