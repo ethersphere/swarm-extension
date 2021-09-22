@@ -48,4 +48,4 @@ jobs:
           CI: true
 
       - name: Build nodejs
-        run: npm run compile -- --env mode=production
+        run: npm run compile
