@@ -11,7 +11,7 @@ module.exports = async () => {
   const browser = await puppeteer.launch({
     executablePath: process.env.PUPPETEER_EXEC_PATH, // set by docker container
     headless: false, // extensions only supported in full chrome.
-    args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`],
+    args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`, '--no-sandbox'],
   })
   // This global is not available inside tests but only in global teardown
   global.__BROWSER__ = browser
