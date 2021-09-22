@@ -47,5 +47,5 @@ jobs:
         env:
           CI: true
 
-      - name: Build nodejs
+      - name: Build Browser Extension
         run: npm run compile
