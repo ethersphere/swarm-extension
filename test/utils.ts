@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import { BeeDebug } from '@ethersphere/bee-js'
 import { ElementHandle, Page } from 'puppeteer'
 
