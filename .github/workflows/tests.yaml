@@ -54,7 +54,7 @@ jobs:
         run: npm run compile
 
       - name: Run tests
-        uses: mujo-code/puppeteer-headful@master
+        uses: vojtechsimetka/puppeteer-headful@master
         env:
           CI: 'true'
         with:
