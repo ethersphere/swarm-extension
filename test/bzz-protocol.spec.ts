@@ -25,7 +25,6 @@ function newBzzPage(url: string): Promise<Page> {
     const page = await global.__BROWSER__.newPage()
     page.once('requestfailed', async request => {
       const errorText = request.failure()?.errorText
-      await new Promise(resolve => setTimeout(() => resolve(true), 500)) // puppeteer needs time to refresh its page set.
 
       if (errorText === 'net::ERR_ABORTED') resolve(await getLastBzzPage())
       else reject(errorText)
@@ -275,6 +274,7 @@ describe('BZZ protocol', () => {
     await replaceInputValue(commonKeyName, localStoragePage)
     const saveKeyValueSelector = '#save-localstorage-key-value'
     // set swarm local storage key value and then save it
+    await localStoragePage.waitForSelector(saveKeyValueSelector)
     await localStoragePage.focus(saveKeyValueSelector)
     await replaceInputValue(swarmKeyValue, localStoragePage)
     const saveSwarmSelector = '#button-save-swarm-localstorage'
