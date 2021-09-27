@@ -27,7 +27,6 @@ function newBzzPage(url: string): Promise<Page> {
       const errorText = request.failure()?.errorText
 
       if (errorText === 'net::ERR_ABORTED') {
-        await new Promise(resolve => setTimeout(() => resolve(true), 4000)) // puppeteer needs time to refresh its page set.
         resolve(await getLastBzzPage())
       } else reject(errorText)
     })
