@@ -270,6 +270,7 @@ describe('BZZ protocol', () => {
     const localStoragePage = await newBzzPage(bzzReferenceByGoogle(localStorageReferece))
     // set common storage key for localstorages
     const saveKeyNameSelector = '#save-localstorage-key-name'
+    await localStoragePage.waitForSelector(saveKeyNameSelector)
     await localStoragePage.focus(saveKeyNameSelector)
     await replaceInputValue(commonKeyName, localStoragePage)
     const saveKeyValueSelector = '#save-localstorage-key-value'
@@ -291,6 +292,7 @@ describe('BZZ protocol', () => {
     }
     const loadAndCheckStorages = async (page: Page, swarmKeyValue: string) => {
       // set common key for retriaval
+      await page.waitForSelector(loadKeyNameSelector)
       await page.focus(loadKeyNameSelector)
       await replaceInputValue(commonKeyName, page)
       // load swarm storage and then check
