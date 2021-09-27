@@ -5,6 +5,7 @@ import { ElementHandle, Page } from 'puppeteer'
 import { bzzResourceToSubdomain } from '../src/utils/bzz-link'
 import {
   BEE_API_URL,
+  BEE_PEER_API_URL,
   bzzReferenceByGoogle,
   getElementBySelector,
   getExtensionId,
@@ -97,6 +98,13 @@ describe('BZZ protocol', () => {
 
     extensionId = await getExtensionId()
 
+    extensionPage = await global.__BROWSER__.newPage()
+    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+      waitUntil: 'networkidle0',
+    })
+    await changeBeeApiUrl(extensionPage, BEE_API_URL)
+    await extensionPage.close()
+
     done()
   })
 
@@ -123,7 +131,7 @@ describe('BZZ protocol', () => {
     const placeHolderSelector = '#bee-api-url-placeholder'
     await page.waitForSelector(placeHolderSelector)
     const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
-    expect(value).toBe('http://localhost:1633') //default value of Bee API URL in the extension
+    expect(value).toBe(BEE_API_URL) //default value of Bee API URL in the extension
 
     done()
   })
@@ -240,8 +248,7 @@ describe('BZZ protocol', () => {
 
   test('Check traditional and swarm localStorage usage', async done => {
     // swarm-test-worker-1
-    const newUrlValue = 'http://localhost:11633'
-    const originalUrlValue = await changeBeeApiUrl(extensionPage, newUrlValue)
+    const originalUrlValue = await changeBeeApiUrl(extensionPage, BEE_PEER_API_URL)
 
     // save sample data
     const commonKeyName = 'Alan Watts'
