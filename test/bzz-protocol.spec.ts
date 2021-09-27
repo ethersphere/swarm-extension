@@ -268,6 +268,7 @@ describe('BZZ protocol', () => {
     const swarmKeyValue =
       'The only way to make sense out of change is to plunge into it, move with it, and join the dance.'
     const localStoragePage = await newBzzPage(bzzReferenceByGoogle(localStorageReferece))
+    expect(await localStoragePage.title()).toBe('Local Storage handling')
     // set common storage key for localstorages
     const saveKeyNameSelector = '#save-localstorage-key-name'
     await localStoragePage.waitForSelector(saveKeyNameSelector)
@@ -315,6 +316,7 @@ describe('BZZ protocol', () => {
   test('checks window object and content document is not available of iframe because of cross-origin', async done => {
     // check whether the localstorage is accessible from an iframe in a different dApp
     const bzzPage = await newBzzPage(bzzReferenceByGoogle(rootFolderReference))
+    expect(await bzzPage.title()).toBe('First Direct BZZ address')
     const iframeWindowIsNotReachable = await bzzPage.evaluate(() => {
       const iframe = document.getElementById('localstorage-iframe')
 
