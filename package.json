@@ -24,7 +24,6 @@
     "compile:deps": "webpack --env buildDeps=true",
     "compile:main": "webpack",
     "test": "jest --config=jest.config.ts",
-    "test:ci": "BEE_API_URL=http://172.18.0.1:1633 BEE_DEBUG_API_URL=http://172.18.0.1:1635 BEE_PEER_API_URL=http://172.18.0.1:11633 jest --config=jest.config.ts",
     "test:demo": "npm run test -- --demo=true --runInBand",
     "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",

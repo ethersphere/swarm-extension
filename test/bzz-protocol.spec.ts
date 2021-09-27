@@ -10,7 +10,7 @@ import {
   getElementBySelector,
   getExtensionId,
   getStamp,
-  replaceInputValue
+  replaceInputValue,
 } from './utils'
 
 async function getLastBzzPage(): Promise<Page> {
@@ -269,7 +269,6 @@ describe('BZZ protocol', () => {
     const swarmKeyValue =
       'The only way to make sense out of change is to plunge into it, move with it, and join the dance.'
     const localStoragePage = await newBzzPage(bzzReferenceByGoogle(localStorageReferece))
-    console.log('localstorage url', localStoragePage.url())
     expect(await localStoragePage.title()).toBe('Local Storage handling')
     // set common storage key for localstorages
     const saveKeyNameSelector = '#save-localstorage-key-name'

@@ -15,6 +15,9 @@ env:
   BEE_IMAGE_PREFIX: 'docker.pkg.github.com/ethersphere/bee-factory'
   COMMIT_VERSION_TAG: 'false'
   WORKERS: 4
+  BEE_API_URL: 'http://172.18.0.1:1633'
+  BEE_DEBUG_API_URL: 'http://172.18.0.1:1635'
+  BEE_PEER_API_URL: 'http://172.18.0.1:11633'
 
 jobs:
   browser:
@@ -58,7 +61,7 @@ jobs:
         env:
           CI: 'true'
         with:
-          args: npm run test:ci
+          args: npm run test
 
       - name: Debug workflow if failed
         if: failure()
