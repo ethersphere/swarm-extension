@@ -10,7 +10,7 @@ import {
   getElementBySelector,
   getExtensionId,
   getStamp,
-  replaceInputValue,
+  replaceInputValue
 } from './utils'
 
 async function getLastBzzPage(): Promise<Page> {
@@ -79,6 +79,16 @@ describe('BZZ protocol', () => {
   }
 
   beforeAll(async done => {
+    // setup Bee API URL in the extension
+    extensionId = await getExtensionId()
+    extensionPage = await global.__BROWSER__.newPage()
+    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+      waitUntil: 'networkidle0',
+    })
+    await changeBeeApiUrl(extensionPage, BEE_API_URL)
+    await extensionPage.close()
+
+    // upload sample pages
     bee = new Bee(BEE_API_URL)
     const uploadOptions = {
       indexDocument: 'index.html',
@@ -95,15 +105,6 @@ describe('BZZ protocol', () => {
     rootFolderReference = await uploadFilesFromDirectory('bzz-test-page')
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
-
-    extensionId = await getExtensionId()
-
-    extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
-    await changeBeeApiUrl(extensionPage, BEE_API_URL)
-    await extensionPage.close()
 
     done()
   })
