@@ -14,7 +14,7 @@ import {
 } from './utils'
 
 async function getLastBzzPage(): Promise<Page> {
-  await new Promise(resolve => setTimeout(() => resolve(true), 500))
+  await new Promise(resolve => setTimeout(() => resolve(true), 1000)) // puppeteer needs time to refresh its page set.
   const pages = await global.__BROWSER__.pages()
 
   return pages[pages.length - 1]
