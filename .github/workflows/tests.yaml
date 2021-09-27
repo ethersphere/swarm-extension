@@ -1,0 +1,73 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - '**'
+
+env:
+  BEE_VERSION: '1.1.0'
+  BLOCKCHAIN_VERSION: '1.2.0'
+  BEE_ENV_PREFIX: 'swarm-test'
+  BEE_IMAGE_PREFIX: 'docker.pkg.github.com/ethersphere/bee-factory'
+  COMMIT_VERSION_TAG: 'false'
+  WORKERS: 4
+  BEE_API_URL: 'http://172.18.0.1:1633'
+  BEE_DEBUG_API_URL: 'http://172.18.0.1:1635'
+  BEE_PEER_API_URL: 'http://172.18.0.1:11633'
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Auth to Github Package Docker Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login https://docker.pkg.github.com -u ${GITHUB_ACTOR} --password-stdin
+      # Setup Bee environment
+      - name: Start Bee Factory environment
+        run: |
+          git clone --depth=1 https://github.com/ethersphere/bee-factory.git
+          chmod +x -R ./bee-factory/scripts
+          ./bee-factory/scripts/environment.sh start --detach --workers=$WORKERS --hostname=0.0.0.0
+
+      - name: Install npm deps
+        if: steps.cache-npm.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Compile
+        run: npm run compile
+
+      - name: Run tests
+        uses: vojtechsimetka/puppeteer-headful@master
+        env:
+          CI: 'true'
+        with:
+          args: npm run test
+
+      - name: Debug workflow if failed
+        if: failure()
+        run: |
+          KEYS=$(curl -sSf -X POST https://relay.tunshell.com/api/sessions)
+          curl -sSf -X POST -H "Content-Type: application/json" -d "{\"text\": \"**Bee JS**\nDebug -> \`sh <(curl -sSf https://lets.tunshell.com/init.sh) L $(echo $KEYS | jq -r .peer2_key) \${TUNSHELL_SECRET} relay.tunshell.com\`\"}" https://beehive.ethswarm.org/hooks/${{ secrets.WEBHOOK_KEY }}
+          echo "Connect to github actions node using"
+          echo "sh <(curl -sSf https://lets.tunshell.com/init.sh) L $(echo $KEYS | jq -r .peer2_key) \${TUNSHELL_SECRET} relay.tunshell.com"
+          curl -sSf https://lets.tunshell.com/init.sh | sh /dev/stdin T $(echo $KEYS | jq -r .peer1_key) ${{ secrets.TUNSHELL_SECRET }} relay.tunshell.com
