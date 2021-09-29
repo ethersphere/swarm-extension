@@ -27,6 +27,7 @@
     "test:demo": "npm run test -- --demo=true --runInBand",
     "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "zip": "cd dist/ && bestzip ../extension.zip *",
     "update:test-bee-js-browser": "cp node_modules/@ethersphere/bee-js/dist/index.browser.min.js test/bzz-test-page/bee-js.min.js"
   },
   "devDependencies": {
@@ -59,6 +60,7 @@
     "@typescript-eslint/parser": "^4.11.0",
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.2",
+    "bestzip": "^2.2.0",
     "concurrently": "^6.0.2",
     "copy-webpack-plugin": "^7.0.0",
     "css-loader": "^5.1.1",
