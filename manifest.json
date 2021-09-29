@@ -5,7 +5,7 @@
   "manifest_version": 2,
   "permissions": ["webRequest", "webRequestBlocking", "tabs", "storage", "*://*/*", "webNavigation"],
   "author": "nugaon",
-  "description": "PoC for Ethereum Swarm extension",
+  "description": "Web3 framework for Ethereum Swarm dApps",
   "icons": {
     "48": "assets/swarm.png"
   },
