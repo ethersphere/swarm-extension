@@ -367,10 +367,6 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
           to: Path.resolve(assetsPath, 'fonts') + Path.sep + '[name].[ext]',
         },
         {
-          from: 'manifest.json',
-          to: path,
-        },
-        {
           from: 'src/popup-page/index.html',
           to: () => {
             return `${path}/[name].[ext]`
