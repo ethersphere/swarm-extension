@@ -20,15 +20,19 @@ interface State {
 }
 
 interface ActionBeeUrlSave {
-  type: 'BEE_API_URL_SAVE' | 'BEE_API_URL_CHANGE' | 'GLOBAL_POSTAGE_BATCH_SAVE'
+  type: 'BEE_API_URL_SAVE' | 'BEE_API_URL_CHANGE'
   newValue: string
 }
 interface ActionGlobalPostageBatchEnabledSave {
   type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE'
   newValue: boolean
 }
+interface ActionPostageBatchSave {
+  type: 'GLOBAL_POSTAGE_BATCH_SAVE'
+  newValue: string | null
+}
 
-type Action = ActionBeeUrlSave | ActionGlobalPostageBatchEnabledSave
+type Action = ActionPostageBatchSave | ActionBeeUrlSave | ActionGlobalPostageBatchEnabledSave
 
 interface ContextValue {
   state: State

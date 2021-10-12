@@ -5,6 +5,7 @@ import { ElementHandle, Page } from 'puppeteer'
 import { bzzResourceToSubdomain } from '../src/utils/bzz-link'
 import {
   BEE_API_URL,
+  BEE_PEER_API_URL,
   bzzReferenceByGoogle,
   getElementBySelector,
   getExtensionId,
@@ -13,7 +14,7 @@ import {
 } from './utils'
 
 async function getLastBzzPage(): Promise<Page> {
-  await new Promise(resolve => setTimeout(() => resolve(true), 500))
+  await new Promise(resolve => setTimeout(() => resolve(true), 1000)) // puppeteer needs time to refresh its page set.
   const pages = await global.__BROWSER__.pages()
 
   return pages[pages.length - 1]
@@ -25,8 +26,9 @@ function newBzzPage(url: string): Promise<Page> {
     page.once('requestfailed', async request => {
       const errorText = request.failure()?.errorText
 
-      if (errorText === 'net::ERR_ABORTED') resolve(await getLastBzzPage())
-      else reject(errorText)
+      if (errorText === 'net::ERR_ABORTED') {
+        resolve(await getLastBzzPage())
+      } else reject(errorText)
     })
 
     try {
@@ -41,7 +43,17 @@ function newBzzPage(url: string): Promise<Page> {
  * Change Bee API URL on the extension page
  * @returns Previous Bee API URL
  * */
-async function changeBeeApiUrl(extensionPage: Page, newBeeApiUrl: string): Promise<string> {
+async function changeBeeApiUrl(newBeeApiUrl: string, extensionPage?: Page): Promise<string> {
+  let closeExtensionPage = false
+
+  if (!extensionPage) {
+    closeExtensionPage = true
+    const extensionId = await getExtensionId()
+    extensionPage = await global.__BROWSER__.newPage()
+    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+      waitUntil: 'networkidle0',
+    })
+  }
   const formId = 'form-bee-api-url-change'
   const inputSelector = `form[id="${formId}"] input[type="text"]`
   const inputText = await getElementBySelector(inputSelector, extensionPage)
@@ -53,6 +65,8 @@ async function changeBeeApiUrl(extensionPage: Page, newBeeApiUrl: string): Promi
   await submitButton.click()
 
   if (typeof originalUrlValue !== 'string') throw new Error('changeBeeApiUrl: there is no valid original URL')
+
+  if (closeExtensionPage) await extensionPage.close()
 
   return originalUrlValue
 }
@@ -78,6 +92,16 @@ describe('BZZ protocol', () => {
   }
 
   beforeAll(async done => {
+    // setup Bee API URL in the extension
+    extensionId = await getExtensionId()
+    const extensionPage = await global.__BROWSER__.newPage()
+    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+      waitUntil: 'networkidle0',
+    })
+    await changeBeeApiUrl(BEE_API_URL, extensionPage)
+    await extensionPage.close()
+
+    // upload sample pages
     bee = new Bee(BEE_API_URL)
     const uploadOptions = {
       indexDocument: 'index.html',
@@ -94,8 +118,6 @@ describe('BZZ protocol', () => {
     rootFolderReference = await uploadFilesFromDirectory('bzz-test-page')
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
-
-    extensionId = await getExtensionId()
 
     done()
   })
@@ -123,7 +145,7 @@ describe('BZZ protocol', () => {
     const placeHolderSelector = '#bee-api-url-placeholder'
     await page.waitForSelector(placeHolderSelector)
     const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
-    expect(value).toBe('http://localhost:1633') //default value of Bee API URL in the extension
+    expect(value).toBe(BEE_API_URL) //default value of Bee API URL in the extension
 
     done()
   })
@@ -226,34 +248,36 @@ describe('BZZ protocol', () => {
 
     // change api url to http://localhost:9999
     const testUrlValue = 'http://localhost:9999'
-    const originalUrlValue = await changeBeeApiUrl(extensionPage, testUrlValue)
+    const originalUrlValue = await changeBeeApiUrl(testUrlValue, extensionPage)
     //test whether it had affect on routing
     const bzzPage = await newBzzPage(bzzReferenceByGoogle('nevermind-value'))
     // the expected error page URL is 'chrome-error://chromewebdata/' on wrong reference.
     expect(bzzPage.url()).toBe('chrome-error://chromewebdata/')
     await bzzPage.close()
     //set back the original value
-    await changeBeeApiUrl(extensionPage, originalUrlValue)
+    await changeBeeApiUrl(originalUrlValue, extensionPage)
 
     done()
   })
 
   test('Check traditional and swarm localStorage usage', async done => {
     // swarm-test-worker-1
-    const newUrlValue = 'http://localhost:11633'
-    const originalUrlValue = await changeBeeApiUrl(extensionPage, newUrlValue)
+    const originalUrlValue = await changeBeeApiUrl(BEE_PEER_API_URL, extensionPage)
 
     // save sample data
     const commonKeyName = 'Alan Watts'
     const swarmKeyValue =
       'The only way to make sense out of change is to plunge into it, move with it, and join the dance.'
     const localStoragePage = await newBzzPage(bzzReferenceByGoogle(localStorageReferece))
+    expect(await localStoragePage.title()).toBe('Local Storage handling')
     // set common storage key for localstorages
     const saveKeyNameSelector = '#save-localstorage-key-name'
+    await localStoragePage.waitForSelector(saveKeyNameSelector)
     await localStoragePage.focus(saveKeyNameSelector)
     await replaceInputValue(commonKeyName, localStoragePage)
     const saveKeyValueSelector = '#save-localstorage-key-value'
     // set swarm local storage key value and then save it
+    await localStoragePage.waitForSelector(saveKeyValueSelector)
     await localStoragePage.focus(saveKeyValueSelector)
     await replaceInputValue(swarmKeyValue, localStoragePage)
     const saveSwarmSelector = '#button-save-swarm-localstorage'
@@ -270,6 +294,7 @@ describe('BZZ protocol', () => {
     }
     const loadAndCheckStorages = async (page: Page, swarmKeyValue: string) => {
       // set common key for retriaval
+      await page.waitForSelector(loadKeyNameSelector)
       await page.focus(loadKeyNameSelector)
       await replaceInputValue(commonKeyName, page)
       // load swarm storage and then check
@@ -281,7 +306,7 @@ describe('BZZ protocol', () => {
     }
     // change back the host to the original and try to fetch again
     await localStoragePage.close()
-    await changeBeeApiUrl(extensionPage, originalUrlValue)
+    await changeBeeApiUrl(originalUrlValue, extensionPage)
     const localStoragePage2 = await newBzzPage(bzzReferenceByGoogle(localStorageReferece))
     // check whether the swarm storage is still retreivable on the new page
     await loadAndCheckStorages(localStoragePage2, swarmKeyValue)
@@ -292,6 +317,7 @@ describe('BZZ protocol', () => {
   test('checks window object and content document is not available of iframe because of cross-origin', async done => {
     // check whether the localstorage is accessible from an iframe in a different dApp
     const bzzPage = await newBzzPage(bzzReferenceByGoogle(rootFolderReference))
+    expect(await bzzPage.title()).toBe('First Direct BZZ address')
     const iframeWindowIsNotReachable = await bzzPage.evaluate(() => {
       const iframe = document.getElementById('localstorage-iframe')
 
