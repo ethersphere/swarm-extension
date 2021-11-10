@@ -1,4 +1,4 @@
-​​# Swarm Extension Privacy Policy
+# Swarm Extension Privacy Policy
 
 The Swarm Extension is owned by the Swarm Foundation ("We"). We do not track or collect any of your Personal Data, nor do we sell it to anyone else or use it for advertising.
 
