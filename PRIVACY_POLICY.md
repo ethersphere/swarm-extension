@@ -1,65 +1,34 @@
-# Swarm-Extension Privacy Policy
+​​# Swarm Extension Privacy Policy
 
-The Swarm Extension belongs to the Swarm Foundation with the purpose of offering web3 environment
-for running decentralised applications (dApps). It provides similar functionalities as web2 browsers,
-so sensitive information may be handled by the browser-extension such as Bee client configuration
-or cross-domain localStore. Although the extension handles these sensitive information for
-the basic security and functionality of dApps, the Swarm Foundation does not collect this
-information and therefore also cannot and does not share it with 3rd parties.
+The Swarm Extension is owned by the Swarm Foundation ("We"). We do not track or collect any of your Personal Data, nor do we sell it to anyone else or use it for advertising.
 
 By installing Swarm Extension, you accept this privacy policy.
 
-## Do we collect any information from you?
+## What Does This Privacy Policy Cover?
 
-Swarm Foundation does not collect any data about you, including personal data.
+This Privacy Policy explains that we don’t gather, track, nor permanently store any of your Personal Data. It also covers Additional Privacy Protocols related to the way the Swarm Extension allows people to add and retrieve data to and from the Swarm Network (which is a peer-to-peer network). This Privacy Policy doesn’t apply to projects run by other organizations outside Swarm Foundation, even if we promote the use of those projects or happen to contribute to them.
 
-## Sharing Data By The Help of The Extension
+## What Information Is Collected?
 
-The Swarm Extension can be configured to connect to an Ethereum Swarm Bee client node
-(which is a peer-to-peer (P2P) storage client). The dApps can utilize this by calling
-the interfaces of the extension and perform read and write operations on the P2P storage network.
-The information stored on this network is publicly available and the encryption handling of
-such content is the dApps responsibility.
+We do not collect any data about you, including personal data.
 
-## Under The Hood
+## Explicitly Shared Data Will Be Publicly Available Over The Swarm Network
 
-DApp developers can store user session data to the user's swarm-extension storage.
-It provides a cross-domain localstorage functionality that dApps can utilize
-in order to save and load the same session data on any gateway host.
-If dApps use the extension's private localstorage, it depends on the dapp in question
-what data will be stored and how, like also in the case of data storing on Swarm network.
-The extension does not share the userdata with other 3rd party, or collect it.
+We do not collect, rent, store or sell your Personal Data to anyone. However because Swarm Extension is a web extension that provides access to the real-time, peer-to-peer Swarm Network (which is a public platform for which anyone may join and participate) the data that you import to the Swarm Network using Swarm Extension is then publicly available and accessible to everyone participating in Swarm Network.
 
-You can set the configuration of the Bee client in the extension's popup page
-in order to connect dApps to web3 services. This configuration is stored in
-the extension's localstore as well. At swarm-extension usage, some centralised
-web3 service provider request will be redirected to the configured Bee client.
-For example, all `https://*.bzz.link` URLs will be cancelled and will be tunneled
-to your Bee client. The BZZ protocol also affects your default search engine usage
-because if you search anything starting with `bzz://`, then it will redirect to your
-Bee client's bzz path with the given BZZ reference.
+## Additional Privacy Protocols
 
-The extension also injects a library to every webpage so that dapps can communicate
-with your Bee node and utilize web3 features Because of that, webpages can detect
-you have Swarm Extension installed by null-checking `window.swarm` object.
+If you add files to the Swarm Network using the Swarm Extension, they will be split into pieces and stored across nodes on the network. Those files are also then cached by anyone who retrieves those files from the Swarm network and co-hosted on that user’s local Swarm Network node. Generally, cached files will eventually expire, but it’s possible for a user with whom you have shared access to such files (by sharing the relevant Content Identifier) to pin that data, which means the cached files then will not expire and will remain stored on such user’s local Swarm Network node.
 
-All before mentioned features along with others in this project aim at the decentralised usage of the internet.
-Because the configured Bee client can be on any host (e.g. `http://localhost:1633` or `https://swarmgateway.org`)
-the extension needs permission to any host in order to handle Ethereum Swarm ecosystem domainless components.
-The Swarm Extension uses FakeURLs that dApps can call directly like other simple webserver endpoints.
-These FakeURL calls will be redirected to the corresponding configured Bee client endpoints based on the configuration,
-that you provided in the extension's popup page.
+All content shared with the Swarm Network is public by default. This means your files and data that you’ve added will be accessible to everyone who knows the Content Identifier or queries the data on the Swarm Network. If you want to share certain materials or data privately, you must encrypt such data before adding it to the Swarm Network.
+
+Websites will be able to detect you are running Swarm Extension. To disable this behavior use incognito mode or turn off the extension.
 
 ## Will The Privacy Policy Be Changed?
 
-As new versions are coming the Privacy Policy may be affected by that.
-Please, check this document every time when a new release come out to be up-to-date
-with the changes, it is your responsibility to do so. You can follow back what changes
-happened by using [history feature of GitHub](https://github.com/ethersphere/swarm-extension/commits/main/PRIVACY-POLICY.md).
-By using the Swarm Extension, you agree to all the changes that were made.
+We’re constantly trying to improve Swarm Extension, so we may need to change this Privacy Policy sometimes. When we do, we will update it on our [Github page](https://github.com/ethersphere/swarm-extension/commits/main/PRIVACY-POLICY.md) where you will be able to track changes.
+We encourage you to periodically review this Privacy Policy to stay informed, which is ultimately your responsibility. If you use Swarm Extension after any changes to the Privacy Policy have been posted, that means you agree to all of those changes.
 
 ## Where Can I Raise My Questions?
 
-If there is any concern or question in your mind regarding to this
-privacy-policy document, we encourage you to send an e-mail for us about it:
-<info@ethswarm.org>.
+If you have any questions or concerns regarding the Privacy Policy, please send a message at <info@ethswarm.org>.
