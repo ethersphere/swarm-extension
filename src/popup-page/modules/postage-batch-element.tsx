@@ -38,7 +38,7 @@ export function PostageBatchElement(): ReactElement {
 
   const retrievePostageBatches = async () => {
     console.log('fetch postagethings')
-    setFetchedPostageBatches(await getPostageBatches(globalState.beeApiUrl))
+    setFetchedPostageBatches(await getPostageBatches(globalState.beeDebugApiUrl))
   }
 
   const postageBatchElements = (): ReactElement[] => {

@@ -5,6 +5,7 @@ import { ElementHandle, Page } from 'puppeteer'
 import { bzzResourceToSubdomain } from '../src/utils/bzz-link'
 import {
   BEE_API_URL,
+  BEE_DEBUG_API_URL,
   BEE_PEER_API_URL,
   bzzReferenceByGoogle,
   getElementBySelector,
@@ -39,6 +40,16 @@ function newBzzPage(url: string): Promise<Page> {
   })
 }
 
+async function openExtensionPage(): Promise<Page> {
+  const extensionId = await getExtensionId()
+  const extensionPage = await global.__BROWSER__.newPage()
+  await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+    waitUntil: 'networkidle0',
+  })
+
+  return extensionPage
+}
+
 /**
  * Change Bee API URL on the extension page
  * @returns Previous Bee API URL
@@ -48,11 +59,7 @@ async function changeBeeApiUrl(newBeeApiUrl: string, extensionPage?: Page): Prom
 
   if (!extensionPage) {
     closeExtensionPage = true
-    const extensionId = await getExtensionId()
-    extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
+    extensionPage = await openExtensionPage()
   }
   const formId = 'form-bee-api-url-change'
   const inputSelector = `form[id="${formId}"] input[type="text"]`
@@ -62,6 +69,34 @@ async function changeBeeApiUrl(newBeeApiUrl: string, extensionPage?: Page): Prom
   const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
   await extensionPage.focus(inputSelector)
   await replaceInputValue(newBeeApiUrl, extensionPage)
+  await submitButton.click()
+
+  if (typeof originalUrlValue !== 'string') throw new Error('changeBeeApiUrl: there is no valid original URL')
+
+  if (closeExtensionPage) await extensionPage.close()
+
+  return originalUrlValue
+}
+
+/**
+ * Change Bee Debug API URL on the extension page
+ * @returns Previous Bee Debug API URL
+ * */
+async function changeBeeDebugApiUrl(newBeeDebugApiUrl: string, extensionPage?: Page): Promise<string> {
+  let closeExtensionPage = false
+
+  if (!extensionPage) {
+    closeExtensionPage = true
+    extensionPage = await openExtensionPage()
+  }
+  const formId = 'form-bee-debug-api-url-change'
+  const inputSelector = `form[id="${formId}"] input[type="text"]`
+  const inputText = await getElementBySelector(inputSelector, extensionPage)
+  const submitSelector = `form[id="${formId}"] input[type="submit"]`
+  const submitButton = await getElementBySelector(submitSelector, extensionPage)
+  const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
+  await extensionPage.focus(inputSelector)
+  await replaceInputValue(newBeeDebugApiUrl, extensionPage)
   await submitButton.click()
 
   if (typeof originalUrlValue !== 'string') throw new Error('changeBeeApiUrl: there is no valid original URL')
@@ -94,11 +129,9 @@ describe('BZZ protocol', () => {
   beforeAll(async done => {
     // setup Bee API URL in the extension
     extensionId = await getExtensionId()
-    const extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
+    const extensionPage = await openExtensionPage()
     await changeBeeApiUrl(BEE_API_URL, extensionPage)
+    await changeBeeDebugApiUrl(BEE_DEBUG_API_URL, extensionPage)
     await extensionPage.close()
 
     // upload sample pages
@@ -107,8 +140,14 @@ describe('BZZ protocol', () => {
       indexDocument: 'index.html',
       pin: true,
     }
-    const uploadFilesFromDirectory = (...relativePath: string[]): Promise<string> => {
-      return bee.uploadFilesFromDirectory(getStamp(), join(__dirname, ...relativePath), uploadOptions)
+    const uploadFilesFromDirectory = async (...relativePath: string[]): Promise<string> => {
+      const { reference } = await bee.uploadFilesFromDirectory(
+        getStamp(),
+        join(__dirname, ...relativePath),
+        uploadOptions,
+      )
+
+      return reference
     }
     const jinnHash = await uploadFilesFromDirectory('bzz-test-page', 'jinn-page')
     const jafarHash = await uploadFilesFromDirectory('bzz-test-page', 'jafar-page')
@@ -151,10 +190,7 @@ describe('BZZ protocol', () => {
   })
 
   test('Allow Global Postage Stamp ID', async done => {
-    const extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
+    const extensionPage = await openExtensionPage()
 
     const checkboxSelector = '#global-postage-stamp-enabled'
     const checkbox = await getElementBySelector(checkboxSelector, extensionPage)
@@ -241,10 +277,7 @@ describe('BZZ protocol', () => {
   })
 
   test('Change Bee API URL', async done => {
-    extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
+    extensionPage = await openExtensionPage()
 
     // change api url to http://localhost:9999
     const testUrlValue = 'http://localhost:9999'
@@ -333,7 +366,8 @@ describe('BZZ protocol', () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const swarm = iframeWindow.window.swarm
-      } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
         if (
           e.stack &&
           typeof e.stack === 'string' &&

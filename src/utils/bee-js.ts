@@ -1,7 +1,7 @@
-import { Bee, PostageBatch } from '@ethersphere/bee-js'
+import { BeeDebug, PostageBatch } from '@ethersphere/bee-js'
 
-export function getPostageBatches(beeApiUrl: string): Promise<PostageBatch[]> {
-  const bee = new Bee(beeApiUrl)
+export function getPostageBatches(beeDebugApiUrl: string): Promise<PostageBatch[]> {
+  const bee = new BeeDebug(beeDebugApiUrl)
 
   return bee.getAllPostageBatch()
 }

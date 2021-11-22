@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 import { BeeApiUrlChangeForm } from './bee-api-url-change-form'
@@ -12,11 +12,16 @@ export function App(): JSX.Element {
     // Read variables from the localstore and
     // update the globalstate in need.
     const storedBeeApiUrl = await getItem('beeApiUrl')
+    const storedBeeDebugApiUrl = await getItem('beeDebugApiUrl')
     const storedGlobalPostageBatchId = await getItem('globalPostageBatch')
     const storedGlobalPostageBatchEnabled = await getItem('globalPostageStampEnabled')
 
     if (storedBeeApiUrl) {
       changeGlobalState({ type: 'BEE_API_URL_SAVE', newValue: storedBeeApiUrl })
+    }
+
+    if (storedBeeDebugApiUrl) {
+      changeGlobalState({ type: 'BEE_DEBUG_API_URL_SAVE', newValue: storedBeeDebugApiUrl })
     }
 
     if (storedGlobalPostageBatchId) {
