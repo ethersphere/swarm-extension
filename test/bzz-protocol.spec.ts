@@ -5,6 +5,7 @@ import { ElementHandle, Page } from 'puppeteer'
 import { bzzResourceToSubdomain } from '../src/utils/bzz-link'
 import {
   BEE_API_URL,
+  BEE_DEBUG_API_URL,
   BEE_PEER_API_URL,
   bzzReferenceByGoogle,
   getElementBySelector,
@@ -39,6 +40,16 @@ function newBzzPage(url: string): Promise<Page> {
   })
 }
 
+async function openExtensionPage(): Promise<Page> {
+  const extensionId = await getExtensionId()
+  const extensionPage = await global.__BROWSER__.newPage()
+  await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
+    waitUntil: 'networkidle0',
+  })
+
+  return extensionPage
+}
+
 /**
  * Change Bee API URL on the extension page
  * @returns Previous Bee API URL
@@ -48,11 +59,7 @@ async function changeBeeApiUrl(newBeeApiUrl: string, extensionPage?: Page): Prom
 
   if (!extensionPage) {
     closeExtensionPage = true
-    const extensionId = await getExtensionId()
-    extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
+    extensionPage = await openExtensionPage()
   }
   const formId = 'form-bee-api-url-change'
   const inputSelector = `form[id="${formId}"] input[type="text"]`
@@ -62,6 +69,34 @@ async function changeBeeApiUrl(newBeeApiUrl: string, extensionPage?: Page): Prom
   const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
   await extensionPage.focus(inputSelector)
   await replaceInputValue(newBeeApiUrl, extensionPage)
+  await submitButton.click()
+
+  if (typeof originalUrlValue !== 'string') throw new Error('changeBeeApiUrl: there is no valid original URL')
+
+  if (closeExtensionPage) await extensionPage.close()
+
+  return originalUrlValue
+}
+
+/**
+ * Change Bee Debug API URL on the extension page
+ * @returns Previous Bee Debug API URL
+ * */
+async function changeBeeDebugApiUrl(newBeeDebugApiUrl: string, extensionPage?: Page): Promise<string> {
+  let closeExtensionPage = false
+
+  if (!extensionPage) {
+    closeExtensionPage = true
+    extensionPage = await openExtensionPage()
+  }
+  const formId = 'form-bee-debug-api-url-change'
+  const inputSelector = `form[id="${formId}"] input[type="text"]`
+  const inputText = await getElementBySelector(inputSelector, extensionPage)
+  const submitSelector = `form[id="${formId}"] input[type="submit"]`
+  const submitButton = await getElementBySelector(submitSelector, extensionPage)
+  const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
+  await extensionPage.focus(inputSelector)
+  await replaceInputValue(newBeeDebugApiUrl, extensionPage)
   await submitButton.click()
 
   if (typeof originalUrlValue !== 'string') throw new Error('changeBeeApiUrl: there is no valid original URL')
@@ -99,6 +134,7 @@ describe('BZZ protocol', () => {
       waitUntil: 'networkidle0',
     })
     await changeBeeApiUrl(BEE_API_URL, extensionPage)
+    await changeBeeDebugApiUrl(BEE_DEBUG_API_URL, extensionPage)
     await extensionPage.close()
 
     // upload sample pages
