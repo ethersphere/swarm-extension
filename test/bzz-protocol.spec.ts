@@ -11,7 +11,7 @@ import {
   getElementBySelector,
   getExtensionId,
   getStamp,
-  replaceInputValue
+  replaceInputValue,
 } from './utils'
 
 async function getLastBzzPage(): Promise<Page> {
@@ -129,10 +129,7 @@ describe('BZZ protocol', () => {
   beforeAll(async done => {
     // setup Bee API URL in the extension
     extensionId = await getExtensionId()
-    const extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
+    const extensionPage = await openExtensionPage()
     await changeBeeApiUrl(BEE_API_URL, extensionPage)
     await changeBeeDebugApiUrl(BEE_DEBUG_API_URL, extensionPage)
     await extensionPage.close()
