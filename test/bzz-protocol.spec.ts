@@ -107,8 +107,14 @@ describe('BZZ protocol', () => {
       indexDocument: 'index.html',
       pin: true,
     }
-    const uploadFilesFromDirectory = (...relativePath: string[]): Promise<string> => {
-      return bee.uploadFilesFromDirectory(getStamp(), join(__dirname, ...relativePath), uploadOptions)
+    const uploadFilesFromDirectory = async (...relativePath: string[]): Promise<string> => {
+      const { reference } = await bee.uploadFilesFromDirectory(
+        getStamp(),
+        join(__dirname, ...relativePath),
+        uploadOptions,
+      )
+
+      return reference
     }
     const jinnHash = await uploadFilesFromDirectory('bzz-test-page', 'jinn-page')
     const jafarHash = await uploadFilesFromDirectory('bzz-test-page', 'jafar-page')
