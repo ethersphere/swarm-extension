@@ -15,6 +15,7 @@ export class ActionError extends Error {
 
 interface State {
   beeApiUrl: string
+  beeDebugApiUrl: string
   postageBatchId: string | null
   globalPostageBatchEnabled: boolean
 }
@@ -23,6 +24,12 @@ interface ActionBeeUrlSave {
   type: 'BEE_API_URL_SAVE' | 'BEE_API_URL_CHANGE'
   newValue: string
 }
+
+interface ActionBeeDebugUrlSave {
+  type: 'BEE_DEBUG_API_URL_SAVE' | 'BEE_DEBUG_API_URL_CHANGE'
+  newValue: string
+}
+
 interface ActionGlobalPostageBatchEnabledSave {
   type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE'
   newValue: boolean
@@ -32,7 +39,7 @@ interface ActionPostageBatchSave {
   newValue: string | null
 }
 
-type Action = ActionPostageBatchSave | ActionBeeUrlSave | ActionGlobalPostageBatchEnabledSave
+type Action = ActionPostageBatchSave | ActionBeeUrlSave | ActionGlobalPostageBatchEnabledSave | ActionBeeDebugUrlSave
 
 interface ContextValue {
   state: State
@@ -49,6 +56,10 @@ async function localStoreDispatch(action: Action): Promise<void> {
       break
     case 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE':
       await setItem('globalPostageStampEnabled', action.newValue)
+      break
+    case 'BEE_DEBUG_API_URL_SAVE':
+      await setItem('beeDebugApiUrl', action.newValue)
+      break
     default:
       return // maybe it doesn't have store key
   }
@@ -56,6 +67,7 @@ async function localStoreDispatch(action: Action): Promise<void> {
 
 const initialState: State = {
   beeApiUrl: 'http://localhost:1633',
+  beeDebugApiUrl: 'http://localhost:1635',
   postageBatchId: null,
   globalPostageBatchEnabled: false,
 }
@@ -74,6 +86,9 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
       case 'BEE_API_URL_CHANGE':
       case 'BEE_API_URL_SAVE':
         return { ...state, beeApiUrl: action.newValue }
+      case 'BEE_DEBUG_API_URL_SAVE':
+      case 'BEE_DEBUG_API_URL_CHANGE':
+        return { ...state, beeDebugApiUrl: action.newValue }
       case 'GLOBAL_POSTAGE_BATCH_SAVE':
         return { ...state, postageBatchId: action.newValue }
       case 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE':
@@ -92,6 +107,11 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
         uiStateDispatch({ type: 'BEE_API_URL_SAVE', newValue })
       }
     }
+    const beeDebugApiUrlListener = (newValue: string, oldValue: string) => {
+      if (newValue !== oldValue && newValue !== state.beeDebugApiUrl) {
+        uiStateDispatch({ type: 'BEE_DEBUG_API_URL_SAVE', newValue })
+      }
+    }
     // localstore changes effect back the handled state
     const globalPostageBatchListener = (newValue: string, oldValue: string) => {
       if (newValue !== oldValue && newValue !== state.postageBatchId) {
@@ -105,11 +125,13 @@ const GlobalStateProvider = ({ children }: { children: React.ReactElement }): Re
       }
     }
     storeObserver.addListener('beeApiUrl', beeApiUrlListener)
+    storeObserver.addListener('beeDebugApiUrl', beeDebugApiUrlListener)
     storeObserver.addListener('globalPostageBatch', globalPostageBatchListener)
     storeObserver.addListener('globalPostageStampEnabled', globalPostageBatchEnabledListener)
 
     return () => {
       storeObserver.removeListener('beeApiUrl', beeApiUrlListener)
+      storeObserver.removeListener('beeDebugApiUrl', beeDebugApiUrlListener)
       storeObserver.removeListener('globalPostageBatch', globalPostageBatchListener)
       storeObserver.removeListener('globalPostageStampEnabled', globalPostageBatchEnabledListener)
     }
