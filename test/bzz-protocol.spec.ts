@@ -277,10 +277,7 @@ describe('BZZ protocol', () => {
   })
 
   test('Change Bee API URL', async done => {
-    extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
+    extensionPage = await openExtensionPage()
 
     // change api url to http://localhost:9999
     const testUrlValue = 'http://localhost:9999'
