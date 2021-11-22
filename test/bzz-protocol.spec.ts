@@ -11,7 +11,7 @@ import {
   getElementBySelector,
   getExtensionId,
   getStamp,
-  replaceInputValue,
+  replaceInputValue
 } from './utils'
 
 async function getLastBzzPage(): Promise<Page> {
@@ -193,10 +193,7 @@ describe('BZZ protocol', () => {
   })
 
   test('Allow Global Postage Stamp ID', async done => {
-    const extensionPage = await global.__BROWSER__.newPage()
-    await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-      waitUntil: 'networkidle0',
-    })
+    const extensionPage = await openExtensionPage()
 
     const checkboxSelector = '#global-postage-stamp-enabled'
     const checkbox = await getElementBySelector(checkboxSelector, extensionPage)
