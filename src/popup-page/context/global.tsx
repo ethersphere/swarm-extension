@@ -39,6 +39,11 @@ interface ActionPostageBatchSave {
   newValue: string | null
 }
 
+/**
+ * The actions types are either ending with `_SAVE` or `_CHANGE`.
+ *
+ * The former saves the value into the localStorage, the latter only changes the globalState in the React app.
+ */
 type Action = ActionPostageBatchSave | ActionBeeUrlSave | ActionGlobalPostageBatchEnabledSave | ActionBeeDebugUrlSave
 
 interface ContextValue {
