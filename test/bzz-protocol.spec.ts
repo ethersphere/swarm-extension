@@ -339,7 +339,8 @@ describe('BZZ protocol', () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const swarm = iframeWindow.window.swarm
-      } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
         if (
           e.stack &&
           typeof e.stack === 'string' &&
