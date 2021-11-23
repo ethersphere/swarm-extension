@@ -35,7 +35,11 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
       }
 
       window.addEventListener('message', handler)
-      const origin = window.origin !== 'null' ? window.origin : '*'
+      /**
+       * TODO: target by app origin
+       * origin is null because of the sandbox
+       */
+      const origin = '*'
       window.postMessage(message, origin)
     })
   }

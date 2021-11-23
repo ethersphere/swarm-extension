@@ -8,7 +8,11 @@ import {
 } from '../../utils/message/message-handler'
 
 export class MessengerInterceptor {
-  private readonly inpageOrigin = window.origin !== 'null' ? window.origin : '*'
+  /**
+   * TODO: target by app origin
+   * origin is null because of the sandbox
+   */
+  private readonly inpageOrigin = '*'
 
   constructor() {
     this.serveEvents()
