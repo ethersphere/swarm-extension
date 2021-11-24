@@ -57,13 +57,7 @@ export class LocalStorage extends MessengerInpage implements ILocalStorageMessag
         // handle message
         if (response.data.error) reject(response.data.error)
 
-        if (response.data.answer === undefined) {
-          const errorMessage = `LocalStorage: no answer. EventID: ${response.data.eventId}`
-          console.error(errorMessage, response)
-          reject(errorMessage)
-        } else {
-          resolve(response.data.answer)
-        }
+        resolve(response.data.answer)
       }
 
       window.addEventListener('message', handler)

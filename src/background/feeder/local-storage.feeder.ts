@@ -57,7 +57,7 @@ export class LocalStorageFeeder {
   ) {
     console.log(`LocalStorageFeeder: store set -> ${payload}`)
 
-    if (!payload || !payload[0] || !payload[1]) {
+    if (!payload || !payload[0]) {
       response.error = `LocalStorageFeeder: wrong payload: Got ${payload}`
 
       return response

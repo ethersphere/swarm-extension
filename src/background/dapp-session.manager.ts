@@ -35,22 +35,17 @@ class DappSecurityContext {
 
   /** STORAGE FUNCTIONS */
 
-  public setStorageItem(keyName: string, keyValue: unknown): Promise<void> {
+  public async setStorageItem(keyName: string, keyValue: unknown): Promise<void> {
     const key = this.enrichStorageKey(keyName)
 
-    return new Promise(resolve => this.storage.set({ [key]: keyValue, resolve }))
+    await new Promise(resolve => this.storage.set({ [key]: keyValue }, () => resolve(true)))
   }
 
   public getStorageItem(keyName: string): Promise<unknown> {
     const key = this.enrichStorageKey(keyName)
 
-    return new Promise((resolve, reject) =>
+    return new Promise(resolve =>
       this.storage.get([key], result => {
-        console.log('result', result)
-
-        if (!result[key]) {
-          reject(`LocalStorage: ${key} does not exist`)
-        }
         resolve(result[key])
       }),
     )
