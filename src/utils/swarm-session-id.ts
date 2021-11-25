@@ -13,7 +13,7 @@ export const SWARM_SESSION_ID_KEY = 'swarm-session-id'
  * @throws if the sessionId is not found in the URL
  */
 export function unpackSwarmSessionIdFromUrl(bzzUrl: string): { sessionId: string; originalUrl: string } {
-  const searchString = `/__${SWARM_SESSION_ID_KEY}~`
+  const searchString = `__${SWARM_SESSION_ID_KEY}~`
   const sessionIdParamIndex = bzzUrl.indexOf(searchString)
 
   if (sessionIdParamIndex === -1) throw new Error(`There is no ${SWARM_SESSION_ID_KEY} element in url ${bzzUrl}`)
@@ -34,5 +34,5 @@ export function unpackSwarmSessionIdFromUrl(bzzUrl: string): { sessionId: string
 }
 
 export function appendSwarmSessionIdToUrl(fakeUrlRef: string): string {
-  return `${fakeUrlRef}/__${SWARM_SESSION_ID_KEY}~${window.swarm.sessionId}__`
+  return `${fakeUrlRef}__${SWARM_SESSION_ID_KEY}~${window.swarm.sessionId}__`
 }
