@@ -20,7 +20,7 @@
   "types": "types/index.d.ts",
   "scripts": {
     "dev": "concurrently \"npm run compile:deps -- --watch --env mode=development\" \"npm run compile:main -- --watch --env mode=development\"",
-    "compile": "npm run compile:deps -- --progress && npm run compile:main -- --progress",
+    "compile": "rimraf dist && npm run compile:deps -- --progress && npm run compile:main -- --progress",
     "compile:deps": "webpack --env buildDeps=true",
     "compile:main": "webpack",
     "test": "jest --config=jest.config.ts",
@@ -75,6 +75,7 @@
     "prettier": "^2.2.1",
     "puppeteer": "^5.5.0",
     "raw-loader": "^4.0.2",
+    "rimraf": "^3.0.2",
     "style-loader": "^2.0.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3",
