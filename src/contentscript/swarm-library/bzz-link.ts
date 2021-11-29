@@ -7,9 +7,11 @@ export function bzzProtocolToFakeUrl(url: string, newPage = false): string | nul
   if (!url.startsWith('bzz://')) return null
 
   const bzzReference = url.substr('bzz://'.length)
-  const fakeUrlRef = newPage ? `${fakeUrl.openDapp}/${bzzReference}` : `${fakeUrl.bzzProtocol}/${bzzReference}`
+  const fakeUrlRef = newPage
+    ? `${fakeUrl.openDapp}/${bzzReference}` // does not need sessionId because it force redirects
+    : appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${bzzReference}`)
 
-  return appendSwarmSessionIdToUrl(fakeUrlRef)
+  return fakeUrlRef
 }
 
 /** gives back the fake URL of the bzz.link or null if the first parameter is not a valid bzz.link reference */

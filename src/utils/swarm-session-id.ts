@@ -10,30 +10,29 @@ export const SWARM_SESSION_ID_KEY = 'swarm-session-id'
  *
  * @param bzzUrl BZZ URL with arbitrary query parameters, e.g. http://.../1231abcd.../valami.html?swarm-session-id=vmi&smth=5
  * @returns url without the SwarmSessionID
+ * @throws if the sessionId is not found in the URL
  */
-export function removeSwarmSessionIdFromUrl(bzzUrl: string): string {
-  const queryIndex = bzzUrl.indexOf('?')
+export function unpackSwarmSessionIdFromUrl(bzzUrl: string): { sessionId: string; originalUrl: string } {
+  const searchString = `__${SWARM_SESSION_ID_KEY}~`
+  const sessionIdParamIndex = bzzUrl.indexOf(searchString)
 
-  if (queryIndex === -1) return bzzUrl
+  if (sessionIdParamIndex === -1) throw new Error(`There is no ${SWARM_SESSION_ID_KEY} element in url ${bzzUrl}`)
 
-  const invalidQueryEnds = bzzUrl.indexOf('/', queryIndex + 1)
+  const sessionIdStartIndex = sessionIdParamIndex + searchString.length
+  const sessionIdEndIndex = bzzUrl.indexOf('__', sessionIdStartIndex)
 
-  if (invalidQueryEnds !== -1) {
-    // remove the whole string chunk starting from the invalid '?' query sign up to the first slash
-    return bzzUrl.slice(0, queryIndex) + bzzUrl.slice(invalidQueryEnds)
+  const sessionId = bzzUrl.substring(sessionIdStartIndex, sessionIdEndIndex)
+  console.log('sessionId', sessionId)
+
+  const originalUrl = bzzUrl.split(searchString + sessionId + '__').join('')
+  console.log('originalUrl', originalUrl)
+
+  return {
+    sessionId,
+    originalUrl,
   }
-
-  // if the process reaches this point, the given url can be handled as with valid query parameter
-  const constructedUrl = new URL(bzzUrl)
-  constructedUrl.searchParams.delete(SWARM_SESSION_ID_KEY)
-
-  return constructedUrl.toString()
 }
 
 export function appendSwarmSessionIdToUrl(fakeUrlRef: string): string {
-  const fakeUrl = new URL(fakeUrlRef)
-  const fakeUrlRefParams = new URLSearchParams(fakeUrl.search.slice(1))
-  fakeUrlRefParams.append(SWARM_SESSION_ID_KEY, window.swarm.sessionId)
-
-  return `${fakeUrlRef}?${fakeUrlRefParams.toString()}`
+  return `${fakeUrlRef}__${SWARM_SESSION_ID_KEY}~${window.swarm.sessionId}__`
 }

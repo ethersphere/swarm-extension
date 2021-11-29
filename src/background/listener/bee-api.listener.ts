@@ -1,7 +1,7 @@
 import { subdomainToBzzResource } from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
-import { removeSwarmSessionIdFromUrl, SWARM_SESSION_ID_KEY } from '../../utils/swarm-session-id'
+import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
 
 export class BeeApiListener {
   private _beeApiUrl: string
@@ -50,7 +50,7 @@ export class BeeApiListener {
     if (urlArray[3] === 'bzz' && urlArray[4]) {
       details.responseHeaders?.push({
         name: 'Content-Security-Policy',
-        value: 'sandbox allow-scripts allow-modals allow-popups',
+        value: 'sandbox allow-scripts allow-modals allow-popups allow-forms',
       })
     }
     console.log('responseHeaders', details.responseHeaders)
@@ -161,18 +161,19 @@ export class BeeApiListener {
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
         let { url } = details
-        // extract session Id and remove from the reference
-        const swarmSessionId = this.getSwarmSessionIdFromUrl(url)
 
-        if (!swarmSessionId) {
+        let swarmSessionId: string
+        try {
+          const { sessionId, originalUrl } = unpackSwarmSessionIdFromUrl(url)
+          swarmSessionId = sessionId
+          url = originalUrl
+        } catch (e) {
           console.error(`There is no valid '${SWARM_SESSION_ID_KEY}' passed to the bzz reference: ${url}`)
 
           return {
             cancel: true,
           }
         }
-        // Delete swarm session id from the url
-        url = removeSwarmSessionIdFromUrl(url)
         // get the full referenced BZZ address from the modified url (without bzz address)
         const urlArray = url.toString().split(`${fakeUrl.bzzProtocol}/`)
         const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
@@ -191,17 +192,17 @@ export class BeeApiListener {
     chrome.webRequest.onBeforeRequest.addListener(
       details => {
         let { url } = details
-        // extract session Id and remove from the reference
-        const swarmSessionId = this.getSwarmSessionIdFromUrl(url)
 
-        if (!swarmSessionId) {
-          console.error(`There is no valid '${SWARM_SESSION_ID_KEY}' passed to the bzz reference: ${details.url}`)
+        try {
+          const { originalUrl } = unpackSwarmSessionIdFromUrl(url)
+          url = originalUrl
+        } catch (e) {
+          console.error(`There is no valid '${SWARM_SESSION_ID_KEY}' passed to the bzz reference: ${url}`)
 
           return {
             cancel: true,
           }
         }
-        url = removeSwarmSessionIdFromUrl(url)
 
         // get the full referenced BZZ address from the modified url (without bzz address)
         const urlArray = url.split(`${fakeUrl.beeApiAddress}/`)
@@ -215,36 +216,6 @@ export class BeeApiListener {
       { urls: [`${fakeUrl.beeApiAddress}*`] },
       ['blocking'],
     )
-  }
-
-  /**
-   *
-   * @param bzzUrl BZZ URL with arbitrary query parameters,  e.g. http://.../1231abcd.../valami.html?swarm-session-id=vmi&smth=5
-   * @returns Swarm Session ID string
-   */
-  private getSwarmSessionIdFromUrl(bzzUrl: string): string | null {
-    const queryIndex = bzzUrl.indexOf('?')
-
-    if (queryIndex === -1) return null
-
-    const invalidQueryEnds = bzzUrl.indexOf('/', queryIndex + 1)
-
-    if (invalidQueryEnds !== -1) {
-      // the swarm session id must be in the invalid query param
-      const invalidQuery = bzzUrl.slice(queryIndex + 1, invalidQueryEnds)
-      const sessionIdSplit = invalidQuery.split(`${SWARM_SESSION_ID_KEY}=`)
-
-      if (sessionIdSplit.length !== 2) {
-        // if there is no swarm session ID in the invalid query
-        // then the request will fail
-        return null
-      }
-
-      return sessionIdSplit[1]
-    }
-    // if the process reaches this point, the given url can be handled as with valid query parameter
-
-    return new URL(bzzUrl).searchParams.get(SWARM_SESSION_ID_KEY)
   }
 
   private async asyncInit() {

@@ -28,7 +28,11 @@ export class LocalStorage extends MessengerInpage implements ILocalStorageMessag
       }
 
       window.addEventListener('message', handler)
-      const origin = window.origin !== 'null' ? window.origin : '*'
+      /**
+       * TODO: target by app origin
+       * origin is null because of the sandbox
+       */
+      const origin = '*'
       window.postMessage(message, origin)
     })
   }
@@ -63,7 +67,11 @@ export class LocalStorage extends MessengerInpage implements ILocalStorageMessag
       }
 
       window.addEventListener('message', handler)
-      const origin = window.origin !== 'null' ? window.origin : '*'
+      /**
+       * TODO: target by app origin
+       * origin is null because of the sandbox
+       */
+      const origin = '*'
       window.postMessage(message, origin)
     })
   }
