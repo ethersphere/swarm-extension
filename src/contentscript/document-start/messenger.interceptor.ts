@@ -73,13 +73,9 @@ export class MessengerInterceptor {
       throw new Error(message.error)
     }
 
-    if (!message.answer) {
-      throw new Error(`No answer from message handler at key "${message.key}"`)
-    }
-
     return {
       key: message.key,
-      answer: message.answer,
+      answer: message.answer as T,
       target: 'content',
       sender: 'background',
     }
