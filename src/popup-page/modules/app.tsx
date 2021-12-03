@@ -1,4 +1,5 @@
-import React, { useContext, useEffect } from 'react'
+import BeeDashboard from '@ethersphere/bee-dashboard'
+import React, { useContext, useEffect, useState } from 'react'
 import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 import { BeeApiUrlChangeForm } from './bee-api-url-change-form'
@@ -7,6 +8,7 @@ import { PostageBatchElement } from './postage-batch-element'
 export function App(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: changeGlobalState } = globalStateContext
+  const [showBeeApp, setShowBeeApp] = useState(false)
 
   const asyncInit = async (): Promise<void> => {
     // Read variables from the localstore and
@@ -35,14 +37,33 @@ export function App(): JSX.Element {
 
   useEffect(() => {
     asyncInit()
+    // init url param resolution
+    const url = new URL(window.location.href)
+    const openAppName = url.searchParams.get('app')
+
+    if (openAppName && openAppName === 'bee-dashboard') {
+      setShowBeeApp(true)
+    }
   }, [])
 
   return (
-    <div>
-      <BeeApiUrlChangeForm />
-      <hr></hr>
-      <PostageBatchElement />
-    </div>
+    <>
+      <div id="app-extension" hidden={showBeeApp}>
+        <div>
+          <BeeApiUrlChangeForm />
+          <hr></hr>
+          <PostageBatchElement />
+        </div>
+        <div>
+          <a href={window.location.href + '?app=bee-dashboard'} target="_blank">
+            Open Bee Dashboard
+          </a>
+        </div>
+      </div>
+      <div id="app-bee-dashboard" hidden={!showBeeApp}>
+        <BeeDashboard beeApiUrl={globalStateContext.state.beeApiUrl}></BeeDashboard>
+      </div>
+    </>
   )
 }
 
