@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '../context/global'
 
 export function BeeApiUrlChangeForm(): JSX.Element {
@@ -45,6 +45,14 @@ export function BeeApiUrlChangeForm(): JSX.Element {
   const handleBeeDebugApiUrlChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setBeeDebugApiUrl(event.target.value)
   }
+
+  useEffect(() => {
+    setBeeApiUrl(globalState.beeApiUrl)
+  }, [globalState.beeApiUrl])
+
+  useEffect(() => {
+    setBeeDebugApiUrl(globalState.beeDebugApiUrl)
+  }, [globalState.beeDebugApiUrl])
 
   return (
     <div>
