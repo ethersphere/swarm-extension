@@ -21,12 +21,12 @@ interface State {
 }
 
 interface ActionBeeUrlSave {
-  type: 'BEE_API_URL_SAVE' | 'BEE_API_URL_CHANGE'
+  type: 'BEE_API_URL_SAVE'
   newValue: string
 }
 
 interface ActionBeeDebugUrlSave {
-  type: 'BEE_DEBUG_API_URL_SAVE' | 'BEE_DEBUG_API_URL_CHANGE'
+  type: 'BEE_DEBUG_API_URL_SAVE'
   newValue: string
 }
 
@@ -88,11 +88,9 @@ const { Provider } = GlobalContext
 const GlobalStateProvider = ({ children }: { children: React.ReactElement }): React.ReactElement => {
   const [state, uiStateDispatch] = useReducer((state: State, action: Action): State => {
     switch (action.type) {
-      case 'BEE_API_URL_CHANGE':
       case 'BEE_API_URL_SAVE':
         return { ...state, beeApiUrl: action.newValue }
       case 'BEE_DEBUG_API_URL_SAVE':
-      case 'BEE_DEBUG_API_URL_CHANGE':
         return { ...state, beeDebugApiUrl: action.newValue }
       case 'GLOBAL_POSTAGE_BATCH_SAVE':
         return { ...state, postageBatchId: action.newValue }
