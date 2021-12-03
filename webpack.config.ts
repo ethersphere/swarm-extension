@@ -417,6 +417,10 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
         path: false,
         fs: false,
       },
+      alias: {
+        react: Path.join(__dirname, 'node_modules', 'react'),
+        'react-dom': Path.join(__dirname, 'node_modules', 'react-dom'),
+      },
     },
     optimization: {
       minimize: isProduction,
