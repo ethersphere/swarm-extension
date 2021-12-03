@@ -61,7 +61,11 @@ export function App(): JSX.Element {
         </div>
       </div>
       <div id="app-bee-dashboard" hidden={!showBeeApp}>
-        <BeeDashboard beeApiUrl={globalStateContext.state.beeApiUrl}></BeeDashboard>
+        <BeeDashboard
+          beeApiUrl={globalStateContext.state.beeApiUrl}
+          beeDebugApiUrl={globalStateContext.state.beeDebugApiUrl}
+          lockedApiSettings={true}
+        ></BeeDashboard>
       </div>
     </>
   )
