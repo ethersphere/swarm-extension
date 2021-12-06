@@ -5,6 +5,10 @@ body {
   overflow-x: hidden;
 }
 
+#root {
+  margin: 24px;
+}
+
 .margin-top > * {
   display: block;
   margin-top: 12px;

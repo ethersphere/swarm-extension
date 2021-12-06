@@ -51,13 +51,13 @@ export function App(): JSX.Element {
       <div id="app-extension" hidden={showBeeApp}>
         <div>
           <BeeApiUrlChangeForm />
+          <div style={{ margin: '12px 0px' }}>
+            <a href={window.location.href + '?app=bee-dashboard'} target="_blank">
+              Open Bee Dashboard
+            </a>
+          </div>
           <hr></hr>
           <PostageBatchElement />
-        </div>
-        <div>
-          <a href={window.location.href + '?app=bee-dashboard'} target="_blank">
-            Open Bee Dashboard
-          </a>
         </div>
       </div>
       <div id="app-bee-dashboard" hidden={!showBeeApp}>

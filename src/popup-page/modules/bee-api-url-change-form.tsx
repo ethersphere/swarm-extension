@@ -59,6 +59,7 @@ export function BeeApiUrlChangeForm(): JSX.Element {
       <form id="form-bee-api-url-change" onSubmit={handleApiUrlSubmit}>
         <label>
           Bee node API address:
+          <br />
           <input type="text" value={beeApiUrl} onChange={handleBeeApiUrlChange} />
         </label>
         <input type="submit" value="Change" />
@@ -67,6 +68,7 @@ export function BeeApiUrlChangeForm(): JSX.Element {
       <form id="form-bee-debug-api-url-change" onSubmit={handleDedugUrlSubmit}>
         <label>
           Bee node Debug API address:
+          <br />
           <input type="text" value={beeDebugApiUrl} onChange={handleBeeDebugApiUrlChange} />
         </label>
         <input type="submit" value="Change" />
