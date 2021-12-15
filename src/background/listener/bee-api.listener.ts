@@ -7,10 +7,12 @@ export class BeeApiListener {
   private _beeApiUrl: string
   private _globalPostageBatchEnabled: boolean
   private _globalPostageBatchId: string
+  private _web2OriginEnabled: boolean
 
   public constructor(private storeObserver: StoreObserver) {
     this._beeApiUrl = 'http://localhost:1633'
     this._globalPostageBatchEnabled = false
+    this._web2OriginEnabled = false
     this._globalPostageBatchId = 'undefined' // it is not necessary to check later, if it is enabled it will insert
     this.addStoreListeners()
     this.asyncInit()
@@ -45,6 +47,10 @@ export class BeeApiListener {
   private sandboxListener = (
     details: chrome.webRequest.WebResponseHeadersDetails,
   ): void | chrome.webRequest.BlockingResponse => {
+    console.log('web2OriginEnabled', this._web2OriginEnabled)
+
+    if (this._web2OriginEnabled) return { responseHeaders: details.responseHeaders }
+
     const urlArray = details.url.toString().split('/')
 
     if (urlArray[3] === 'bzz' && urlArray[4]) {
@@ -222,12 +228,15 @@ export class BeeApiListener {
     const storedBeeApiUrl = await getItem('beeApiUrl')
     const storedGlobalPostageBatchEnabled = await getItem('globalPostageStampEnabled')
     const storedGlobalPostageBatchId = await getItem('globalPostageBatch')
+    const storedWeb2OriginEnabled = await getItem('web2OriginEnabled')
 
     if (storedBeeApiUrl) this._beeApiUrl = storedBeeApiUrl
 
     if (storedGlobalPostageBatchEnabled) this._globalPostageBatchEnabled = storedGlobalPostageBatchEnabled
 
     if (storedGlobalPostageBatchId) this._globalPostageBatchId = storedGlobalPostageBatchId
+
+    if (storedWeb2OriginEnabled) this._web2OriginEnabled = storedWeb2OriginEnabled
 
     // register listeners that have to be after async init
     this.addBeeNodeListeners(this._beeApiUrl)
@@ -245,6 +254,10 @@ export class BeeApiListener {
     })
     this.storeObserver.addListener('globalPostageBatch', newValue => {
       this._globalPostageBatchId = newValue
+    })
+    this.storeObserver.addListener<boolean>('web2OriginEnabled', newValue => {
+      console.log('web2OriginEnabled changed to', newValue)
+      this._web2OriginEnabled = newValue
     })
   }
 
