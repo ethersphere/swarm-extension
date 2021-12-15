@@ -22,7 +22,7 @@ function init(): void {
   //listen to events which come from inpage side
   new MessengerInterceptor()
 
-  // all bzz root content has to be in sandbox because of the CSP
+  // for all bzz content which is in sandbox because of the CSP
   if (window.origin !== 'null') return
   // Generate dapp session id
   injectSandboxPolyfill()

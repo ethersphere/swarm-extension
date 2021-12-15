@@ -3,6 +3,7 @@ import { EventEmitter } from 'events'
 interface Store {
   beeApiUrl: string
   beeDebugApiUrl: string
+  web2OriginEnabled: boolean
   globalPostageBatch: string | null
   globalPostageStampEnabled: boolean
 }
