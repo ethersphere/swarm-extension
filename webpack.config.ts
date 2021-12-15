@@ -345,6 +345,7 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
   const filename = 'index.js'
   const entry = Path.resolve(__dirname, 'src', 'popup-page', 'index.tsx')
   const path = Path.resolve(__dirname, 'dist', 'popup-page')
+  const assetsPath = Path.resolve(path, 'assets')
   const target = 'web'
   const plugins: WebpackPluginInstance[] = [
     new DefinePlugin({
@@ -355,7 +356,15 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
       patterns: [
         {
           from: 'assets/**/*',
-          to: path,
+          to: assetsPath,
+        },
+        {
+          from: 'node_modules/@ethersphere/bee-dashboard/lib/assets/*',
+          to: assetsPath + Path.sep + '[name].[ext]',
+        },
+        {
+          from: 'node_modules/@ethersphere/bee-dashboard/lib/assets/fonts/*',
+          to: Path.resolve(assetsPath, 'fonts') + Path.sep + '[name].[ext]',
         },
         {
           from: 'manifest.json',
@@ -406,7 +415,7 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.(png|svg|jpg|gif)$/,
+          test: /\.(png|jp(e*)g|svg|gif|ttf)$/,
           use: ['file-loader'],
         },
       ],
@@ -416,6 +425,10 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
       fallback: {
         path: false,
         fs: false,
+      },
+      alias: {
+        react: Path.join(__dirname, 'node_modules', 'react'),
+        'react-dom': Path.join(__dirname, 'node_modules', 'react-dom'),
       },
     },
     optimization: {
