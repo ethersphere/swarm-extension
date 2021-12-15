@@ -4,6 +4,7 @@ import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 import { BeeApiUrlChangeForm } from './bee-api-url-change-form'
 import { PostageBatchElement } from './postage-batch-element'
+import { Web2Origin } from './web2-origin'
 
 export function App(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
@@ -17,6 +18,7 @@ export function App(): JSX.Element {
     const storedBeeDebugApiUrl = await getItem('beeDebugApiUrl')
     const storedGlobalPostageBatchId = await getItem('globalPostageBatch')
     const storedGlobalPostageBatchEnabled = await getItem('globalPostageStampEnabled')
+    const storedWeb2OriginEnabled = await getItem('web2OriginEnabled')
 
     if (storedBeeApiUrl) {
       changeGlobalState({ type: 'BEE_API_URL_SAVE', newValue: storedBeeApiUrl })
@@ -32,6 +34,10 @@ export function App(): JSX.Element {
 
     if (storedGlobalPostageBatchEnabled) {
       changeGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE', newValue: storedGlobalPostageBatchEnabled })
+    }
+
+    if (storedWeb2OriginEnabled) {
+      changeGlobalState({ type: 'WEB2_ORIGIN_ENABLED_SAVE', newValue: storedWeb2OriginEnabled })
     }
   }
 
@@ -56,6 +62,7 @@ export function App(): JSX.Element {
               Open Bee Dashboard
             </a>
           </div>
+          <Web2Origin />
           <hr></hr>
           <PostageBatchElement />
         </div>
