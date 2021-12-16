@@ -1,40 +1,40 @@
 /** bzz.link CID implementaion */
-import CID from 'cids'
+import * as swarmCid from '@ethersphere/swarm-cid'
 
-function hexToBytes(hex: string): Uint8Array {
-  const bytes = new Uint8Array(hex.length / 2)
-  for (let i = 0; i < bytes.length; i++) {
-    const hexByte = hex.substr(i * 2, 2)
-    bytes[i] = parseInt(hexByte, 16)
+export function hashToCid(
+  input: string,
+  type: swarmCid.ReferenceType = swarmCid.ReferenceType.FEED,
+): ReturnType<typeof swarmCid.encodeReference> {
+  return swarmCid.encodeReference(input, type)
+}
+
+export function CidToHash(input: string): string {
+  let ref: swarmCid.Reference
+  // FIXME: after https://github.com/ethersphere/swarm-cid-js/issues/7
+  try {
+    ref = swarmCid.decodeFeedCid(input)
+  } catch (e) {
+    ref = swarmCid.decodeManifestCid(input)
   }
 
-  return bytes
+  return ref
 }
 
-function bytesToHex(bytes: Uint8Array) {
-  const hexByte = (n: number) => n.toString(16).padStart(2, '0')
-  const hex = Array.from(bytes, hexByte).join('')
+export function isSwarmCid(input: string): boolean {
+  // FIXME: after https://github.com/ethersphere/swarm-cid-js/issues/7
+  try {
+    swarmCid.decodeFeedCid(input)
 
-  return hex
-}
+    return true
+  } catch (e) {
+    try {
+      swarmCid.decodeManifestCid(input)
 
-export function hashToCID(input: string): CID {
-  const hashBytes = hexToBytes(input)
-  const multihash = new Uint8Array([0x1b, hashBytes.length, ...hashBytes])
-  const cid = new CID(1, 'dag-pb', multihash)
-
-  return cid
-}
-
-export function CIDToHash(input: string): string {
-  const cid = new CID(input)
-  const hashBytes = cid.multihash.slice(2)
-
-  return bytesToHex(hashBytes)
-}
-
-export function isCID(input: string): boolean {
-  return input.startsWith('bafyb') && input.length === 59
+      return true
+    } catch (e) {
+      return false
+    }
+  }
 }
 
 export function isHash(input: string): boolean {
@@ -53,8 +53,8 @@ export function getSubdomain(url: string): string | null {
 }
 
 export function subdomainToBzzResource(subdomain: string): string {
-  if (isCID(subdomain)) {
-    const contentHash = CIDToHash(subdomain)
+  if (isSwarmCid(subdomain)) {
+    const contentHash = CidToHash(subdomain)
 
     return contentHash
   }
@@ -62,13 +62,16 @@ export function subdomainToBzzResource(subdomain: string): string {
   return `${subdomain}.eth`
 }
 
-export function bzzResourceToSubdomain(bzzReference: string): string | null {
+export function bzzResourceToSubdomain(
+  bzzReference: string,
+  type: swarmCid.ReferenceType = swarmCid.ReferenceType.FEED,
+): string | null {
   const lastSlash = bzzReference.indexOf('/')
 
   if (lastSlash) bzzReference.slice(0, lastSlash)
 
   if (isHash(bzzReference)) {
-    const cid = hashToCID(bzzReference)
+    const cid = hashToCid(bzzReference, type)
 
     return cid.toString()
   }
