@@ -1,6 +1,6 @@
 {
   "name": "@ethersphere/swarm-extension",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Extension to properly handle Swarm dApps in browsers",
   "keywords": [
     "Swarm",
