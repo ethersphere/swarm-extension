@@ -13,6 +13,15 @@ describe('Unit', () => {
 
     expect(fakeUrlAgain).toBe(fakeUrl)
     expect(sessionIdAgain).toBe(sessionId)
+
+    // with path
+    const fakeUrl2 = `${FakeUrl.beeApiAddress}/bzz/${testBzzHash}/path/to/smth.img`
+    const fakeUrlWithSessionId2 = `${fakeUrl2}__${SWARM_SESSION_ID_KEY}~${sessionId}__`
+    const { originalUrl: fakeUrlAgain2, sessionId: sessionIdAgain2 } =
+      unpackSwarmSessionIdFromUrl(fakeUrlWithSessionId2)
+
+    expect(fakeUrlAgain2).toBe(fakeUrl2)
+    expect(sessionIdAgain2).toBe(sessionId)
   })
 
   test('Throw error at Unpacking Swarm session ID from wrong URL', () => {
