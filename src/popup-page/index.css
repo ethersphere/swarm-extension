@@ -4,26 +4,3 @@ body {
   min-width: 400px;
   overflow-x: hidden;
 }
-
-#root {
-  margin: 24px;
-}
-
-.margin-top > * {
-  display: block;
-  margin-top: 12px;
-}
-
-.a-click {
-  text-decoration: underline;
-  color: #de7100;
-  cursor: pointer;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-tr:nth-child(even) {
-  background-color: #f0d57254;
-}

@@ -5,6 +5,7 @@ import { GlobalContext } from '../context/global'
 import { BeeApiUrlChangeForm } from './bee-api-url-change-form'
 import { PostageBatchElement } from './postage-batch-element'
 import { Web2Origin } from './web2-origin'
+import Logo from '../assets/logo.svg'
 
 export function App(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
@@ -54,9 +55,62 @@ export function App(): JSX.Element {
 
   return (
     <>
-      <div id="app-extension" hidden={showBeeApp}>
-        <div>
-          <BeeApiUrlChangeForm />
+      <div id="app-extension" hidden={showBeeApp} style={{ backgroundColor: '#ededed' }}>
+        {/*  Header with logo and action */}
+        <div
+          style={{
+            height: 74,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#303030',
+          }}
+        >
+          <div style={{ height: 30, width: 88, marginLeft: 20 }}>
+            <img style={{ height: '100%', width: '100%' }} src={Logo} />
+          </div>
+          <div
+            style={{
+              marginRight: 16,
+              backgroundColor: '#3f3f3f',
+              padding: 12,
+              fontFamily: 'iA Writer Quattro V',
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#f9f9f9',
+            }}
+          >
+            <a href={window.location.href + '?app=bee-dashboard'} target="_blank">
+              Open Bee Dashboard
+            </a>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div
+          style={{
+            padding: 16,
+            width: '100%',
+            color: '#303030',
+            fontFamily: 'iA Writer Quattro V',
+            fontSize: 14,
+            fontWeight: 500,
+          }}
+        >
+          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12, marginBottom: 2 }}>Node error</div>
+          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12, marginBottom: 2 }}>Connected peers</div>
+          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12, marginBottom: 2 }}>API address</div>
+          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12 }}>Debug API address</div>
+          <div style={{ marginTop: 8, backgroundColor: '#f9f9f9', padding: 12 }}>Modify settings</div>
+          <div style={{ marginTop: 16, marginBottom: 16, width: '100%', height: 1, backgroundColor: '#dadada' }} />
+          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12, marginBottom: 2 }}>
+            Use global postage stamps
+          </div>
+          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12 }}>
+            Enable Web2 origins for dApps (unsafe)
+          </div>
+          {/*<BeeApiUrlChangeForm />
           <div style={{ margin: '12px 0px' }}>
             <a href={window.location.href + '?app=bee-dashboard'} target="_blank">
               Open Bee Dashboard
@@ -64,7 +118,7 @@ export function App(): JSX.Element {
           </div>
           <Web2Origin />
           <hr></hr>
-          <PostageBatchElement />
+          <PostageBatchElement />*/}
         </div>
       </div>
       <div id="app-bee-dashboard" hidden={!showBeeApp}>
