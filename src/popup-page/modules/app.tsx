@@ -6,6 +6,8 @@ import { BeeApiUrlChangeForm } from './bee-api-url-change-form'
 import { PostageBatchElement } from './postage-batch-element'
 import { Web2Origin } from './web2-origin'
 import Logo from '../assets/logo.svg'
+import Row from './Row'
+import Button from './Button'
 
 export function App(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
@@ -98,18 +100,14 @@ export function App(): JSX.Element {
             fontWeight: 500,
           }}
         >
-          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12, marginBottom: 2 }}>Node error</div>
-          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12, marginBottom: 2 }}>Connected peers</div>
-          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12, marginBottom: 2 }}>API address</div>
-          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12 }}>Debug API address</div>
-          <div style={{ marginTop: 8, backgroundColor: '#f9f9f9', padding: 12 }}>Modify settings</div>
+          <Row style={{ marginBottom: 2 }}>Node error</Row>
+          <Row style={{ marginBottom: 2 }}>Connected peers</Row>
+          <Row style={{ marginBottom: 2 }}>API address</Row>
+          <Row>Debug API address</Row>
+          <Button style={{ marginTop: 8 }}>Modify settings</Button>
           <div style={{ marginTop: 16, marginBottom: 16, width: '100%', height: 1, backgroundColor: '#dadada' }} />
-          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12, marginBottom: 2 }}>
-            Use global postage stamps
-          </div>
-          <div style={{ backgroundColor: '#f9f9f9', width: '100%', padding: 12 }}>
-            Enable Web2 origins for dApps (unsafe)
-          </div>
+          <Row style={{ marginBottom: 2 }}>Use global postage stamps</Row>
+          <Row>Enable Web2 origins for dApps (unsafe)</Row>
           {/*<BeeApiUrlChangeForm />
           <div style={{ margin: '12px 0px' }}>
             <a href={window.location.href + '?app=bee-dashboard'} target="_blank">

@@ -4,3 +4,7 @@ body {
   min-width: 400px;
   overflow-x: hidden;
 }
+.Button {
+  background-color: '#f9f9f9';
+  padding: 12;
+}
