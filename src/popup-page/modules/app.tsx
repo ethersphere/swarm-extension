@@ -4,10 +4,11 @@ import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 import { BeeApiUrlChangeForm } from './bee-api-url-change-form'
 import { PostageBatchElement } from './postage-batch-element'
-import { Web2Origin } from './web2-origin'
+import Web2Origin from './Web2Origin'
 import Logo from '../assets/logo.svg'
 import Row from './Row'
 import Button from './Button'
+import Toggle from './Toggle'
 
 export function App(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
@@ -57,7 +58,17 @@ export function App(): JSX.Element {
 
   return (
     <>
-      <div id="app-extension" hidden={showBeeApp} style={{ backgroundColor: '#ededed' }}>
+      <div
+        id="app-extension"
+        hidden={showBeeApp}
+        style={{
+          backgroundColor: '#ededed',
+          color: '#303030',
+          fontFamily: 'iA Writer Quattro V',
+          fontSize: 14,
+          fontWeight: 500,
+        }}
+      >
         {/*  Header with logo and action */}
         <div
           style={{
@@ -72,21 +83,14 @@ export function App(): JSX.Element {
           <div style={{ height: 30, width: 88, marginLeft: 20 }}>
             <img style={{ height: '100%', width: '100%' }} src={Logo} />
           </div>
-          <div
-            style={{
-              marginRight: 16,
-              backgroundColor: '#3f3f3f',
-              padding: 12,
-              fontFamily: 'iA Writer Quattro V',
-              fontSize: 14,
-              fontWeight: 500,
-              color: '#f9f9f9',
-            }}
+          <Button
+            variant="dark"
+            style={{ marginRight: 16 }}
+            href={window.location.href + '?app=bee-dashboard'}
+            target="_blank"
           >
-            <a href={window.location.href + '?app=bee-dashboard'} target="_blank">
-              Open Bee Dashboard
-            </a>
-          </div>
+            Open Bee Dashboard
+          </Button>
         </div>
 
         {/* Body */}
@@ -94,20 +98,25 @@ export function App(): JSX.Element {
           style={{
             padding: 16,
             width: '100%',
-            color: '#303030',
-            fontFamily: 'iA Writer Quattro V',
-            fontSize: 14,
-            fontWeight: 500,
           }}
         >
           <Row style={{ marginBottom: 2 }}>Node error</Row>
           <Row style={{ marginBottom: 2 }}>Connected peers</Row>
           <Row style={{ marginBottom: 2 }}>API address</Row>
           <Row>Debug API address</Row>
-          <Button style={{ marginTop: 8 }}>Modify settings</Button>
+          <Button
+            variant="light"
+            style={{ marginTop: 8 }}
+            href={window.location.href + '?app=bee-dashboard'}
+            target="_blank"
+          >
+            Modify settings
+          </Button>
           <div style={{ marginTop: 16, marginBottom: 16, width: '100%', height: 1, backgroundColor: '#dadada' }} />
           <Row style={{ marginBottom: 2 }}>Use global postage stamps</Row>
-          <Row>Enable Web2 origins for dApps (unsafe)</Row>
+          <Row>
+            <Web2Origin />
+          </Row>
           {/*<BeeApiUrlChangeForm />
           <div style={{ margin: '12px 0px' }}>
             <a href={window.location.href + '?app=bee-dashboard'} target="_blank">

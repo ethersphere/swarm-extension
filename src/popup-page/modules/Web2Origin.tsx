@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
 import { GlobalContext } from '../context/global'
+import Toggle from './Toggle'
 
-export function Web2Origin(): JSX.Element {
+export default function Web2Origin(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: dispatchGlobalState, state: globalState } = globalStateContext
 
@@ -10,11 +11,9 @@ export function Web2Origin(): JSX.Element {
   }
 
   return (
-    <div id="form-bee-debug-api-url-change">
-      <label>
-        Enable Web2 origins for dApps (unsafe)
-        <input type="checkbox" checked={globalState.web2OriginEnabled} onClick={handleWeb2OriginClick} />
-      </label>
+    <div>
+      <label>Enable Web2 origins for dApps (unsafe) {JSON.stringify(globalState.web2OriginEnabled)}</label>
+      <Toggle checked={globalState.web2OriginEnabled} onClick={handleWeb2OriginClick} />
     </div>
   )
 }

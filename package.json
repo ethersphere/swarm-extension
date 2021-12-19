@@ -86,6 +86,7 @@
     "@ethersphere/swarm-cid": "^0.1.0",
     "nanoid": "^3.1.22",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-jss": "^10.9.0"
   }
 }

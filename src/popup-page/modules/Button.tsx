@@ -1,15 +1,48 @@
 import React, { HTMLAttributes, ReactNode } from 'react'
-import classes from './Button.css'
+import { createUseStyles } from 'react-jss'
+
+const useStyles = createUseStyles({
+  common: {
+    padding: 12,
+    display: 'inline-block',
+    cursor: 'pointer',
+  },
+  light: {
+    backgroundColor: '#f9f9f9',
+    '&:hover': {
+      backgroundColor: '#fdfdfd',
+    },
+  },
+  dark: {
+    backgroundColor: '#3f3f3f',
+    color: '#f9f9f9',
+    '&:hover': {
+      backgroundColor: '#595959',
+    },
+  },
+})
 
 interface Props {
   children?: ReactNode
-  style?: HTMLAttributes<HTMLDivElement>
+  style?: HTMLAttributes<HTMLLinkElement>
+  variant: 'dark' | 'light'
+  href: string
+  target?: '_blank'
 }
 
-const Button = ({ children, style }: Props) => (
-  <div className="Button" style={style}>
-    {children}
-  </div>
-)
+const Button = ({ children, style, variant, href, target }: Props) => {
+  const classes = useStyles()
+
+  return (
+    <a
+      className={`${classes.common} ${variant === 'dark' ? classes.dark : classes.light}`}
+      style={style}
+      href={href}
+      target={target}
+    >
+      {children}
+    </a>
+  )
+}
 
 export default Button
