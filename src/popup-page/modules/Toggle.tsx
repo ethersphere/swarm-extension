@@ -15,6 +15,8 @@ const useStyles = createUseStyles({
     appearance: 'none',
     width: 32,
     height: 18,
+    margin: 0,
+    padding: 0,
     display: 'inline-block',
     position: 'relative',
     borderRadius: 25,
@@ -48,7 +50,7 @@ const useStyles = createUseStyles({
       transition: 'all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s',
     },
     '&:checked': {
-      backgroundColor: '#ec922a',
+      backgroundColor: '#52d368',
       '&:before': {
         left: 16,
       },

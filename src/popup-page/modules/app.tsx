@@ -113,9 +113,11 @@ export function App(): JSX.Element {
             Modify settings
           </Button>
           <div style={{ marginTop: 16, marginBottom: 16, width: '100%', height: 1, backgroundColor: '#dadada' }} />
-          <Row style={{ marginBottom: 2 }}>Use global postage stamps</Row>
-          <Row>
+          <Row style={{ marginBottom: 2 }}>
             <Web2Origin />
+          </Row>
+          <Row>
+            <PostageBatchElement />
           </Row>
           {/*<BeeApiUrlChangeForm />
           <div style={{ margin: '12px 0px' }}>

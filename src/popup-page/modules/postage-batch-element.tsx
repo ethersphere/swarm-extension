@@ -1,5 +1,6 @@
 import { PostageBatch } from '@ethersphere/bee-js'
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
+import Toggle from './Toggle'
 import { getPostageBatches } from '../../utils/bee-js'
 import { GlobalContext } from '../context/global'
 import { utilizationPercentage } from '../utils'
@@ -19,8 +20,7 @@ export function PostageBatchElement(): ReactElement {
     init()
   }, [globalState.globalPostageBatchEnabled])
 
-  const handleUseGlobalPostageBatch = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const { checked } = event.target
+  const handleUseGlobalPostageBatch = (checked: boolean): void => {
     dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE', newValue: checked })
 
     if (checked) {
@@ -63,20 +63,16 @@ export function PostageBatchElement(): ReactElement {
       )
     })
   }
+  const checked = globalState.globalPostageBatchEnabled
 
   return (
-    <div id="form-postage-batch">
+    <div>
       <div>
-        <div className="margin-top">
-          <label>
-            <input
-              id="global-postage-stamp-enabled"
-              type="checkbox"
-              onChange={handleUseGlobalPostageBatch}
-              checked={globalState.globalPostageBatchEnabled}
-            />
-            Use global Postage Batch
-          </label>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          Use global Postage Batch
+          <div>
+            {checked ? 'on' : 'off'} <Toggle checked={checked} onToggle={handleUseGlobalPostageBatch} />
+          </div>
         </div>
         <div id="global-postage-batch-details" className="margin-top" hidden={!globalState.globalPostageBatchEnabled}>
           <div>
