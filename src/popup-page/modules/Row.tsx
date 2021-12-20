@@ -1,9 +1,9 @@
-import React, { HTMLAttributes, ReactNode } from 'react'
+import React, { CSSProperties, ReactNode } from 'react'
 import { createUseStyles } from 'react-jss'
 
 interface Props {
   children?: ReactNode
-  style?: HTMLAttributes<HTMLDivElement>
+  style?: CSSProperties
 }
 
 const useStyles = createUseStyles({

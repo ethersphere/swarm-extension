@@ -1,10 +1,10 @@
-import React, { HTMLAttributes, ReactNode } from 'react'
+import React, { CSSProperties, ReactNode } from 'react'
 import { createUseStyles } from 'react-jss'
 
 interface Props {
   id?: string
   children?: ReactNode
-  style?: HTMLAttributes<HTMLDivElement>
+  style?: CSSProperties
   onToggle: (value: boolean) => void
   checked: boolean
 }

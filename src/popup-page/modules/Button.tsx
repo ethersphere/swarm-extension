@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, ReactNode } from 'react'
+import React, { CSSProperties, ReactNode } from 'react'
 import { createUseStyles } from 'react-jss'
 
 const useStyles = createUseStyles({
@@ -30,7 +30,7 @@ const useStyles = createUseStyles({
 interface Props {
   id?: string
   children?: ReactNode
-  style?: HTMLAttributes<HTMLLinkElement>
+  style?: CSSProperties
   variant: 'dark' | 'light'
   onClick?: () => void
   href?: string
