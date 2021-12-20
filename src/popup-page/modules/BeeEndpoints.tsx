@@ -70,6 +70,7 @@ export default function BeeEndpoints(): JSX.Element {
       {(beeApiUrl !== globalState.beeApiUrl || beeDebugApiUrl !== globalState.beeDebugApiUrl) && (
         <div style={{ marginTop: 8 }}>
           <Button
+            variant="light"
             onClick={() => {
               submitBeeAPI()
               submitBeeDebugAPI()
@@ -78,6 +79,7 @@ export default function BeeEndpoints(): JSX.Element {
             Save
           </Button>
           <Button
+            variant="light"
             style={{ marginLeft: 8 }}
             onClick={() => {
               setBeeApiUrl(globalState.beeApiUrl)
