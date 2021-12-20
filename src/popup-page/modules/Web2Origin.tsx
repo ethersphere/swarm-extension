@@ -1,8 +1,15 @@
 import React, { useContext } from 'react'
+import { createUseStyles } from 'react-jss'
+
 import { GlobalContext } from '../context/global'
 import Toggle from './Toggle'
 
+const useStyles = createUseStyles({
+  root: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+})
+
 export default function Web2Origin(): JSX.Element {
+  const classes = useStyles()
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: dispatchGlobalState, state: globalState } = globalStateContext
 
@@ -13,7 +20,7 @@ export default function Web2Origin(): JSX.Element {
   const checked = globalState.web2OriginEnabled
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className={classes.root}>
       Enable Web2 origins for dApps (unsafe)
       <div>
         {checked ? 'on' : 'off'} <Toggle checked={checked} onToggle={handleWeb2OriginClick} />

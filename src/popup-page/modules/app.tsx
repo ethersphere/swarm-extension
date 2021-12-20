@@ -8,7 +8,8 @@ import Web2Origin from './Web2Origin'
 import Logo from '../assets/logo.svg'
 import Row from './Row'
 import Button from './Button'
-import Toggle from './Toggle'
+import BeeApiUrl from './BeeApiURL'
+import BeeDebugApiUrl from './BeeDebugApiURL'
 
 export function App(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
@@ -102,8 +103,12 @@ export function App(): JSX.Element {
         >
           <Row style={{ marginBottom: 2 }}>Node error</Row>
           <Row style={{ marginBottom: 2 }}>Connected peers</Row>
-          <Row style={{ marginBottom: 2 }}>API address</Row>
-          <Row>Debug API address</Row>
+          <Row style={{ marginBottom: 2 }}>
+            <BeeApiUrl />
+          </Row>
+          <Row>
+            <BeeDebugApiUrl />
+          </Row>
           <Button
             variant="light"
             style={{ marginTop: 8 }}

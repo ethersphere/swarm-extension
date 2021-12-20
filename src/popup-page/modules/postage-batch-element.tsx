@@ -1,11 +1,18 @@
 import { PostageBatch } from '@ethersphere/bee-js'
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
+import { createUseStyles } from 'react-jss'
+
 import Toggle from './Toggle'
 import { getPostageBatches } from '../../utils/bee-js'
 import { GlobalContext } from '../context/global'
 import { utilizationPercentage } from '../utils'
 
+const useStyles = createUseStyles({
+  button: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+})
+
 export function PostageBatchElement(): ReactElement {
+  const classes = useStyles()
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: dispatchGlobalState, state: globalState } = globalStateContext
   const [fetchedPostageBatches, setFetchedPostageBatches] = useState<PostageBatch[]>([])
@@ -68,7 +75,7 @@ export function PostageBatchElement(): ReactElement {
   return (
     <div>
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className={classes.button}>
           Use global Postage Batch
           <div>
             {checked ? 'on' : 'off'} <Toggle checked={checked} onToggle={handleUseGlobalPostageBatch} />
