@@ -62,34 +62,42 @@ export default function BeeEndpoints(): JSX.Element {
   return (
     <>
       <Row style={{ marginBottom: 2 }}>
-        <Input label="Bee API URL" value={beeApiUrl} onChange={onBeeApiUrlChange} />
+        <Input id="bee-api-url-input" label="Bee API URL" value={beeApiUrl} onChange={onBeeApiUrlChange} />
       </Row>
       <Row>
-        <Input label="Bee Debug API URL" value={beeDebugApiUrl} onChange={onBeeDebugApiUrlChange} />
+        <Input
+          id="bee-debug-api-url-input"
+          label="Bee Debug API URL"
+          value={beeDebugApiUrl}
+          onChange={onBeeDebugApiUrlChange}
+        />
       </Row>
-      {(beeApiUrl !== globalState.beeApiUrl || beeDebugApiUrl !== globalState.beeDebugApiUrl) && (
-        <div style={{ marginTop: 8 }}>
-          <Button
-            variant="light"
-            onClick={() => {
-              submitBeeAPI()
-              submitBeeDebugAPI()
-            }}
-          >
-            Save
-          </Button>
-          <Button
-            variant="light"
-            style={{ marginLeft: 8 }}
-            onClick={() => {
-              setBeeApiUrl(globalState.beeApiUrl)
-              setBeeDebugApiUrl(globalState.beeDebugApiUrl)
-            }}
-          >
-            Cancel
-          </Button>
-        </div>
-      )}
+      <div
+        style={{ marginTop: 8 }}
+        hidden={beeApiUrl === globalState.beeApiUrl && beeDebugApiUrl === globalState.beeDebugApiUrl}
+      >
+        <Button
+          id="api-button-save"
+          variant="light"
+          onClick={() => {
+            submitBeeAPI()
+            submitBeeDebugAPI()
+          }}
+        >
+          Save
+        </Button>
+        <Button
+          id="api-button-cancel"
+          variant="light"
+          style={{ marginLeft: 8 }}
+          onClick={() => {
+            setBeeApiUrl(globalState.beeApiUrl)
+            setBeeDebugApiUrl(globalState.beeDebugApiUrl)
+          }}
+        >
+          Cancel
+        </Button>
+      </div>
     </>
   )
 }

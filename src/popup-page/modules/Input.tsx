@@ -1,8 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React from 'react'
 import { createUseStyles } from 'react-jss'
-
-import { GlobalContext } from '../context/global'
-import Button from './Button'
 
 const useStyles = createUseStyles({
   root: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
@@ -18,12 +15,13 @@ const useStyles = createUseStyles({
 })
 
 interface Props {
+  id?: string
   label: string
   value: string
   onChange: (value: string) => void
 }
 
-export default function Input({ label, value, onChange }): JSX.Element {
+export default function Input({ label, value, onChange, id }: Props): JSX.Element {
   const classes = useStyles()
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -31,7 +29,7 @@ export default function Input({ label, value, onChange }): JSX.Element {
   }
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} id={id}>
       {label}
       <input type="text" value={value} onChange={handleChange} className={classes.input} />
     </div>

@@ -28,6 +28,7 @@ const useStyles = createUseStyles({
 })
 
 interface Props {
+  id?: string
   children?: ReactNode
   style?: HTMLAttributes<HTMLLinkElement>
   variant: 'dark' | 'light'
@@ -36,12 +37,13 @@ interface Props {
   target?: '_blank'
 }
 
-const Button = ({ children, style, variant, href, target, onClick }: Props) => {
+const Button = ({ children, style, variant, href, target, onClick, id }: Props) => {
   const classes = useStyles()
 
   if (onClick) {
     return (
       <div
+        id={id}
         className={`${classes.common} ${variant === 'dark' ? classes.dark : classes.light}`}
         style={style}
         onClick={onClick}
@@ -53,6 +55,7 @@ const Button = ({ children, style, variant, href, target, onClick }: Props) => {
 
   return (
     <a
+      id={id}
       className={`${classes.common} ${variant === 'dark' ? classes.dark : classes.light}`}
       style={style}
       href={href}
