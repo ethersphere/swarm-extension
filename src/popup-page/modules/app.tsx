@@ -88,7 +88,7 @@ export function App(): JSX.Element {
             href={window.location.href + '?app=bee-dashboard'}
             target="_blank"
           >
-            Open Bee Dashboard
+            Open Dashboard
           </Button>
         </div>
 
