@@ -31,12 +31,25 @@ interface Props {
   children?: ReactNode
   style?: HTMLAttributes<HTMLLinkElement>
   variant: 'dark' | 'light'
-  href: string
+  onClick?: () => void
+  href?: string
   target?: '_blank'
 }
 
-const Button = ({ children, style, variant, href, target }: Props) => {
+const Button = ({ children, style, variant, href, target, onClick }: Props) => {
   const classes = useStyles()
+
+  if (onClick) {
+    return (
+      <div
+        className={`${classes.common} ${variant === 'dark' ? classes.dark : classes.light}`}
+        style={style}
+        onClick={onClick}
+      >
+        {children}
+      </div>
+    )
+  }
 
   return (
     <a

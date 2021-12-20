@@ -21,15 +21,10 @@ interface Props {
   label: string
   value: string
   onChange: (value: string) => void
-  onSubmit: (value: string) => void
 }
 
-export default function EditForm({ label, value, onChange, onSubmit }): JSX.Element {
+export default function Input({ label, value, onChange }): JSX.Element {
   const classes = useStyles()
-
-  const handleSubmit = (): void => {
-    onSubmit(value)
-  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     onChange(event.target.value)
@@ -39,7 +34,6 @@ export default function EditForm({ label, value, onChange, onSubmit }): JSX.Elem
     <div className={classes.root}>
       {label}
       <input type="text" value={value} onChange={handleChange} className={classes.input} />
-      {/*<Button value="Change" onClick={handleSubmit} />*/}
     </div>
   )
 }

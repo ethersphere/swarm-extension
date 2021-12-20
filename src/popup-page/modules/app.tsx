@@ -8,8 +8,7 @@ import Web2Origin from './Web2Origin'
 import Logo from '../assets/logo.svg'
 import Row from './Row'
 import Button from './Button'
-import BeeApiUrl from './BeeApiURL'
-import BeeDebugApiUrl from './BeeDebugApiURL'
+import BeeEndpoints from './BeeEndpoints'
 
 export function App(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
@@ -101,20 +100,7 @@ export function App(): JSX.Element {
             width: '100%',
           }}
         >
-          <Row style={{ marginBottom: 2 }}>
-            <BeeApiUrl />
-          </Row>
-          <Row>
-            <BeeDebugApiUrl />
-          </Row>
-          <Button
-            variant="light"
-            style={{ marginTop: 8 }}
-            href={window.location.href + '?app=bee-dashboard'}
-            target="_blank"
-          >
-            Modify settings
-          </Button>
+          <BeeEndpoints />
           <div style={{ marginTop: 16, marginBottom: 16, width: '100%', height: 1, backgroundColor: '#dadada' }} />
           <Row style={{ marginBottom: 2 }}>
             <Web2Origin />

@@ -1,14 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '../context/global'
+import Row from './Row'
+import Input from './Input'
+import Button from './Button'
 
-export function BeeApiUrlChangeForm(): JSX.Element {
+export default function BeeEndpoints(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: dispatchGlobalState, state: globalState } = globalStateContext
   const [beeApiUrl, setBeeApiUrl] = useState<string>(globalState.beeApiUrl)
   const [beeDebugApiUrl, setBeeDebugApiUrl] = useState<string>(globalState.beeDebugApiUrl)
 
-  const handleApiUrlSubmit = (event: React.FormEvent<HTMLElement>): void => {
-    event.preventDefault()
+  const submitBeeAPI = (): void => {
+    // No need to update
+    if (beeApiUrl === globalState.beeApiUrl) return
 
     if (!/^https?:\/\/.*/i.test(beeApiUrl)) {
       // eslint-disable-next-line no-alert
@@ -23,8 +27,9 @@ export function BeeApiUrlChangeForm(): JSX.Element {
     dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue: null })
   }
 
-  const handleDedugUrlSubmit = (event: React.FormEvent<HTMLElement>): void => {
-    event.preventDefault()
+  const submitBeeDebugAPI = (): void => {
+    // No need to update
+    if (beeDebugApiUrl === globalState.beeDebugApiUrl) return
 
     if (!/^https?:\/\/.*/i.test(beeDebugApiUrl)) {
       // eslint-disable-next-line no-alert
@@ -38,12 +43,12 @@ export function BeeApiUrlChangeForm(): JSX.Element {
     dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue: null })
   }
 
-  const handleBeeApiUrlChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setBeeApiUrl(event.target.value)
+  const onBeeApiUrlChange = (value: string): void => {
+    setBeeApiUrl(value)
   }
 
-  const handleBeeDebugApiUrlChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setBeeDebugApiUrl(event.target.value)
+  const onBeeDebugApiUrlChange = (value: string): void => {
+    setBeeDebugApiUrl(value)
   }
 
   useEffect(() => {
@@ -55,24 +60,34 @@ export function BeeApiUrlChangeForm(): JSX.Element {
   }, [globalState.beeDebugApiUrl])
 
   return (
-    <div>
-      <form id="form-bee-api-url-change" onSubmit={handleApiUrlSubmit}>
-        <label>
-          Bee node API address:
-          <br />
-          <input type="text" value={beeApiUrl} onChange={handleBeeApiUrlChange} />
-        </label>
-        <input type="submit" value="Change" />
-      </form>
-
-      <form id="form-bee-debug-api-url-change" onSubmit={handleDedugUrlSubmit}>
-        <label>
-          Bee node Debug API address:
-          <br />
-          <input type="text" value={beeDebugApiUrl} onChange={handleBeeDebugApiUrlChange} />
-        </label>
-        <input type="submit" value="Change" />
-      </form>
-    </div>
+    <>
+      <Row style={{ marginBottom: 2 }}>
+        <Input label="Bee API URL" value={beeApiUrl} onChange={onBeeApiUrlChange} />
+      </Row>
+      <Row>
+        <Input label="Bee Debug API URL" value={beeDebugApiUrl} onChange={onBeeDebugApiUrlChange} />
+      </Row>
+      {(beeApiUrl !== globalState.beeApiUrl || beeDebugApiUrl !== globalState.beeDebugApiUrl) && (
+        <div style={{ marginTop: 8 }}>
+          <Button
+            onClick={() => {
+              submitBeeAPI()
+              submitBeeDebugAPI()
+            }}
+          >
+            Save
+          </Button>
+          <Button
+            style={{ marginLeft: 8 }}
+            onClick={() => {
+              setBeeApiUrl(globalState.beeApiUrl)
+              setBeeDebugApiUrl(globalState.beeDebugApiUrl)
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
+      )}
+    </>
   )
 }
