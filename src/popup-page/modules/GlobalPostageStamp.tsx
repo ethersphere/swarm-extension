@@ -45,7 +45,7 @@ export default function GlobalPostageStamp(): ReactElement {
     setFetchedPostageBatches(await getPostageBatches(globalState.beeDebugApiUrl))
   }
 
-  const getPostageBatchUsage = (): ReactElement[] => {
+  const getPostageBatchUsage = (): string => {
     const stamp = fetchedPostageBatches.find(b => b.batchID === globalState.postageBatchId)
 
     if (stamp) return utilizationPercentage(stamp)
@@ -60,6 +60,7 @@ export default function GlobalPostageStamp(): ReactElement {
     if (fetchedPostageBatches.length > 0) {
       return (
         <select
+          id="postage-stamps-select"
           name="stamps"
           value={globalState.postageBatchId}
           onChange={onChange}
@@ -85,10 +86,14 @@ export default function GlobalPostageStamp(): ReactElement {
       <Row>
         <div className={classes.button}>
           Use global Postage Batch
-          <Toggle checked={globalState.globalPostageBatchEnabled} onToggle={handleUseGlobalPostageBatch} />
+          <Toggle
+            id="postage-stamps-toggle"
+            checked={globalState.globalPostageBatchEnabled}
+            onToggle={handleUseGlobalPostageBatch}
+          />
         </div>
       </Row>
-      {globalState.globalPostageBatchEnabled && (
+      <div hidden={!globalState.globalPostageBatchEnabled}>
         <Row
           style={{
             marginTop: 2,
@@ -99,13 +104,21 @@ export default function GlobalPostageStamp(): ReactElement {
         >
           Selected stamp
           <div>{getSelect()}</div>
+          {/* This is used only for tests */}
+          <div id="postage-stamp-batch-id" hidden>
+            {globalState.postageBatchId}
+          </div>
         </Row>
-      )}
-      {globalState.globalPostageBatchEnabled && globalState.postageBatchId && fetchedPostageBatches.length > 0 && (
+      </div>
+      <div
+        hidden={
+          !globalState.globalPostageBatchEnabled || !globalState.postageBatchId || fetchedPostageBatches.length < 1
+        }
+      >
         <Row style={{ marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           Stamp usage <div>{getPostageBatchUsage()}%</div>
         </Row>
-      )}
+      </div>
     </>
   )
 }

@@ -189,17 +189,18 @@ describe('BZZ protocol', () => {
 
   test('Allow Global Postage Stamp ID', async done => {
     const extensionPage = await openExtensionPage()
+    const stamp = getStamp()
 
-    const checkboxSelector = '#global-postage-stamp-enabled'
+    const checkboxSelector = '#postage-stamps-toggle input[type=checkbox]'
     const checkbox = await getElementBySelector(checkboxSelector, extensionPage)
     await checkbox.click()
-    const firstPostageBatchSelector = '#postage-batch-list tbody tr:nth-child(1) td:nth-child(3) a'
-    const firstPostageBatchSelectButton = await getElementBySelector(firstPostageBatchSelector, extensionPage)
-    await firstPostageBatchSelectButton.click()
-    const globalPostageBatchIdSelector = '#global-postage-batch-id'
+    const postageBatchSelector = '#postage-stamps-select'
+    const postageBatchSelect = await getElementBySelector(postageBatchSelector, extensionPage)
+    await postageBatchSelect.select(stamp)
+    const globalPostageBatchIdSelector = '#postage-stamp-batch-id'
     const globalPostageBatchId = await extensionPage.$eval(globalPostageBatchIdSelector, e => e.innerHTML)
 
-    expect(globalPostageBatchId).toHaveLength(64) // valid postage batch ID
+    expect(globalPostageBatchId).toEqual(stamp)
 
     await extensionPage.close()
 

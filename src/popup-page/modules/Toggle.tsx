@@ -2,6 +2,7 @@ import React, { HTMLAttributes, ReactNode } from 'react'
 import { createUseStyles } from 'react-jss'
 
 interface Props {
+  id?: string
   children?: ReactNode
   style?: HTMLAttributes<HTMLDivElement>
   onToggle: (value: boolean) => void
@@ -59,11 +60,11 @@ const useStyles = createUseStyles({
   },
 })
 
-const Toggle = ({ style, onToggle, checked }: Props) => {
+const Toggle = ({ style, onToggle, checked, id }: Props) => {
   const classes = useStyles()
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} id={id}>
       {checked ? 'on' : 'off'}{' '}
       <input
         className={classes.toggle}
