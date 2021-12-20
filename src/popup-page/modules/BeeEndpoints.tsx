@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { Check, X } from 'react-feather'
+
 import { GlobalContext } from '../context/global'
 import Row from './Row'
 import Input from './Input'
@@ -84,7 +86,10 @@ export default function BeeEndpoints(): JSX.Element {
             submitBeeDebugAPI()
           }}
         >
-          Save
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Check size="18" style={{ marginRight: 8 }} />
+            Save
+          </div>
         </Button>
         <Button
           id="api-button-cancel"
@@ -95,7 +100,10 @@ export default function BeeEndpoints(): JSX.Element {
             setBeeDebugApiUrl(globalState.beeDebugApiUrl)
           }}
         >
-          Cancel
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <X size="18" style={{ marginRight: 8 }} />
+            Cancel
+          </div>
         </Button>
       </div>
     </>

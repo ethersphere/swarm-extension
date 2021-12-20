@@ -1,5 +1,7 @@
 import BeeDashboard from '@ethersphere/bee-dashboard'
 import React, { useContext, useEffect, useState } from 'react'
+import { ExternalLink } from 'react-feather'
+
 import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 import GlobalPostageStamp from './GlobalPostageStamp'
@@ -88,7 +90,10 @@ export function App(): JSX.Element {
             href={window.location.href + '?app=bee-dashboard'}
             target="_blank"
           >
-            Open Dashboard
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <ExternalLink size="18" style={{ marginRight: 8 }} />
+              Open Dashboard
+            </div>
           </Button>
         </div>
 
