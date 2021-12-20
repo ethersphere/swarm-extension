@@ -2,8 +2,7 @@ import BeeDashboard from '@ethersphere/bee-dashboard'
 import React, { useContext, useEffect, useState } from 'react'
 import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
-import { BeeApiUrlChangeForm } from './bee-api-url-change-form'
-import { PostageBatchElement } from './postage-batch-element'
+import GlobalPostageStamp from './GlobalPostageStamp'
 import Web2Origin from './Web2Origin'
 import Logo from '../assets/logo.svg'
 import Row from './Row'
@@ -105,18 +104,7 @@ export function App(): JSX.Element {
           <Row style={{ marginBottom: 2 }}>
             <Web2Origin />
           </Row>
-          <Row>
-            <PostageBatchElement />
-          </Row>
-          {/*<BeeApiUrlChangeForm />
-          <div style={{ margin: '12px 0px' }}>
-            <a href={window.location.href + '?app=bee-dashboard'} target="_blank">
-              Open Bee Dashboard
-            </a>
-          </div>
-          <Web2Origin />
-          <hr></hr>
-          <PostageBatchElement />*/}
+          <GlobalPostageStamp />
         </div>
       </div>
       <div id="app-bee-dashboard" hidden={!showBeeApp}>
