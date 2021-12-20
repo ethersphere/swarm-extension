@@ -6,9 +6,14 @@ const useStyles = createUseStyles({
     padding: 12,
     display: 'inline-block',
     cursor: 'pointer',
+    textDecoration: 'none',
+    fontFamily: 'iA Writer Quattro V',
+    fontSize: 14,
+    fontWeight: 500,
   },
   light: {
     backgroundColor: '#f9f9f9',
+    color: '#303030',
     '&:hover': {
       backgroundColor: '#fdfdfd',
     },

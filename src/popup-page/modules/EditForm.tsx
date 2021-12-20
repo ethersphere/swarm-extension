@@ -6,6 +6,15 @@ import Button from './Button'
 
 const useStyles = createUseStyles({
   root: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  input: {
+    backgroundColor: 'rgba(0,0,0,0)',
+    border: 'none',
+    textAlign: 'right',
+    fontFamily: 'iA Writer Quattro V',
+    fontSize: 14,
+    fontWeight: 500,
+    '&:focus': { outline: 'none' },
+  },
 })
 
 interface Props {
@@ -29,12 +38,7 @@ export default function EditForm({ label, value, onChange, onSubmit }): JSX.Elem
   return (
     <div className={classes.root}>
       {label}
-      <input
-        type="text"
-        value={value}
-        onChange={handleChange}
-        style={{ backgroundColor: 'rgba(0,0,0,0)', border: 'none', textAlign: 'right' }}
-      />
+      <input type="text" value={value} onChange={handleChange} className={classes.input} />
       {/*<Button value="Change" onClick={handleSubmit} />*/}
     </div>
   )

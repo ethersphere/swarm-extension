@@ -17,14 +17,10 @@ export default function Web2Origin(): JSX.Element {
     dispatchGlobalState({ type: 'WEB2_ORIGIN_ENABLED_SAVE', newValue: checked })
   }
 
-  const checked = globalState.web2OriginEnabled
-
   return (
     <div className={classes.root}>
       Enable Web2 origins for dApps (unsafe)
-      <div>
-        {checked ? 'on' : 'off'} <Toggle checked={checked} onToggle={handleWeb2OriginClick} />
-      </div>
+      <Toggle checked={globalState.web2OriginEnabled} onToggle={handleWeb2OriginClick} />
     </div>
   )
 }

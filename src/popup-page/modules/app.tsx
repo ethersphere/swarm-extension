@@ -101,8 +101,6 @@ export function App(): JSX.Element {
             width: '100%',
           }}
         >
-          <Row style={{ marginBottom: 2 }}>Node error</Row>
-          <Row style={{ marginBottom: 2 }}>Connected peers</Row>
           <Row style={{ marginBottom: 2 }}>
             <BeeApiUrl />
           </Row>

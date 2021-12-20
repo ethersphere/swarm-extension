@@ -4,3 +4,15 @@ body {
   min-width: 400px;
   overflow-x: hidden;
 }
+
+@font-face {
+  font-family: 'iA Writer Mono V';
+  src: local('iA Writer Mono V'), url(./assets/iAWriterMonoV.ttf) format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'iA Writer Quattro V';
+  src: local('iA Writer Quattro V'), url(./assets/iAWriterQuattroV.ttf) format('truetype');
+  font-weight: 500;
+}

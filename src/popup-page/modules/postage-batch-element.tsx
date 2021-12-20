@@ -70,16 +70,13 @@ export function PostageBatchElement(): ReactElement {
       )
     })
   }
-  const checked = globalState.globalPostageBatchEnabled
 
   return (
     <div>
       <div>
         <div className={classes.button}>
           Use global Postage Batch
-          <div>
-            {checked ? 'on' : 'off'} <Toggle checked={checked} onToggle={handleUseGlobalPostageBatch} />
-          </div>
+          <Toggle checked={globalState.globalPostageBatchEnabled} onToggle={handleUseGlobalPostageBatch} />
         </div>
         <div id="global-postage-batch-details" className="margin-top" hidden={!globalState.globalPostageBatchEnabled}>
           <div>

@@ -9,6 +9,7 @@ interface Props {
 }
 
 const useStyles = createUseStyles({
+  root: { width: 70, textAlign: 'right', fontFamily: 'iA Writer Mono V' },
   toggle: {
     ['-webkit-appearance']: 'none',
     ['-moz-appearance']: 'none',
@@ -62,13 +63,16 @@ const Toggle = ({ style, onToggle, checked }: Props) => {
   const classes = useStyles()
 
   return (
-    <input
-      className={classes.toggle}
-      style={style}
-      onClick={() => onToggle(!checked)}
-      type="checkbox"
-      checked={checked}
-    />
+    <div className={classes.root}>
+      {checked ? 'on' : 'off'}{' '}
+      <input
+        className={classes.toggle}
+        style={style}
+        onClick={() => onToggle(!checked)}
+        type="checkbox"
+        checked={checked}
+      />
+    </div>
   )
 }
 
