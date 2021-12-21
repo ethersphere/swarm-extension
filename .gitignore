@@ -19,8 +19,10 @@ coverage
 # node-waf configuration
 .lock-wscript
 
+# builds
 build
 dist
+extension.zip
 
 # Dependency directory
 node_modules

@@ -1,11 +1,11 @@
 {
   "name": "Ethereum Swarm Extension",
   "short_name": "Swarm Extension",
-  "version": "0.0.2",
+  "version": "0.2.1",
   "manifest_version": 2,
   "permissions": ["webRequest", "webRequestBlocking", "tabs", "storage", "*://*/*", "webNavigation"],
   "author": "nugaon",
-  "description": "PoC for Ethereum Swarm extension",
+  "description": "Web3 framework for Ethereum Swarm dApps",
   "icons": {
     "48": "assets/swarm.png"
   },
