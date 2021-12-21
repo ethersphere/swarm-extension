@@ -63,9 +63,13 @@ async function changeBeeApiUrl(newBeeApiUrl: string, extensionPage?: Page): Prom
   }
   const inputSelector = `#bee-api-url-input input[type="text"]`
   const inputText = await getElementBySelector(inputSelector, extensionPage)
+  const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
+
+  // The URL is the same, no need to change it
+  if (originalUrlValue === newBeeApiUrl) return newBeeApiUrl
+
   const submitSelector = `#api-button-save`
   const submitButton = await getElementBySelector(submitSelector, extensionPage)
-  const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
   await extensionPage.focus(inputSelector)
   await replaceInputValue(newBeeApiUrl, extensionPage)
   await submitButton.click()
@@ -90,9 +94,13 @@ async function changeBeeDebugApiUrl(newBeeDebugApiUrl: string, extensionPage?: P
   }
   const inputSelector = `#bee-debug-api-url-input input[type="text"]`
   const inputText = await getElementBySelector(inputSelector, extensionPage)
+  const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
+
+  // The URL is the same, no need to change it
+  if (originalUrlValue === newBeeDebugApiUrl) return newBeeDebugApiUrl
+
   const submitSelector = `#api-button-save`
   const submitButton = await getElementBySelector(submitSelector, extensionPage)
-  const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
   await extensionPage.focus(inputSelector)
   await replaceInputValue(newBeeDebugApiUrl, extensionPage)
   await submitButton.click()
