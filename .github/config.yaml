@@ -11,3 +11,4 @@ release:
     ### Before release
 
      - [ ] Update the version in `manifest.json` to the same version as this PR
+     - [ ] Update Google Store image before publish if the popup page's UI structure changed
