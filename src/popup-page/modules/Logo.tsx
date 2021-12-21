@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, ReactElement } from 'react'
 import { createUseStyles } from 'react-jss'
 
 interface Props {
@@ -12,7 +12,7 @@ const useStyles = createUseStyles({
   },
 })
 
-const Logo = ({ style }: Props) => {
+const Logo = ({ style }: Props): ReactElement => {
   const classes = useStyles()
 
   return (

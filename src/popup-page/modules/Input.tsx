@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { createUseStyles } from 'react-jss'
 
 const useStyles = createUseStyles({
@@ -21,7 +21,7 @@ interface Props {
   onChange: (value: string) => void
 }
 
-export default function Input({ label, value, onChange, id }: Props): JSX.Element {
+export default function Input({ label, value, onChange, id }: Props): ReactElement {
   const classes = useStyles()
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {

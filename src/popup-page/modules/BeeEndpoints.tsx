@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, ReactElement } from 'react'
 import { Check, X } from 'react-feather'
 
 import { GlobalContext } from '../context/global'
@@ -6,7 +6,7 @@ import Row from './Row'
 import Input from './Input'
 import Button from './Button'
 
-export default function BeeEndpoints(): JSX.Element {
+export default function BeeEndpoints(): ReactElement {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: dispatchGlobalState, state: globalState } = globalStateContext
   const [beeApiUrl, setBeeApiUrl] = useState<string>(globalState.beeApiUrl)

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, ReactElement } from 'react'
 import { createUseStyles } from 'react-jss'
 
 import { GlobalContext } from '../context/global'
@@ -8,7 +8,7 @@ const useStyles = createUseStyles({
   root: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
 })
 
-export default function Web2Origin(): JSX.Element {
+export default function Web2Origin(): ReactElement {
   const classes = useStyles()
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: dispatchGlobalState, state: globalState } = globalStateContext

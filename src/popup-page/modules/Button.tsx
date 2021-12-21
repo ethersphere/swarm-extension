@@ -1,4 +1,4 @@
-import React, { CSSProperties, ReactNode } from 'react'
+import React, { CSSProperties, ReactNode, ReactElement } from 'react'
 import { createUseStyles } from 'react-jss'
 
 const useStyles = createUseStyles({
@@ -37,7 +37,7 @@ interface Props {
   target?: '_blank'
 }
 
-const Button = ({ children, style, variant, href, target, onClick, id }: Props) => {
+const Button = ({ children, style, variant, href, target, onClick, id }: Props): ReactElement => {
   const classes = useStyles()
 
   if (onClick) {

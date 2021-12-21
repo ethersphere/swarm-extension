@@ -1,4 +1,4 @@
-import React, { CSSProperties, ReactNode } from 'react'
+import React, { CSSProperties, ReactNode, ReactElement } from 'react'
 import { createUseStyles } from 'react-jss'
 
 interface Props {
@@ -10,7 +10,7 @@ const useStyles = createUseStyles({
   root: { backgroundColor: '#f9f9f9', width: '100%', padding: 12 },
 })
 
-const Row = ({ children, style }: Props) => {
+const Row = ({ children, style }: Props): ReactElement => {
   const classes = useStyles()
 
   return (

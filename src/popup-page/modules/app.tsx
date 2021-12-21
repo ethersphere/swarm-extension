@@ -1,5 +1,5 @@
 import BeeDashboard from '@ethersphere/bee-dashboard'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, ReactElement } from 'react'
 import { ExternalLink } from 'react-feather'
 
 import { getItem } from '../../utils/storage'
@@ -11,7 +11,7 @@ import Button from './Button'
 import BeeEndpoints from './BeeEndpoints'
 import Logo from './Logo'
 
-export function App(): JSX.Element {
+export function App(): ReactElement {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: changeGlobalState } = globalStateContext
   const [showBeeApp, setShowBeeApp] = useState(false)
