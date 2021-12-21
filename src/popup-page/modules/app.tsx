@@ -1,12 +1,17 @@
 import BeeDashboard from '@ethersphere/bee-dashboard'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, ReactElement } from 'react'
+import { ExternalLink } from 'react-feather'
+
 import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
-import { BeeApiUrlChangeForm } from './bee-api-url-change-form'
-import { PostageBatchElement } from './postage-batch-element'
-import { Web2Origin } from './web2-origin'
+import GlobalPostageStamp from './GlobalPostageStamp'
+import Web2Origin from './Web2Origin'
+import Row from './Row'
+import Button from './Button'
+import BeeEndpoints from './BeeEndpoints'
+import Logo from './Logo'
 
-export function App(): JSX.Element {
+export function App(): ReactElement {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: changeGlobalState } = globalStateContext
   const [showBeeApp, setShowBeeApp] = useState(false)
@@ -54,17 +59,55 @@ export function App(): JSX.Element {
 
   return (
     <>
-      <div id="app-extension" hidden={showBeeApp}>
-        <div>
-          <BeeApiUrlChangeForm />
-          <div style={{ margin: '12px 0px' }}>
-            <a href={window.location.href + '?app=bee-dashboard'} target="_blank">
-              Open Bee Dashboard
-            </a>
-          </div>
-          <Web2Origin />
-          <hr></hr>
-          <PostageBatchElement />
+      <div
+        id="app-extension"
+        hidden={showBeeApp}
+        style={{
+          backgroundColor: '#ededed',
+          color: '#303030',
+          fontFamily: 'iA Writer Quattro V',
+          fontSize: 14,
+          fontWeight: 500,
+        }}
+      >
+        {/*  Header with logo and action */}
+        <div
+          style={{
+            height: 74,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#303030',
+          }}
+        >
+          <Logo style={{ marginLeft: 20 }} />
+          <Button
+            variant="dark"
+            style={{ marginRight: 16 }}
+            href={window.location.href + '?app=bee-dashboard'}
+            target="_blank"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <ExternalLink size="18" style={{ marginRight: 8 }} />
+              Open Dashboard
+            </div>
+          </Button>
+        </div>
+
+        {/* Body */}
+        <div
+          style={{
+            padding: 16,
+            width: '100%',
+          }}
+        >
+          <BeeEndpoints />
+          <div style={{ marginTop: 16, marginBottom: 16, width: '100%', height: 1, backgroundColor: '#dadada' }} />
+          <Row style={{ marginBottom: 2 }}>
+            <Web2Origin />
+          </Row>
+          <GlobalPostageStamp />
         </div>
       </div>
       <div id="app-bee-dashboard" hidden={!showBeeApp}>

@@ -376,12 +376,6 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
             return `${path}/[name].[ext]`
           },
         },
-        {
-          from: 'src/popup-page/index.css',
-          to: () => {
-            return `${path}/[name].[ext]`
-          },
-        },
       ],
     }),
   ]

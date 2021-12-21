@@ -61,12 +61,15 @@ async function changeBeeApiUrl(newBeeApiUrl: string, extensionPage?: Page): Prom
     closeExtensionPage = true
     extensionPage = await openExtensionPage()
   }
-  const formId = 'form-bee-api-url-change'
-  const inputSelector = `form[id="${formId}"] input[type="text"]`
+  const inputSelector = `#bee-api-url-input input[type="text"]`
   const inputText = await getElementBySelector(inputSelector, extensionPage)
-  const submitSelector = `form[id="${formId}"] input[type="submit"]`
-  const submitButton = await getElementBySelector(submitSelector, extensionPage)
   const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
+
+  // The URL is the same, no need to change it
+  if (originalUrlValue === newBeeApiUrl) return newBeeApiUrl
+
+  const submitSelector = `#api-button-save`
+  const submitButton = await getElementBySelector(submitSelector, extensionPage)
   await extensionPage.focus(inputSelector)
   await replaceInputValue(newBeeApiUrl, extensionPage)
   await submitButton.click()
@@ -89,12 +92,15 @@ async function changeBeeDebugApiUrl(newBeeDebugApiUrl: string, extensionPage?: P
     closeExtensionPage = true
     extensionPage = await openExtensionPage()
   }
-  const formId = 'form-bee-debug-api-url-change'
-  const inputSelector = `form[id="${formId}"] input[type="text"]`
+  const inputSelector = `#bee-debug-api-url-input input[type="text"]`
   const inputText = await getElementBySelector(inputSelector, extensionPage)
-  const submitSelector = `form[id="${formId}"] input[type="submit"]`
-  const submitButton = await getElementBySelector(submitSelector, extensionPage)
   const originalUrlValue = await (await inputText.getProperty('value')).jsonValue()
+
+  // The URL is the same, no need to change it
+  if (originalUrlValue === newBeeDebugApiUrl) return newBeeDebugApiUrl
+
+  const submitSelector = `#api-button-save`
+  const submitButton = await getElementBySelector(submitSelector, extensionPage)
   await extensionPage.focus(inputSelector)
   await replaceInputValue(newBeeDebugApiUrl, extensionPage)
   await submitButton.click()
@@ -191,17 +197,18 @@ describe('BZZ protocol', () => {
 
   test('Allow Global Postage Stamp ID', async done => {
     const extensionPage = await openExtensionPage()
+    const stamp = getStamp()
 
-    const checkboxSelector = '#global-postage-stamp-enabled'
+    const checkboxSelector = '#postage-stamps-toggle input[type=checkbox]'
     const checkbox = await getElementBySelector(checkboxSelector, extensionPage)
     await checkbox.click()
-    const firstPostageBatchSelector = '#postage-batch-list tbody tr:nth-child(1) td:nth-child(3) a'
-    const firstPostageBatchSelectButton = await getElementBySelector(firstPostageBatchSelector, extensionPage)
-    await firstPostageBatchSelectButton.click()
-    const globalPostageBatchIdSelector = '#global-postage-batch-id'
+    const postageBatchSelector = '#postage-stamps-select'
+    const postageBatchSelect = await getElementBySelector(postageBatchSelector, extensionPage)
+    await postageBatchSelect.select(stamp)
+    const globalPostageBatchIdSelector = '#postage-stamp-batch-id'
     const globalPostageBatchId = await extensionPage.$eval(globalPostageBatchIdSelector, e => e.innerHTML)
 
-    expect(globalPostageBatchId).toHaveLength(64) // valid postage batch ID
+    expect(globalPostageBatchId).toEqual(stamp)
 
     await extensionPage.close()
 

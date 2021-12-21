@@ -49,6 +49,7 @@
     "@types/puppeteer": "^5.4.2",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
+    "@types/react-jss": "^10.0.0",
     "@types/rimraf": "^3.0.0",
     "@types/terser-webpack-plugin": "^5.0.2",
     "@types/webpack": "^4.41.25",
@@ -86,6 +87,8 @@
     "@ethersphere/swarm-cid": "^0.1.0",
     "nanoid": "^3.1.22",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-feather": "^2.0.9",
+    "react-jss": "^10.9.0"
   }
 }

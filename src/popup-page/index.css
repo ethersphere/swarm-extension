@@ -5,25 +5,14 @@ body {
   overflow-x: hidden;
 }
 
-#root {
-  margin: 24px;
+@font-face {
+  font-family: 'iA Writer Mono V';
+  src: local('iA Writer Mono V'), url(./assets/iAWriterMonoV.ttf) format('truetype');
+  font-weight: 500;
 }
 
-.margin-top > * {
-  display: block;
-  margin-top: 12px;
-}
-
-.a-click {
-  text-decoration: underline;
-  color: #de7100;
-  cursor: pointer;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-tr:nth-child(even) {
-  background-color: #f0d57254;
+@font-face {
+  font-family: 'iA Writer Quattro V';
+  src: local('iA Writer Quattro V'), url(./assets/iAWriterQuattroV.ttf) format('truetype');
+  font-weight: 500;
 }
