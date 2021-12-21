@@ -6,10 +6,10 @@ import { getItem } from '../../utils/storage'
 import { GlobalContext } from '../context/global'
 import GlobalPostageStamp from './GlobalPostageStamp'
 import Web2Origin from './Web2Origin'
-import Logo from '../assets/logo.svg'
 import Row from './Row'
 import Button from './Button'
 import BeeEndpoints from './BeeEndpoints'
+import Logo from './Logo'
 
 export function App(): JSX.Element {
   const globalStateContext = useContext(GlobalContext)
@@ -81,9 +81,7 @@ export function App(): JSX.Element {
             backgroundColor: '#303030',
           }}
         >
-          <div style={{ height: 30, width: 88, marginLeft: 20 }}>
-            <img style={{ height: '100%', width: '100%' }} src={Logo} />
-          </div>
+          <Logo style={{ marginLeft: 20 }} />
           <Button
             variant="dark"
             style={{ marginRight: 16 }}
