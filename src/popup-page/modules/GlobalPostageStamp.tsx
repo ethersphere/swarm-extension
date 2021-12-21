@@ -1,5 +1,5 @@
 import { PostageBatch } from '@ethersphere/bee-js'
-import React, { ReactElement, FormEvent, useContext, useEffect, useState } from 'react'
+import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import { createUseStyles } from 'react-jss'
 
 import Toggle from './Toggle'
@@ -62,7 +62,7 @@ export default function GlobalPostageStamp(): ReactElement {
         <select
           id="postage-stamps-select"
           name="stamps"
-          value={globalState.postageBatchId}
+          value={globalState.postageBatchId || undefined}
           onChange={onChange}
           style={{
             cursor: 'pointer',
@@ -104,7 +104,7 @@ export default function GlobalPostageStamp(): ReactElement {
         >
           Selected stamp
           <div>{getSelect()}</div>
-          {/* This is used only for tests */}
+          {/* FIXME: This is used only for tests and should be done differently */}
           <div id="postage-stamp-batch-id" hidden>
             {globalState.postageBatchId}
           </div>
