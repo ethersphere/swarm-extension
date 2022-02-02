@@ -1,3 +1,5 @@
+import { SWARM_SESSION_ID_KEY } from "./swarm-session-id";
+
 /** API endpoints that the extension can serve out */
 class FakeUrl {
   /**
@@ -28,6 +30,14 @@ class FakeUrl {
     this.bzzProtocol = `${this.baseUrl}/bzz`
     this.beeApiAddress = `${this.baseUrl}/bee-api`
     this.openDapp = `${this.baseUrl}/open-dapp`
+  }
+
+  public createRE2Pattern(type: 'bzz' | 'bee-api', includeSessionIdKey = false): string {
+    let pattern = `^(https?\\://)?swarm\\.fakeurl\\.localhost/${type}(.*)`;
+    if (includeSessionIdKey) {
+      pattern += `(__${SWARM_SESSION_ID_KEY}~.*__.*)`;
+    }
+    return pattern;
   }
 }
 
