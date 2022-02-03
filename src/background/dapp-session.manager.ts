@@ -1,3 +1,5 @@
+import { getItem, setItem } from '../utils/storage'
+import { DappSecurityContextData } from './data/DappSecurityContextData'
 import { senderContentOrigin, senderFrameId, senderFrameOrigin, senderTabId } from './utils'
 
 type LocalStorage = {
@@ -56,27 +58,40 @@ class DappSecurityContext {
   }
 }
 
-export class DappSessionManager {
-  private securityContexts: { [sessionId: string]: DappSecurityContext }
+type SecurityContextDataMap = { [sessionId: string]: DappSecurityContextData }
 
-  public constructor() {
-    this.securityContexts = {}
+export class DappSessionManager {
+  private securityContextsPromise: Promise<SecurityContextDataMap> | null = null
+
+  constructor() {
+    chrome.runtime.onSuspend.addListener(() => {
+      setItem('securityContexts', {})
+    })
   }
-  public register(sessionId: string, sender: chrome.runtime.MessageSender): void {
+
+  public async register(sessionId: string, sender: chrome.runtime.MessageSender): Promise<void> {
     const tabId = senderTabId(sender)
     const frameId = senderFrameId(sender)
     const frameContentRoot = senderFrameOrigin(sender)
     const originContentRoot = senderContentOrigin(sender)
 
-    this.securityContexts[sessionId] = new DappSecurityContext(tabId, frameId, frameContentRoot, originContentRoot)
-    console.log(`dApp session "${sessionId}" has been initialized`, this.securityContexts[sessionId])
+    const context: DappSecurityContextData = {
+      tabId,
+      frameId,
+      frameContentRoot,
+      originContentRoot,
+    }
+
+    await this.setSecurityContext(sessionId, context)
+
+    console.log(`dApp session "${sessionId}" has been initialized`, context)
   }
 
   /**
    * Checks the given sessionId and sender's data match with the DappSessionManager's records
    */
-  public isValidSession(sessionId: string, sender: chrome.runtime.MessageSender): boolean {
-    const context = this.securityContexts[sessionId]
+  public async isValidSession(sessionId: string, sender: chrome.runtime.MessageSender): Promise<boolean> {
+    const context = await this.getSecurityContext(sessionId)
 
     if (!context) return false
 
@@ -95,11 +110,11 @@ export class DappSessionManager {
     )
   }
 
-  public getStorageItem(
+  public async getStorageItem(
     sessionId: string,
     ...getStorageParams: Parameters<DappSecurityContext['getStorageItem']>
   ): ReturnType<DappSecurityContext['getStorageItem']> {
-    const context = this.getSecurityContext(sessionId)
+    const context = await this.getSecurityContext(sessionId)
 
     return context.getStorageItem(...getStorageParams)
   }
@@ -108,18 +123,39 @@ export class DappSessionManager {
     sessionId: string,
     ...setStorageParams: Parameters<DappSecurityContext['setStorageItem']>
   ): Promise<void> {
-    const context = this.getSecurityContext(sessionId)
+    const context = await this.getSecurityContext(sessionId)
 
     await context.setStorageItem(...setStorageParams)
   }
 
-  private getSecurityContext(sessionId: string): DappSecurityContext {
-    const securityContext = this.securityContexts[sessionId]
+  private async getSecurityContext(sessionId: string): Promise<DappSecurityContext> {
+    const securityContextMap = await this.getSecurityContextsDataMap()
+    const securityContext = securityContextMap[sessionId]
 
     if (!securityContext) {
       throw new Error(`DappSessionManager: There is no registered security context for session: ${sessionId}`)
     }
 
-    return securityContext
+    return new DappSecurityContext(
+      securityContext.tabId,
+      securityContext.frameId,
+      securityContext.frameContentRoot,
+      securityContext.originContentRoot,
+    )
+  }
+
+  private async getSecurityContextsDataMap(): Promise<SecurityContextDataMap> {
+    if (this.securityContextsPromise) {
+      return this.securityContextsPromise
+    }
+    const securityContexts = await getItem('securityContexts')
+
+    return (this.securityContextsPromise = Promise.resolve(securityContexts || {}))
+  }
+
+  private async setSecurityContext(sessionId: string, context: DappSecurityContextData): Promise<void> {
+    const securityContexts = await this.getSecurityContextsDataMap()
+    securityContexts[sessionId] = context
+    await setItem('securityContexts', securityContexts)
   }
 }
