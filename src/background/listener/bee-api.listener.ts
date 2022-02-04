@@ -20,8 +20,8 @@ export class BeeApiListener {
   protected static RESOURCE_TYPE_ALL = ['main_frame', 'sub_frame', 'stylesheet', 'script', 'image', 'font', 'object', 'xmlhttprequest', 'media', 'websocket'];
   constructor(private storeObserver: StoreObserver) {
     this._beeApiUrl = 'http://localhost:1633'
-    this._globalPostageBatchEnabled = true
-    this._web2OriginEnabled = true
+    this._globalPostageBatchEnabled = false
+    this._web2OriginEnabled = false
     this._globalPostageBatchId = 'undefined' // it is not necessary to check later, if it is enabled it will insert
     this.addStoreListeners();
     this.asyncInit();
