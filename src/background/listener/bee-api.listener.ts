@@ -85,7 +85,8 @@ export class BeeApiListener {
       })
     }
 
-    (chrome as any).declarativeNetRequest.updateSessionRules(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-extra-semi
+    ;(chrome as any).declarativeNetRequest.updateSessionRules(
       {
         removeRuleIds: [BeeApiListener.POSTAGE_BATCH_RULE_ID, BeeApiListener.WEB2_ORIGIN_RULE_ID],
         addRules: rules,
@@ -165,6 +166,7 @@ export class BeeApiListener {
      * this listener automatically cancels all requests towards .bzz.link URLs
      * it relates to the 2nd scenario
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(chrome as any).declarativeNetRequest.updateSessionRules(
       {
         removeRuleIds: [

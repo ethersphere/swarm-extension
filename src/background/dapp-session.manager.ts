@@ -144,7 +144,7 @@ export class DappSessionManager {
     )
   }
 
-  private async getSecurityContextsDataMap(): Promise<SecurityContextDataMap> {
+  private getSecurityContextsDataMap(): Promise<SecurityContextDataMap> {
     if (this.securityContextsPromise) {
       return this.securityContextsPromise
     }
