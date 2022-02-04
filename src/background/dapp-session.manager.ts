@@ -148,9 +148,10 @@ export class DappSessionManager {
     if (this.securityContextsPromise) {
       return this.securityContextsPromise
     }
-    const securityContexts = await getItem('securityContexts')
 
-    return (this.securityContextsPromise = Promise.resolve(securityContexts || {}))
+    return this.securityContextsPromise = (async () => {
+      return (await getItem('securityContexts') || {})
+    })();
   }
 
   private async setSecurityContext(sessionId: string, context: DappSecurityContextData): Promise<void> {
