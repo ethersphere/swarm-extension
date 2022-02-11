@@ -15,6 +15,7 @@ export function App(): ReactElement {
   const globalStateContext = useContext(GlobalContext)
   const { dispatch: changeGlobalState } = globalStateContext
   const [showBeeApp, setShowBeeApp] = useState(false)
+  const [initialized, setInitialized] = useState(false)
 
   const asyncInit = async (): Promise<void> => {
     // Read variables from the localstore and
@@ -44,6 +45,8 @@ export function App(): ReactElement {
     if (storedWeb2OriginEnabled) {
       changeGlobalState({ type: 'WEB2_ORIGIN_ENABLED_SAVE', newValue: storedWeb2OriginEnabled })
     }
+
+    setInitialized(true)
   }
 
   useEffect(() => {
@@ -56,6 +59,10 @@ export function App(): ReactElement {
       setShowBeeApp(true)
     }
   }, [])
+
+  if (!initialized) {
+    return <></>
+  }
 
   return (
     <>
