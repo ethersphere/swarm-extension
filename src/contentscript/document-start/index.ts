@@ -15,9 +15,12 @@ import { MessengerInterceptor } from './messenger.interceptor'
 function init(): void {
   const sessionId = nanoid()
   dappSessionRegister(sessionId)
-  injectSessionId(sessionId)
-  injectSwarmHtml()
-  injectSwarmLibrary()
+
+  document.addEventListener('DOMContentLoaded', () => {
+    injectSessionId(sessionId)
+    injectSwarmLibrary()
+    injectSwarmHtml()
+  })
 
   //listen to events which come from inpage side
   new MessengerInterceptor()

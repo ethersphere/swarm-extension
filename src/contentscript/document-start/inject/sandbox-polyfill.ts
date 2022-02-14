@@ -5,8 +5,5 @@ import { injectScript } from '../utils'
  * and as a result some common libraries won't work without polyfilling
  */
 export function injectSandboxPolyfill(): void {
-  injectScript(
-    "Object.defineProperty(document, 'cookie', { get: function(){return ''}, set: function(){return true}, });",
-    'sandboxPolyfill',
-  )
+  injectScript('sandbox-ployfill.js', 'sandboxPolyfill')
 }

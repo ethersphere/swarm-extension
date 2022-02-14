@@ -24,5 +24,11 @@
       "all_frames": true
     }
   ],
-  "host_permissions": ["*://*/*"]
+  "host_permissions": ["*://*/*"],
+  "web_accessible_resources": [
+    {
+      "resources": ["swarm-session-id.js", "swarm-html.js", "swarm-library.js", "sandbox-polyfill.js"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"]
+    }
+  ]
 }

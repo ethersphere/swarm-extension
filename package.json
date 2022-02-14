@@ -25,7 +25,7 @@
     "compile:main": "webpack",
     "test": "jest --config=jest.config.ts",
     "test:demo": "npm run test -- --demo=true --runInBand",
-    "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "zip": "cd dist/ && bestzip ../extension.zip *",
     "update:test-bee-js-browser": "cp node_modules/@ethersphere/bee-js/dist/index.browser.min.js test/bzz-test-page/bee-js.min.js"

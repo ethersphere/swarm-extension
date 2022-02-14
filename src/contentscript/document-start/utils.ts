@@ -3,14 +3,13 @@
  *
  * @param content - Code to be executed in the current document
  */
-export function injectScript(content: string, windowObjectName: string): void {
+export function injectScript(scriptSrc: string, windowObjectName: string, async = false) {
   try {
-    const container = document.head || document.documentElement
-    const scriptTag = document.createElement('script')
-    scriptTag.setAttribute('async', 'false')
-    scriptTag.textContent = content
-    container.insertBefore(scriptTag, container.children[0])
-    container.removeChild(scriptTag)
+    const script = document.createElement('script')
+    script.setAttribute('type', 'text/javascript')
+    script.setAttribute('async', 'false')
+    script.setAttribute('src', chrome.runtime.getURL(scriptSrc))
+    document.body.appendChild(script)
     console.log(`Swarm-Extension: injected object is available via "window.${windowObjectName}"`)
   } catch (error) {
     console.error('Swarm-Extension: Provider injection failed.', error)

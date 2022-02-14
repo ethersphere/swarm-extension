@@ -240,10 +240,10 @@ const background = (env?: Partial<WebpackEnvParams>): Configuration => {
 }
 
 const contentscript = (
-  scriptType: 'document-start' | 'swarm-library' | 'swarm-html',
+  scriptType: 'document-start' | 'swarm-library' | 'swarm-html' | 'swarm-session-id' | 'sandbox-polyfill',
   env?: Partial<WebpackEnvParams>,
 ): Configuration => {
-  const dependencies = ['swarm-library', 'swarm-html']
+  const dependencies = ['swarm-library', 'swarm-html', 'swarm-session-id', 'sandbox-polyfill']
   const isProduction = env?.mode === 'production'
   const filename = `${scriptType}.js`
   const entry = Path.resolve(__dirname, 'src', 'contentscript', scriptType)
@@ -479,7 +479,7 @@ export default (env?: Partial<WebpackEnvParams>): Configuration[] => {
   if (env?.buildDeps) {
     if (env?.mode === 'development') liveReloadServer = new Server({ port: DEPS_RELOAD_PORT })
 
-    baseConfig = [contentscript('swarm-library', env), contentscript('swarm-html', env)]
+    baseConfig = [contentscript('swarm-library', env), contentscript('swarm-html', env), contentscript('swarm-session-id', env), contentscript('sandbox-polyfill', env)]
   } else {
     if (env?.mode === 'development') liveReloadServer = new Server({ port: MAIN_RELOAD_PORT })
 
