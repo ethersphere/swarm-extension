@@ -29,9 +29,12 @@ interface Response {
 type RegisterRequest = Request<Action.REGISTER, void>
 type LocalStorageGetRequest = Request<Action.LOCAL_STORAGE_GET, { name: string }>
 type LocalStorageSetRequest = Request<Action.LOCAL_STORAGE_SET, { name: string; value: unknown }>
-type BzzLinkProtocolToFakeUrlRequest = Request<Action.BZZ_LINK_PROTOCOL_TO_FAKE_URL, { url: string, newPage: boolean }>
-type BzzLinkLinkUrlToFakeUrlRequest = Request<Action.BZZ_LINK_LINK_URL_TO_FAKE_URL, { bzzLinkUrl: string, newPage: boolean }>
-type BzzLinkUrlToFakeUrlRequest = Request<Action.BZZ_LINK_URL_TO_FAKE_URL, { url: string, newPage: boolean }>
+type BzzLinkProtocolToFakeUrlRequest = Request<Action.BZZ_LINK_PROTOCOL_TO_FAKE_URL, { url: string; newPage: boolean }>
+type BzzLinkLinkUrlToFakeUrlRequest = Request<
+  Action.BZZ_LINK_LINK_URL_TO_FAKE_URL,
+  { bzzLinkUrl: string; newPage: boolean }
+>
+type BzzLinkUrlToFakeUrlRequest = Request<Action.BZZ_LINK_URL_TO_FAKE_URL, { url: string; newPage: boolean }>
 type Web2HelperFakeBeeApiAddressRequesst = Request<Action.WEB2_HELPER_FAKE_BEE_API_ADDRESS, void>
 type Web2HelprFakeBzzAddressRequest = Request<Action.WEB2_HELPER_FAKE_BZZ_ADDRESS, { reference: string }>
 
@@ -148,22 +151,35 @@ export class E2ESessionFeeder {
   }
 
   private handleBzzLinkProtocolToFakeUrl(request: RequestType): string | null {
-    const { sessionId, parameters: { url, newPage }} = request as BzzLinkProtocolToFakeUrlRequest
+    const {
+      sessionId,
+      parameters: { url, newPage },
+    } = request as BzzLinkProtocolToFakeUrlRequest
+
     return bzzProtocolToFakeUrl(url, sessionId, newPage)
   }
 
   private handleBzzLinkUrlToFakeUrl(request: RequestType): string | null {
-    const { sessionId, parameters: { bzzLinkUrl, newPage }} = request as BzzLinkLinkUrlToFakeUrlRequest
+    const {
+      sessionId,
+      parameters: { bzzLinkUrl, newPage },
+    } = request as BzzLinkLinkUrlToFakeUrlRequest
+
     return bzzProtocolToFakeUrl(bzzLinkUrl, sessionId, newPage)
-  } 
+  }
 
   private handleBzzUrlToFakeUrl(request: RequestType): string | null {
-    const { sessionId, parameters: { url, newPage }} = request as BzzLinkUrlToFakeUrlRequest
+    const {
+      sessionId,
+      parameters: { url, newPage },
+    } = request as BzzLinkUrlToFakeUrlRequest
+
     return bzzProtocolToFakeUrl(url, sessionId, newPage)
-  } 
+  }
 
   private handleWeb2FakeBeeApiAddress(request: RequestType): string {
-    const { sessionId } = request;
+    const { sessionId } = request
+
     return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress, sessionId)
   }
 
