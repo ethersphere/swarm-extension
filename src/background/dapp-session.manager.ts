@@ -101,7 +101,7 @@ export class DappSessionManager {
     let context: DappSecurityContext | null = null
 
     if (this.isSenderExtension(sender)) {
-      context = new ExtensionDappSecurityContext(String(sender.id))
+      context = new ExtensionDappSecurityContext(String(sessionId))
     } else {
       const tabId = senderTabId(sender)
       const frameId = senderFrameId(sender)
