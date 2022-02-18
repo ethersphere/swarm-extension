@@ -1,4 +1,4 @@
-import * as BzzLink from './bzz-link'
+import * as BzzLink from './bzz-link-page-api'
 import { localStorage } from './local-storage'
 import { web2HelperContent } from './web2-helper.content'
 

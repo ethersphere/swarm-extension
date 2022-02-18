@@ -33,6 +33,6 @@ export function unpackSwarmSessionIdFromUrl(bzzUrl: string): { sessionId: string
   }
 }
 
-export function appendSwarmSessionIdToUrl(fakeUrlRef: string): string {
-  return `${fakeUrlRef}__${SWARM_SESSION_ID_KEY}~${window.swarm.sessionId}__`
+export function appendSwarmSessionIdToUrl(fakeUrlRef: string, sessionId: string): string {
+  return `${fakeUrlRef}__${SWARM_SESSION_ID_KEY}~${sessionId}__`
 }

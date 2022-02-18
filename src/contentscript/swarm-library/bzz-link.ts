@@ -3,19 +3,19 @@ import { fakeUrl } from '../../utils/fake-url'
 import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
 
 /** gives back the fake URL of the BZZ protocol reference or null if the first parameter is not a valid BZZ protocol reference */
-export function bzzProtocolToFakeUrl(url: string, newPage = false): string | null {
+export function bzzProtocolToFakeUrl(url: string, sessionId: string, newPage = false): string | null {
   if (!url.startsWith('bzz://')) return null
 
   const bzzReference = url.substr('bzz://'.length)
   const fakeUrlRef = newPage
     ? `${fakeUrl.openDapp}/${bzzReference}` // does not need sessionId because it force redirects
-    : appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${bzzReference}`)
+    : appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${bzzReference}`, sessionId)
 
   return fakeUrlRef
 }
 
 /** gives back the fake URL of the bzz.link or null if the first parameter is not a valid bzz.link reference */
-export function bzzLinkUrlToFakeUrl(bzzLinkUrl: string, newPage = false): string | null {
+export function bzzLinkUrlToFakeUrl(bzzLinkUrl: string, sessionId: string, newPage = false): string | null {
   const subdomain = getSubdomain(bzzLinkUrl)
 
   if (subdomain) {
@@ -29,15 +29,13 @@ export function bzzLinkUrlToFakeUrl(bzzLinkUrl: string, newPage = false): string
 
     const fakeUrlRef = newPage ? `${fakeUrl.openDapp}/${bzzReference}` : `${fakeUrl.bzzProtocol}/${bzzReference}`
 
-    return appendSwarmSessionIdToUrl(fakeUrlRef)
+    return appendSwarmSessionIdToUrl(fakeUrlRef, sessionId)
   }
 
   return null
 }
 
 /** transform the given URL to FakeURL or return null if it is not possible */
-export function urlToFakeUrl(url: string, newPage = false): string | null {
-  return bzzLinkUrlToFakeUrl(url, newPage) || bzzProtocolToFakeUrl(url, newPage) || null
+export function urlToFakeUrl(url: string, sessionId: string, newPage = false): string | null {
+  return bzzLinkUrlToFakeUrl(url, sessionId, newPage) || bzzProtocolToFakeUrl(url, sessionId, newPage) || null
 }
-
-export * from '../../utils/bzz-link'
