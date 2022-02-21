@@ -6,8 +6,6 @@ import { DappSessionManager } from '../dapp-session.manager'
 
 enum Action {
   REGISTER = 'register',
-  LOCAL_STORAGE_GET = 'localStorage.getItem',
-  LOCAL_STORAGE_SET = 'localStorage.setItem',
   BZZ_LINK_PROTOCOL_TO_FAKE_URL = 'bzzLink.bzzProtocolToFakeUrl',
   BZZ_LINK_LINK_URL_TO_FAKE_URL = 'bzzLink.bzzLinkUrlToFakeUrl',
   BZZ_LINK_URL_TO_FAKE_URL = 'bzzLink.urlToFakeUrl',
@@ -19,6 +17,7 @@ interface Request<A extends Action, P> {
   action: A
   sessionId: string
   parameters: P
+  eventId?: string
 }
 
 interface Response {
@@ -27,8 +26,6 @@ interface Response {
 }
 
 type RegisterRequest = Request<Action.REGISTER, void>
-type LocalStorageGetRequest = Request<Action.LOCAL_STORAGE_GET, { name: string }>
-type LocalStorageSetRequest = Request<Action.LOCAL_STORAGE_SET, { name: string; value: unknown }>
 type BzzLinkProtocolToFakeUrlRequest = Request<Action.BZZ_LINK_PROTOCOL_TO_FAKE_URL, { url: string; newPage: boolean }>
 type BzzLinkLinkUrlToFakeUrlRequest = Request<
   Action.BZZ_LINK_LINK_URL_TO_FAKE_URL,
@@ -40,8 +37,6 @@ type Web2HelprFakeBzzAddressRequest = Request<Action.WEB2_HELPER_FAKE_BZZ_ADDRES
 
 type RequestType =
   | RegisterRequest
-  | LocalStorageGetRequest
-  | LocalStorageSetRequest
   | BzzLinkProtocolToFakeUrlRequest
   | BzzLinkLinkUrlToFakeUrlRequest
   | BzzLinkUrlToFakeUrlRequest
@@ -58,26 +53,18 @@ export class E2ESessionFeeder {
 
     // register dapp session id
     chrome.runtime.onMessageExternal.addListener(
-      async (
-        request: RequestType,
-        sender: chrome.runtime.MessageSender,
-        sendResponse: (response?: Response) => void,
-      ) => {
+      (request: RequestType, sender: chrome.runtime.MessageSender, sendResponse: (response?: Response) => void) => {
         const { action } = request || {}
         const senderId = sender.id as string
         const response: Response = {}
 
         try {
           if (!senderId) {
-            throw new Error('Invalid extension ID')
+            throw new Error('E2E Session Feeder: Extension ID is undefined.')
           }
 
           if (action === Action.REGISTER) {
             response.data = this.handleRegistration(sender)
-          } else if (action === Action.LOCAL_STORAGE_GET) {
-            response.data = await this.handleLocalStorageGet(request)
-          } else if (action === Action.LOCAL_STORAGE_SET) {
-            await this.handleLocalStorageSet(request)
           } else if (action === Action.WEB2_HELPER_FAKE_BEE_API_ADDRESS) {
             response.data = this.handleWeb2FakeBeeApiAddress(request)
           } else if (action === Action.WEB2_HELPER_FAKE_BZZ_ADDRESS) {
@@ -89,18 +76,18 @@ export class E2ESessionFeeder {
           } else if (action === Action.BZZ_LINK_URL_TO_FAKE_URL) {
             response.data = this.handleBzzUrlToFakeUrl(request)
           } else {
-            throw new Error(`Unknown action ${action}`)
+            throw new Error(`E2E Session Feeder: Unknown action ${action}`)
           }
         } catch (error) {
           response.error = String(error)
         }
 
-        this.sendResponse(response, action, senderId, sendResponse)
+        this.handleResponse(response, action, senderId, sendResponse)
       },
     )
   }
 
-  private sendResponse(
+  private handleResponse(
     response: Response | null,
     action: Action,
     senderId: string,
@@ -108,11 +95,11 @@ export class E2ESessionFeeder {
   ) {
     if (response?.error) {
       console.warn(
-        `Sending error response for action '${action}' to the extension with ID '${senderId}'.`,
+        `E2E Session Feeder: Sending error response for action '${action}' to the extension with ID '${senderId}'.`,
         response.error,
       )
     } else {
-      console.log(`The extension with ID '${senderId}' successfully invoked action '${action}'.`)
+      console.log(`E2E Session Feeder: The extension with ID '${senderId}' successfully invoked action '${action}'.`)
     }
     sendResponse(response || {})
   }
@@ -122,32 +109,6 @@ export class E2ESessionFeeder {
     this.manager.register(sessionId, sender)
 
     return sessionId
-  }
-
-  private handleLocalStorageGet(request: RequestType): Promise<unknown> {
-    const {
-      sessionId,
-      parameters: { name },
-    } = request as LocalStorageGetRequest
-
-    if (!name) {
-      throw new Error('Cannot get item from localStorage. Item name required')
-    }
-
-    return this.manager.getStorageItem(sessionId, name)
-  }
-
-  private handleLocalStorageSet(request: RequestType): Promise<void> {
-    const {
-      sessionId,
-      parameters: { name, value },
-    } = request as LocalStorageSetRequest
-
-    if (!name) {
-      throw new Error('Cannot get item from localStorage. Item name required')
-    }
-
-    return this.manager.setStorageItem(sessionId, name, value)
   }
 
   private handleBzzLinkProtocolToFakeUrl(request: RequestType): string | null {

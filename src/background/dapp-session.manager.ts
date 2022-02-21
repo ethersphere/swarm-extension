@@ -1,4 +1,4 @@
-import { senderContentOrigin, senderFrameId, senderFrameOrigin, senderTabId } from './utils'
+import { isSenderExtension, senderContentOrigin, senderFrameId, senderFrameOrigin, senderTabId } from './utils'
 
 type LocalStorage = {
   set: (storeValues: { [key: string]: unknown }, callback?: () => void) => void
@@ -82,12 +82,12 @@ class TabDappSecurityContext extends DappSecurityContext {
 }
 
 class ExtensionDappSecurityContext extends DappSecurityContext {
-  constructor(private extensionId: string) {
-    super(extensionId)
+  constructor() {
+    super('extension')
   }
 
   public isValid(sender: chrome.runtime.MessageSender): boolean {
-    return sender.id === this.extensionId
+    return isSenderExtension(sender)
   }
 }
 
@@ -100,8 +100,8 @@ export class DappSessionManager {
   public register(sessionId: string, sender: chrome.runtime.MessageSender): void {
     let context: DappSecurityContext | null = null
 
-    if (this.isSenderExtension(sender)) {
-      context = new ExtensionDappSecurityContext(String(sessionId))
+    if (isSenderExtension(sender)) {
+      context = new ExtensionDappSecurityContext()
     } else {
       const tabId = senderTabId(sender)
       const frameId = senderFrameId(sender)
@@ -152,10 +152,5 @@ export class DappSessionManager {
     }
 
     return securityContext
-  }
-
-  private isSenderExtension(sender: chrome.runtime.MessageSender): boolean {
-    // TODO If support for other browsers is needed, then this function should be extended
-    return Boolean(sender.url?.startsWith('chrome-extension://'))
   }
 }
