@@ -17,7 +17,7 @@ interface Request<A extends Action, P> {
   action: A
   sessionId: string
   parameters: P
-  eventId?: string
+  eventId: string
 }
 
 interface Response {

@@ -18,25 +18,9 @@ abstract class DappSecurityContext {
 
   /** STORAGE FUNCTIONS */
 
-  public async setStorageItem(keyName: string, keyValue: unknown): Promise<void> {
-    const key = this.enrichStorageKey(keyName)
+  public abstract setStorageItem(keyName: string, keyValue: unknown): Promise<void>
 
-    await new Promise(resolve => this.storage.set({ [key]: keyValue }, () => resolve(true)))
-  }
-
-  public getStorageItem(keyName: string): Promise<unknown> {
-    const key = this.enrichStorageKey(keyName)
-
-    return new Promise(resolve =>
-      this.storage.get([key], result => {
-        resolve(result[key])
-      }),
-    )
-  }
-
-  private enrichStorageKey(keyName: string): string {
-    return `${this.storePrefix}-${keyName}`
-  }
+  public abstract getStorageItem(keyName: string): Promise<unknown>
 }
 
 class TabDappSecurityContext extends DappSecurityContext {
@@ -79,6 +63,26 @@ class TabDappSecurityContext extends DappSecurityContext {
       this.isValidOriginContentRoot(originContentRoot)
     )
   }
+
+  public async setStorageItem(keyName: string, keyValue: unknown): Promise<void> {
+    const key = this.enrichStorageKey(keyName)
+
+    await new Promise(resolve => this.storage.set({ [key]: keyValue }, () => resolve(true)))
+  }
+
+  public getStorageItem(keyName: string): Promise<unknown> {
+    const key = this.enrichStorageKey(keyName)
+
+    return new Promise(resolve =>
+      this.storage.get([key], result => {
+        resolve(result[key])
+      }),
+    )
+  }
+
+  private enrichStorageKey(keyName: string): string {
+    return `${this.storePrefix}-${keyName}`
+  }
 }
 
 class ExtensionDappSecurityContext extends DappSecurityContext {
@@ -88,6 +92,14 @@ class ExtensionDappSecurityContext extends DappSecurityContext {
 
   public isValid(sender: chrome.runtime.MessageSender): boolean {
     return isSenderExtension(sender)
+  }
+
+  public setStorageItem(keyName: string, keyValue: unknown): Promise<void> {
+    throw new Error("ExtensionDappSecurityContext doesn't support extension storage functions")
+  }
+
+  public getStorageItem(keyName: string): Promise<unknown> {
+    throw new Error("ExtensionDappSecurityContext doesn't support extension storage functions")
   }
 }
 
