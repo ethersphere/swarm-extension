@@ -88,7 +88,7 @@
   "dependencies": {
     "@ethersphere/bee-dashboard": "^0.13.0",
     "@ethersphere/swarm-cid": "^0.1.0",
-    "nanoid": "^3.1.22",
+    "nanoid": "^3.1.31",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-feather": "^2.0.9",
