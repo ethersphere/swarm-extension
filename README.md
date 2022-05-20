@@ -46,7 +46,7 @@ During the redirection, the extension creates separated context by `root content
 (E.g. restrict calls towards the targeted service, cache the returned cookies from the response in the content context, etc.)
 This architecture also allows changing the default URLs of decentralized services (Bee) to any arbitrary one,
 meanwhile dApps do not have to guess this address.
-For example Bee client has default `http://localhost:1633`, user can change it to any other port or even other gateway host,
+For example Bee client has default `http://127.0.0.1:1633`, user can change it to any other port or even other gateway host,
 the dApps will call it in the same way.
 
 ### Callable Endpoints
