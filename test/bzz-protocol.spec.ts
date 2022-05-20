@@ -287,7 +287,7 @@ describe('BZZ protocol', () => {
     extensionPage = await openExtensionPage()
 
     // change api url to http://localhost:9999
-    const testUrlValue = 'http://localhost:9999'
+    const testUrlValue = 'http://127.0.0.1:9999'
     const originalUrlValue = await changeBeeApiUrl(testUrlValue, extensionPage)
     //test whether it had affect on routing
     const bzzPage = await newBzzPage(bzzReferenceByGoogle('nevermind-value'))

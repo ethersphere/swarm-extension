@@ -6,10 +6,10 @@ import { ElementHandle, Page } from 'puppeteer'
 /**
  * Returns a url for testing the Bee API
  */
-export const BEE_DEBUG_API_URL = process.env.BEE_DEBUG_API_URL || 'http://localhost:1635'
-export const BEE_API_URL = process.env.BEE_API_URL || 'http://localhost:1633'
+export const BEE_DEBUG_API_URL = process.env.BEE_DEBUG_API_URL || 'http://127.0.0.1:1635'
+export const BEE_API_URL = process.env.BEE_API_URL || 'http://127.0.0.1:1633'
 
-export const BEE_PEER_API_URL = process.env.BEE_PEER_API_URL || 'http://localhost:11633'
+export const BEE_PEER_API_URL = process.env.BEE_PEER_API_URL || 'http://127.0.0.1:11633'
 
 let extensionId: string
 

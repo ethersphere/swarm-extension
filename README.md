@@ -46,7 +46,7 @@ During the redirection, the extension creates separated context by `root content
 (E.g. restrict calls towards the targeted service, cache the returned cookies from the response in the content context, etc.)
 This architecture also allows changing the default URLs of decentralized services (Bee) to any arbitrary one,
 meanwhile dApps do not have to guess this address.
-For example Bee client has default `http://localhost:1633`, user can change it to any other port or even other gateway host,
+For example Bee client has default `http://127.0.0.1:1633`, user can change it to any other port or even other gateway host,
 the dApps will call it in the same way.
 
 ### Callable Endpoints
@@ -137,7 +137,7 @@ if you run [test in demo mode](#Test), the extension in the Chromium browser wil
 
 There are some illustrative tests which show how these PoC ideas work.
 For running tests, you need to run a Bee node.
-By default, tests are run against `http://localhost:1633`. You can change it by setting environment variable `BEE_API_URL`.
+By default, tests are run against `http://127.0.0.1:1633`. You can change it by setting environment variable `BEE_API_URL`.
 On test pages, if a Jinn can show up under a section which means it works as it is intended to be.
 On other hand, if Jafar comes into the picture, than it points out a bad/insecure use-case.
 
