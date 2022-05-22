@@ -11,6 +11,9 @@ on:
 env:
   BEE_API_URL: 'http://127.0.0.1:1633'
   BEE_DEBUG_API_URL: 'http://127.0.0.1:1635'
+  BEE_PEER_API_URL: 'http://127.0.0.1:11633'
+  BEE_PEER_DEBUG_API_URL: 'http://127.0.0.1:11635'
+
 
 jobs:
   nodejs:
