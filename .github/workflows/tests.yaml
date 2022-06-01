@@ -46,7 +46,9 @@ jobs:
 
       # Start Bee Factory environment
       - name: Start Bee Factory environment
-        run: npm run bee -- --detach
+        run: |
+          npm run bee -- --detach
+          netstat -tulpn | grep LISTEN
 
       - name: Run tests
         uses: vojtechsimetka/puppeteer-headful@master
