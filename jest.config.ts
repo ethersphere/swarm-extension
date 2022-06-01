@@ -5,17 +5,13 @@
 import type from './types/index' //FIXME: jest does not recognize own global types without this
 import type { Config } from '@jest/types'
 import { join } from 'path'
-import { buyStamp } from './test/utils'
 
-export default async (): Promise<Config.InitialOptions> => {
+export default (): Promise<Config.InitialOptions> => {
   if (!process.env.BEE_STAMP) {
-    process.env.BEE_STAMP = await buyStamp()
-    console.log(
-      `Bee postage stamp: ${process.env.BEE_STAMP} \n You can set it to BEE_STAMP sys env variable to don't wait again for buying one`,
-    )
+    throw new Error('The BEE_STAMP environment variable not set. Run the test/scripts/buy-stamp.sh script first.')
   }
 
-  return {
+  return Promise.resolve({
     // Indicates whether the coverage information should be collected while executing the test
     // collectCoverage: false,
 
@@ -41,5 +37,5 @@ export default async (): Promise<Config.InitialOptions> => {
 
     // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
     testPathIgnorePatterns: ['/node_modules/'],
-  }
+  })
 }
