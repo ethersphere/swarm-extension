@@ -54,7 +54,7 @@ jobs:
         env:
           CI: 'true'
         with:
-          args: netstat -tulpn | grep LISTEN && npm run test
+          args: curl -s -XPOST http://127.0.0.1:1635/stamps/1/20
 
       - name: Debug workflow if failed
         if: failure()
