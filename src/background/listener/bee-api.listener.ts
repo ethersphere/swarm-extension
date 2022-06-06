@@ -10,7 +10,7 @@ export class BeeApiListener {
   private _web2OriginEnabled: boolean
 
   public constructor(private storeObserver: StoreObserver) {
-    this._beeApiUrl = 'http://127.0.0.1:1633'
+    this._beeApiUrl = process.env.BEE_API_URL || 'http://127.0.0.1:1633'
     this._globalPostageBatchEnabled = false
     this._web2OriginEnabled = false
     this._globalPostageBatchId = 'undefined' // it is not necessary to check later, if it is enabled it will insert
