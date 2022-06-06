@@ -44,17 +44,17 @@ jobs:
       - name: Compile
         run: npm run compile
 
-      # Start Bee Factory environment
-      - name: Start Bee Factory environment
-        run: |
-          npm run bee -- --detach
+      # # Start Bee Factory environment
+      # - name: Start Bee Factory environment
+      #   run: |
+      #     npm run bee -- --detach
 
       - name: Run tests
         uses: vojtechsimetka/puppeteer-headful@master
         env:
           CI: 'true'
         with:
-          args: curl -s -XPOST http://127.0.0.1:1635/stamps/1/20
+          args: npm run bee -- --detach && npm run test
 
       - name: Debug workflow if failed
         if: failure()
