@@ -222,6 +222,7 @@ describe('BZZ protocol', () => {
     await page.click(placeHolderSelector)
     const bzzPageTitle = await page.$('h1')
     expect(bzzPageTitle).toBeTruthy()
+    await page.setDefaultNavigationTimeout(360000)
     await page.goBack()
 
     done()
