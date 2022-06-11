@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/ethersphere/swarm-extension/compare/v0.3.0...v0.3.1) (2022-06-11)
+
+
+### Bug Fixes
+
+* update supported bee version to 1.6.1 with bee-dashboard v0.16.0 ([#119](https://github.com/ethersphere/swarm-extension/issues/119)) ([f808a81](https://github.com/ethersphere/swarm-extension/commit/f808a815b99db44eade0b971ddf62d72703c870b))
+* update swarm dependencies ci 3 ([#116](https://github.com/ethersphere/swarm-extension/issues/116)) ([76141e0](https://github.com/ethersphere/swarm-extension/commit/76141e0d0c39dbe086ca29042a471c7226b0220f))
+
 ## 0.3.0 (2022-04-20)
 
 
