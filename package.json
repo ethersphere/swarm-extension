@@ -87,7 +87,7 @@
     "ws": "^7.4.4"
   },
   "dependencies": {
-    "@ethersphere/bee-dashboard": "^0.15.0",
+    "@ethersphere/bee-dashboard": "^0.16.0",
     "@ethersphere/bee-js": "^4.1.1",
     "@ethersphere/swarm-cid": "^0.1.0",
     "isarray": "^2.0.5",
