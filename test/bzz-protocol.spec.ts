@@ -216,19 +216,25 @@ describe('BZZ protocol', () => {
   })
 
   test('Upload file through Fake URL', async done => {
+    page = await global.__BROWSER__.newPage()
+    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
+
     await page.click('#button-upload-fake-url-file')
     const placeHolderSelector = '#fake-bzz-url-content-1 > a:first-child'
     await page.waitForSelector(placeHolderSelector)
     await page.click(placeHolderSelector)
     const bzzPageTitle = await page.$('h1')
     expect(bzzPageTitle).toBeTruthy()
-    page.setDefaultNavigationTimeout(860000)
-    await page.goBack()
+    page.setDefaultNavigationTimeout(360000)
+    await page.close()
 
     done()
   })
 
   test('Fetch image via Fake URL', async done => {
+    page = await global.__BROWSER__.newPage()
+    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
+
     await page.click('#button-fetch-jinn-page')
     const placeHolderSelector = '#fake-url-fetch-jinn > img:first-child'
     await page.waitForSelector(placeHolderSelector)
