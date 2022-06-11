@@ -24,11 +24,23 @@ export default function GlobalPostageStamp(): ReactElement {
     if (globalState.globalPostageBatchEnabled) retrievePostageBatches()
   }, [globalState.globalPostageBatchEnabled])
 
+  useEffect(() => {
+    //select first stamp
+    if (fetchedPostageBatches[0]) {
+      dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue: fetchedPostageBatches[0].batchID })
+    }
+  }, [fetchedPostageBatches])
+
   const handleUseGlobalPostageBatch = (checked: boolean): void => {
     dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE', newValue: checked })
 
     if (checked) {
       retrievePostageBatches()
+
+      //select first stamp
+      if (fetchedPostageBatches[0]) {
+        dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue: fetchedPostageBatches[0].batchID })
+      }
     }
   }
 
@@ -62,7 +74,7 @@ export default function GlobalPostageStamp(): ReactElement {
         <select
           id="postage-stamps-select"
           name="stamps"
-          value={globalState.postageBatchId || undefined}
+          value={globalState.postageBatchId || 'NO_POSTAGE_BATCH_SELECTED'}
           onChange={onChange}
           style={{
             cursor: 'pointer',
@@ -72,7 +84,9 @@ export default function GlobalPostageStamp(): ReactElement {
           }}
         >
           {fetchedPostageBatches.map(batch => (
-            <option value={batch.batchID}>{truncatePostageBatchId(batch.batchID)}</option>
+            <option id="batch.batchID" value={batch.batchID}>
+              {truncatePostageBatchId(batch.batchID)}
+            </option>
           ))}
         </select>
       )
