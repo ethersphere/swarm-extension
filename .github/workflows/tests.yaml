@@ -9,13 +9,10 @@ on:
       - '**'
 
 env:
-  BEE_ENV_PREFIX: 'swarm-test'
-  BEE_IMAGE_PREFIX: 'docker.pkg.github.com/ethersphere/bee-factory'
-  COMMIT_VERSION_TAG: 'false'
-  WORKERS: 4
   BEE_API_URL: 'http://172.18.0.1:1633'
   BEE_DEBUG_API_URL: 'http://172.18.0.1:1635'
   BEE_PEER_API_URL: 'http://172.18.0.1:11633'
+  BEE_PEER_DEBUG_API_URL: 'http://172.18.0.1:11635'
 
 jobs:
   browser:
@@ -40,19 +37,16 @@ jobs:
       - name: Auth to Github Package Docker Registry
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login https://docker.pkg.github.com -u ${GITHUB_ACTOR} --password-stdin
-      # Setup Bee environment
-      - name: Start Bee Factory environment
-        run: |
-          git clone --depth=1 https://github.com/ethersphere/bee-factory.git
-          chmod +x -R ./bee-factory/scripts
-          ./bee-factory/scripts/environment.sh start --detach --workers=$WORKERS --hostname=0.0.0.0
-
       - name: Install npm deps
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Compile
         run: npm run compile
+
+      # Start Bee Factory environment
+      - name: Start Bee Factory environment
+        run: npm run bee -- --detach
 
       - name: Run tests
         uses: vojtechsimetka/puppeteer-headful@master

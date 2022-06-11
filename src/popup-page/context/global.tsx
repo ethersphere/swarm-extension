@@ -85,8 +85,8 @@ async function localStoreDispatch(action: Action): Promise<void> {
 }
 
 const initialState: State = {
-  beeApiUrl: 'http://localhost:1633',
-  beeDebugApiUrl: 'http://localhost:1635',
+  beeApiUrl: 'http://127.0.0.1:1633',
+  beeDebugApiUrl: 'http://127.0.0.1:1635',
   postageBatchId: null,
   globalPostageBatchEnabled: false,
   web2OriginEnabled: false,
