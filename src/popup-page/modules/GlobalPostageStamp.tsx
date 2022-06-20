@@ -42,7 +42,12 @@ export default function GlobalPostageStamp(): ReactElement {
 
   const retrievePostageBatches = async () => {
     console.log('fetch postagethings')
-    setFetchedPostageBatches(await getPostageBatches(globalState.beeDebugApiUrl))
+    const postageBatches = await getPostageBatches(globalState.beeDebugApiUrl)
+    setFetchedPostageBatches(postageBatches)
+
+    if (!globalState.postageBatchId && postageBatches[0]) {
+      dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue: postageBatches[0].batchID })
+    }
   }
 
   const getPostageBatchUsage = (): string => {
