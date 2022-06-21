@@ -1,4 +1,4 @@
-import { subdomainToBzzResource } from '../../utils/bzz-link'
+import { createSubdomainUrl, isHostIpAddress, subdomainToBzzResource } from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
@@ -276,7 +276,20 @@ export class BeeApiListener {
    * @param tabId the tab will be navigated to the dApp page
    */
   private redirectToBzzReference(bzzReference: string, tabId: number) {
-    const url = `${this._beeApiUrl}/bzz/${bzzReference}`
+    let url: string
+
+    if (isHostIpAddress(this._beeApiUrl)) {
+      const [hash, path] = bzzReference.split(/\/(.*)/s)
+      let subdomain = hash
+
+      if (subdomain.endsWith('.eth')) {
+        subdomain = subdomain.substring(0, subdomain.length - 4)
+      }
+
+      url = createSubdomainUrl(this._beeApiUrl, subdomain) + path
+    } else {
+      url = `${this._beeApiUrl}/bzz/${bzzReference}`
+    }
 
     console.log(`Fake URL redirection to ${url} on tabId ${tabId}`)
 
