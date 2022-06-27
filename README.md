@@ -75,11 +75,13 @@ You can read about it in more detail in the following section
 
 ### Swarm HTML
 
-You can refer to any `bzz` resource in html if you add attribute `is=swarm-X` to your html element, where `X` is the name of the HTML tag element, like `<img is="swarm-img" src="bzz://{content-address}" />`.
+You can refer to any `bzz` resource in html if you add attribute `is=swarm-X` to your html element, where `X` is the name of the HTML tag element, such as `<img is="swarm-img" src="https://{cid-or-ens-name}.bzz.link" />`.
 
 Current supported elements:
 * `a` -> `<a is="swarm-a" (...)`
 * `img` -> `<img is="swarm-img" (...)`
+* `video` -> `<video is="swarm-video" (...)`
+* `source` -> `<audio controls><source is="swarm-source" (...)`
 * `iframe` -> `<iframe is="swarm-iframe" (...)`
 
 at references, you can use the `bzz` protocol or the `bzz.link` structure that is detailed below.
