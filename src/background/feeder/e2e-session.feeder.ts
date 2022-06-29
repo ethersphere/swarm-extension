@@ -3,6 +3,7 @@ import { bzzProtocolToFakeUrl } from '../../contentscript/swarm-library/bzz-link
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem } from '../../utils/storage'
 import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
+import { DEFAULT_BEE_API_ADDRESS, DEFAULT_BEE_DEBUG_API_ADDRESS } from '../constants/addresses'
 import { DappSessionManager } from '../dapp-session.manager'
 
 enum Action {
@@ -12,7 +13,7 @@ enum Action {
   BZZ_LINK_URL_TO_FAKE_URL = 'bzzLink.urlToFakeUrl',
   WEB2_HELPER_FAKE_BEE_API_ADDRESS = 'web2Helper.fakeBeeApiAddress',
   WEB2_HELPER_FAKE_BZZ_ADDRESS = 'web2Helper.fakeBzzAddress',
-  WEB2_HELPER_BEE_ADDRESS = 'web2Helper.beeAddress'
+  WEB2_HELPER_BEE_ADDRESS = 'web2Helper.beeAddress',
 }
 
 interface Request<A extends Action, P> {
@@ -57,7 +58,11 @@ export class E2ESessionFeeder {
 
     // register dapp session id
     chrome.runtime.onMessageExternal.addListener(
-      async (request: RequestType, sender: chrome.runtime.MessageSender, sendResponse: (response?: Response) => void) => {
+      async (
+        request: RequestType,
+        sender: chrome.runtime.MessageSender,
+        sendResponse: (response?: Response) => void,
+      ) => {
         const { action } = request || {}
         const senderId = sender.id as string
         const response: Response = {}
@@ -159,7 +164,12 @@ export class E2ESessionFeeder {
     return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`, sessionId)
   }
 
-  private handleWeb2BeeAddress(): Promise<string> {
-    return getItem('beeApiUrl')
+  private async handleWeb2BeeAddress(): Promise<{ beeApiUrl: string; beeDebugApiUrl: string }> {
+    const [beeApiUrl, beeDebugApiUrl] = await Promise.all([getItem('beeApiUrl'), getItem('beeDebugApiUrl')])
+
+    return {
+      beeApiUrl: beeApiUrl || DEFAULT_BEE_API_ADDRESS,
+      beeDebugApiUrl: beeDebugApiUrl || DEFAULT_BEE_DEBUG_API_ADDRESS,
+    }
   }
 }

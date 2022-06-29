@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { createContext, useEffect, useReducer } from 'react'
+import { DEFAULT_BEE_API_ADDRESS, DEFAULT_BEE_DEBUG_API_ADDRESS } from '../../background/constants/addresses'
 import { setItem, StoreObserver } from '../../utils/storage'
 
 export class ActionError extends Error {
@@ -85,8 +86,8 @@ async function localStoreDispatch(action: Action): Promise<void> {
 }
 
 const initialState: State = {
-  beeApiUrl: 'http://127.0.0.1:1633',
-  beeDebugApiUrl: 'http://127.0.0.1:1635',
+  beeApiUrl: DEFAULT_BEE_API_ADDRESS,
+  beeDebugApiUrl: DEFAULT_BEE_DEBUG_API_ADDRESS,
   postageBatchId: null,
   globalPostageBatchEnabled: false,
   web2OriginEnabled: false,
