@@ -1,5 +1,6 @@
 import type puppeteer from 'puppeteer'
 import type { LocalStorage } from '../src/contentscript/swarm-library/local-storage'
+import { PostageBatch } from '../src/contentscript/swarm-library/postage-batch'
 import type { Web2HelperContent } from '../src/contentscript/swarm-library/web2-helper.content'
 export {} //indicate it is a module type declaration
 
@@ -15,6 +16,7 @@ declare global {
       localStorage: LocalStorage
       sessionId: string
       bzzLink: typeof import('../src/contentscript/swarm-library/bzz-link')
+      postageBatch: PostageBatch
     }
   }
 }

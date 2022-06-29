@@ -15,33 +15,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
       target: 'content',
     }
 
-    return new Promise<string>((resolve, reject) => {
-      const handler = (response: MessageEvent<InterceptorResMessageFormat<string>>) => {
-        if (!this.validMessage(response, message.eventId)) return
-
-        // Remove listener since this was the response that we were looking for at this point
-        window.removeEventListener('message', handler)
-
-        // handle message
-        if (response.data.error) reject(response.data.error)
-
-        if (response.data.answer === undefined) {
-          const errorMessage = `Web2Helper inpage request failed. It didn't get any answer. ID: ${response.data.eventId}`
-          console.error(errorMessage, response)
-          reject(errorMessage)
-        } else {
-          resolve(response.data.answer)
-        }
-      }
-
-      window.addEventListener('message', handler)
-      /**
-       * TODO: target by app origin
-       * origin is null because of the sandbox
-       */
-      const origin = '*'
-      window.postMessage(message, origin)
-    })
+    return this.messageHandler(message, 'Web2Helper')
   }
 
   /**

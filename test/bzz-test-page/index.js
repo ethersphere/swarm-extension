@@ -1,7 +1,16 @@
 const web2Helper = window.swarm.web2Helper
+const postageBatch = window.swarm.postageBatch
 
 function fetchBeeApiUrl() {
   web2Helper.beeApiUrl().then(url => (document.getElementById('bee-api-url-placeholder').innerHTML = url))
+}
+
+function fetchGlobalPostageBatch() {
+  postageBatch.isGlobalPostageBatchEnabled().then(enabled => {
+    const placeholderElement = document.getElementById('global-postage-batch-placeholder')
+    placeholderElement.innerHTML = enabled
+    placeholderElement.setAttribute('complete', 'true')
+  })
 }
 
 function fetchJinnImage() {
