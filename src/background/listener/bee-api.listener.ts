@@ -10,7 +10,7 @@ export class BeeApiListener {
   private _web2OriginEnabled: boolean
 
   public constructor(private storeObserver: StoreObserver) {
-    this._beeApiUrl = 'http://localhost:1633'
+    this._beeApiUrl = 'http://127.0.0.1:1633'
     this._globalPostageBatchEnabled = false
     this._web2OriginEnabled = false
     this._globalPostageBatchId = 'undefined' // it is not necessary to check later, if it is enabled it will insert
@@ -31,17 +31,25 @@ export class BeeApiListener {
   ): void | chrome.webRequest.BlockingResponse => {
     if (!this._globalPostageBatchEnabled || !details.requestHeaders) return
 
-    const postageBatchIdHeader = details.requestHeaders.find(header => header.name === 'swarm-postage-batch-id')
+    try {
+      const postageBatchIdHeader = details.requestHeaders.find(
+        header => header.name.toLowerCase() === 'swarm-postage-batch-id',
+      )
 
-    if (!postageBatchIdHeader) return
+      if (!postageBatchIdHeader) return
 
-    console.log(
-      `Postage Batch: ${this._globalPostageBatchId} Batch ID will be used instead of ` + postageBatchIdHeader.value,
-    )
+      console.log(
+        `Postage Batch: ${this._globalPostageBatchId} Batch ID will be used instead of ` + postageBatchIdHeader.value,
+      )
 
-    postageBatchIdHeader.value = this._globalPostageBatchId
+      postageBatchIdHeader.value = this._globalPostageBatchId
 
-    return { requestHeaders: details.requestHeaders }
+      return { requestHeaders: details.requestHeaders }
+    } catch (e) {
+      console.error(`request header error problem`, e, details.requestHeaders)
+
+      return
+    }
   }
 
   private sandboxListener = (

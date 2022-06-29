@@ -1,6 +1,6 @@
 {
   "name": "@ethersphere/swarm-extension",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "description": "Extension to properly handle Swarm dApps in browsers",
   "keywords": [
     "Swarm",
@@ -28,7 +28,8 @@
     "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "zip": "cd dist/ && bestzip ../extension.zip *",
-    "update:test-bee-js-browser": "cp node_modules/@ethersphere/bee-js/dist/index.browser.min.js test/bzz-test-page/bee-js.min.js"
+    "update:test-bee-js-browser": "cp node_modules/@ethersphere/bee-js/dist/index.browser.min.js test/bzz-test-page/bee-js.min.js",
+    "bee": "bee-factory start"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
@@ -40,7 +41,7 @@
     "@babel/preset-typescript": "^7.12.7",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@ethersphere/bee-js": "^2.1.1",
+    "@ethersphere/bee-factory": "^0.4.1",
     "@types/chrome": "0.0.128",
     "@types/copy-webpack-plugin": "^6.4.0",
     "@types/glob": "^7.1.3",
@@ -86,12 +87,20 @@
     "ws": "^7.4.4"
   },
   "dependencies": {
-    "@ethersphere/bee-dashboard": "^0.13.0",
+    "@ethersphere/bee-dashboard": "^0.16.0",
+    "@ethersphere/bee-js": "^4.1.1",
     "@ethersphere/swarm-cid": "^0.1.0",
-    "nanoid": "^3.1.22",
+    "isarray": "^2.0.5",
+    "nanoid": "^3.1.31",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-feather": "^2.0.9",
-    "react-jss": "^10.9.0"
+    "react-jss": "^10.9.0",
+    "safe-buffer": "^5.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0",
+    "bee": "1.6.0-6ceadd35"
   }
 }
