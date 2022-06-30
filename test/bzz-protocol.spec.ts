@@ -195,6 +195,16 @@ describe('BZZ protocol', () => {
     done()
   })
 
+  test('Check Real Bee API is available', async done => {
+    await page.click('#button-check-real-bee-api-available')
+    const placeHolderSelector = '#bee-api-available-placeholder[complete="true"]'
+    await page.waitForSelector(placeHolderSelector)
+    const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
+    expect(value).toBe('true') //default value of Bee API URL in the extension
+
+    done()
+  })
+
   test('Allow Global Postage Stamp ID', async done => {
     const extensionPage = await openExtensionPage()
     const stamp = getStamp()

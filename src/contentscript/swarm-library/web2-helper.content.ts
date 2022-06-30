@@ -6,17 +6,9 @@ import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
 import { MessengerInpage } from './messenger.inpage'
 
 export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMessage {
-  /** The real Bee API address that shouldn't be called directly by dApps */
-  public beeApiUrl(): Promise<string> {
-    const message: InpageReqMessageFormat<undefined> = {
-      key: 'beeApiUrl',
-      eventId: nanoid(),
-      sender: 'inpage',
-      target: 'content',
-    }
-
-    return new Promise<string>((resolve, reject) => {
-      const handler = (response: MessageEvent<InterceptorResMessageFormat<string>>) => {
+  private messageHandler<Response>(message: InpageReqMessageFormat<unknown>) {
+    return new Promise<Response>((resolve, reject) => {
+      const handler = (response: MessageEvent<InterceptorResMessageFormat<Response>>) => {
         if (!this.validMessage(response, message.eventId)) return
 
         // Remove listener since this was the response that we were looking for at this point
@@ -42,6 +34,31 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
       const origin = '*'
       window.postMessage(message, origin)
     })
+  }
+  /** The real Bee API address that shouldn't be called directly by dApps */
+  public beeApiUrl(): Promise<string> {
+    const message: InpageReqMessageFormat<undefined> = {
+      key: 'beeApiUrl',
+      eventId: nanoid(),
+      sender: 'inpage',
+      target: 'content',
+    }
+
+    return this.messageHandler<string>(message)
+  }
+
+  /**
+   * Checks whether configured Bee API is available
+   */
+  public isBeeApiAvailable(): Promise<boolean> {
+    const message: InpageReqMessageFormat<undefined> = {
+      key: 'isBeeApiAvailable',
+      eventId: nanoid(),
+      sender: 'inpage',
+      target: 'content',
+    }
+
+    return this.messageHandler<boolean>(message)
   }
 
   /**
