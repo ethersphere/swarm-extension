@@ -1,7 +1,17 @@
 const web2Helper = window.swarm.web2Helper
+const postageBatch = window.swarm.postageBatch
 
 function fetchBeeApiUrl() {
   web2Helper.beeApiUrl().then(url => (document.getElementById('bee-api-url-placeholder').innerHTML = url))
+}
+
+function fetchGlobalPostageBatch() {
+  const placeholderElement = document.getElementById('global-postage-batch-placeholder')
+  placeholderElement.setAttribute('complete', 'false')
+  postageBatch.isGlobalPostageBatchEnabled().then(enabled => {
+    placeholderElement.innerHTML = enabled
+    placeholderElement.setAttribute('complete', 'true')
+  })
 }
 
 function checkBeeApiAvailable() {

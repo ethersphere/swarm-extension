@@ -6,35 +6,6 @@ import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
 import { MessengerInpage } from './messenger.inpage'
 
 export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMessage {
-  private messageHandler<Response>(message: InpageReqMessageFormat<unknown>) {
-    return new Promise<Response>((resolve, reject) => {
-      const handler = (response: MessageEvent<InterceptorResMessageFormat<Response>>) => {
-        if (!this.validMessage(response, message.eventId)) return
-
-        // Remove listener since this was the response that we were looking for at this point
-        window.removeEventListener('message', handler)
-
-        // handle message
-        if (response.data.error) reject(response.data.error)
-
-        if (response.data.answer === undefined) {
-          const errorMessage = `Web2Helper inpage request failed. It didn't get any answer. ID: ${response.data.eventId}`
-          console.error(errorMessage, response)
-          reject(errorMessage)
-        } else {
-          resolve(response.data.answer)
-        }
-      }
-
-      window.addEventListener('message', handler)
-      /**
-       * TODO: target by app origin
-       * origin is null because of the sandbox
-       */
-      const origin = '*'
-      window.postMessage(message, origin)
-    })
-  }
   /** The real Bee API address that shouldn't be called directly by dApps */
   public beeApiUrl(): Promise<string> {
     const message: InpageReqMessageFormat<undefined> = {
@@ -44,7 +15,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
       target: 'content',
     }
 
-    return this.messageHandler<string>(message)
+    return this.messageHandler<string>(message, 'Web2Helper')
   }
 
   /**
@@ -58,7 +29,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
       target: 'content',
     }
 
-    return this.messageHandler<boolean>(message)
+    return this.messageHandler<boolean>(message, 'Web2Helper')
   }
 
   /**

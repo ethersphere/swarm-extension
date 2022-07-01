@@ -195,12 +195,22 @@ describe('BZZ protocol', () => {
     done()
   })
 
+  test('Check if global postage batch is enabled', async done => {
+    await page.click('#button-check-global-postage-batch-enabled')
+    const placeHolderSelector = '#global-postage-batch-placeholder[complete="true"]'
+    await page.waitForSelector(placeHolderSelector)
+    const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
+    expect(value).toBe('false') //default value of Bee API URL in the extension
+
+    done()
+  })
+
   test('Check Real Bee API is available', async done => {
     await page.click('#button-check-real-bee-api-available')
     const placeHolderSelector = '#bee-api-available-placeholder[complete="true"]'
     await page.waitForSelector(placeHolderSelector)
     const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
-    expect(value).toBe('true') //default value of Bee API URL in the extension
+    expect(value).toBe('true')
 
     done()
   })
@@ -221,6 +231,16 @@ describe('BZZ protocol', () => {
     expect(globalPostageBatchId).toEqual(stamp)
 
     await extensionPage.close()
+
+    done()
+  })
+
+  test('Check if global postage batch is enabled', async done => {
+    await page.click('#button-check-global-postage-batch-enabled')
+    const placeHolderSelector = '#global-postage-batch-placeholder[complete="true"]'
+    await page.waitForSelector(placeHolderSelector)
+    const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
+    expect(value).toBe('true')
 
     done()
   })
