@@ -6,8 +6,9 @@ function fetchBeeApiUrl() {
 }
 
 function fetchGlobalPostageBatch() {
+  const placeholderElement = document.getElementById('global-postage-batch-placeholder')
+  placeholderElement.setAttribute('complete', 'false')
   postageBatch.isGlobalPostageBatchEnabled().then(enabled => {
-    const placeholderElement = document.getElementById('global-postage-batch-placeholder')
     placeholderElement.innerHTML = enabled
     placeholderElement.setAttribute('complete', 'true')
   })

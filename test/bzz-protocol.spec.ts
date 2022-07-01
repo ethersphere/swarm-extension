@@ -225,6 +225,16 @@ describe('BZZ protocol', () => {
     done()
   })
 
+  test('Check if global postage batch is enabled', async done => {
+    await page.click('#button-check-global-postage-batch-enabled')
+    const placeHolderSelector = '#global-postage-batch-placeholder[complete="true"]'
+    await page.waitForSelector(placeHolderSelector)
+    const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
+    expect(value).toBe('true')
+
+    done()
+  })
+
   test('Upload file through Fake URL', async done => {
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
