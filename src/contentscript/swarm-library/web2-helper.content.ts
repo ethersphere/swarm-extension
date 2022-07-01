@@ -15,7 +15,21 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
       target: 'content',
     }
 
-    return this.messageHandler(message, 'Web2Helper')
+    return this.messageHandler<string>(message, 'Web2Helper')
+  }
+
+  /**
+   * Checks whether configured Bee API is available
+   */
+  public isBeeApiAvailable(): Promise<boolean> {
+    const message: InpageReqMessageFormat<undefined> = {
+      key: 'isBeeApiAvailable',
+      eventId: nanoid(),
+      sender: 'inpage',
+      target: 'content',
+    }
+
+    return this.messageHandler<boolean>(message, 'Web2Helper')
   }
 
   /**

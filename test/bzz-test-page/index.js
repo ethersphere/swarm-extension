@@ -14,6 +14,14 @@ function fetchGlobalPostageBatch() {
   })
 }
 
+function checkBeeApiAvailable() {
+  web2Helper.isBeeApiAvailable().then(available => {
+    const placeholderElement = document.getElementById('bee-api-available-placeholder')
+    placeholderElement.innerHTML = available
+    placeholderElement.setAttribute('complete', 'true')
+  })
+}
+
 function fetchJinnImage() {
   const bzzContentAddress = '82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5/images/jinn.png'
   const jinnFakeUrl = web2Helper.fakeBzzAddress(bzzContentAddress)

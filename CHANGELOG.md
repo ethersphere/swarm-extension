@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/ethersphere/swarm-extension/compare/v0.3.1...v0.4.0) (2022-06-30)
+
+
+### Features
+
+* add option to check whether bee api is available ([#127](https://github.com/ethersphere/swarm-extension/issues/127)) ([34719b0](https://github.com/ethersphere/swarm-extension/commit/34719b03d9ca1cfb921a0fd14bcad605a810e1d1))
+* new swarm html elements ([#124](https://github.com/ethersphere/swarm-extension/issues/124)) ([2ce4f00](https://github.com/ethersphere/swarm-extension/commit/2ce4f00b1fa27787c7f54d668703729656a713d1))
+
+
+### Bug Fixes
+
+* global postage batch ([#125](https://github.com/ethersphere/swarm-extension/issues/125)) ([21be2dc](https://github.com/ethersphere/swarm-extension/commit/21be2dce8627d9e251dc231736ea0315c129c80e))
+* set global postage batch on fetch ([#121](https://github.com/ethersphere/swarm-extension/issues/121)) ([f392b7c](https://github.com/ethersphere/swarm-extension/commit/f392b7c50de8641a63114f7a9c552a2e0aaaf28a))
+
 ## [0.3.1](https://github.com/ethersphere/swarm-extension/compare/v0.3.0...v0.3.1) (2022-06-11)
 
 
