@@ -57,3 +57,8 @@ export function extractContentRoot(url: string): string {
   // TODO: check configurated bee api/debug address
   return urlParts[4]
 }
+
+export function isSenderExtension(sender: chrome.runtime.MessageSender): boolean {
+  // TODO If support for other browsers is needed, then this function should be extended
+  return Boolean(sender.url?.startsWith('chrome-extension://'))
+}

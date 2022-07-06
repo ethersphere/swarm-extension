@@ -2,12 +2,13 @@
 
 import { BeeDebug, DebugPostageBatch } from '@ethersphere/bee-js'
 import { ElementHandle, Page } from 'puppeteer'
+import { DEFAULT_BEE_API_ADDRESS, DEFAULT_BEE_DEBUG_API_ADDRESS } from '../src/background/constants/addresses'
 
 /**
  * Returns a url for testing the Bee API
  */
-export const BEE_DEBUG_API_URL = process.env.BEE_DEBUG_API_URL || 'http://127.0.0.1:1635'
-export const BEE_API_URL = process.env.BEE_API_URL || 'http://127.0.0.1:1633'
+export const BEE_DEBUG_API_URL = process.env.BEE_DEBUG_API_URL || DEFAULT_BEE_DEBUG_API_ADDRESS
+export const BEE_API_URL = process.env.BEE_API_URL || DEFAULT_BEE_API_ADDRESS
 
 export const BEE_PEER_API_URL = process.env.BEE_PEER_API_URL || 'http://127.0.0.1:11633'
 

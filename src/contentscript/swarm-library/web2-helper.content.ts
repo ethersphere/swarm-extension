@@ -44,7 +44,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
    * @returns Fake URL pointing to the BZZ endpoint of the Bee client
    */
   public fakeBzzAddress(reference: string): string {
-    return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`)
+    return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`, window.swarm.sessionId)
   }
 
   /**
@@ -56,7 +56,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
    * @returns Fake Bee API URL that is directly callable from dApp side
    */
   public fakeBeeApiAddress(): string {
-    return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress)
+    return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress, window.swarm.sessionId)
   }
 }
 
