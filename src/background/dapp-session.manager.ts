@@ -1,21 +1,36 @@
-import { senderContentOrigin, senderFrameId, senderFrameOrigin, senderTabId } from './utils'
+import { isSenderExtension, senderContentOrigin, senderFrameId, senderFrameOrigin, senderTabId } from './utils'
 
 type LocalStorage = {
   set: (storeValues: { [key: string]: unknown }, callback?: () => void) => void
   get: (storeValues: string[], callback: (result: { [key: string]: unknown }) => void) => void
 }
 
-class DappSecurityContext {
-  private readonly storage: LocalStorage
-  private readonly storePrefix: string
+abstract class DappSecurityContext {
+  protected readonly storage: LocalStorage
+  protected readonly storePrefix: string
+
+  constructor(storePrefix: string) {
+    this.storage = chrome.storage.local
+    this.storePrefix = storePrefix
+  }
+
+  public abstract isValid(sender: chrome.runtime.MessageSender): boolean
+
+  /** STORAGE FUNCTIONS */
+
+  public abstract setStorageItem(keyName: string, keyValue: unknown): Promise<void>
+
+  public abstract getStorageItem(keyName: string): Promise<unknown>
+}
+
+class TabDappSecurityContext extends DappSecurityContext {
   public constructor(
     private tabId: number,
     private frameId: number,
     private frameContentRoot: string,
     private originContentRoot: string,
   ) {
-    this.storage = chrome.storage.local
-    this.storePrefix = this.frameContentRoot || this.originContentRoot
+    super(frameContentRoot || originContentRoot)
   }
 
   public isValidTabId(tabId: number): boolean {
@@ -33,7 +48,21 @@ class DappSecurityContext {
     return originContentRoot === this.originContentRoot
   }
 
-  /** STORAGE FUNCTIONS */
+  public isValid(sender: chrome.runtime.MessageSender): boolean {
+    const tabId = senderTabId(sender)
+    const frameId = senderFrameId(sender)
+    const frameContentRoot = senderFrameOrigin(sender)
+    const originContentRoot = senderContentOrigin(sender)
+
+    console.log(`tabid ${tabId} frameId ${frameId} frameconte ${frameContentRoot} originCon ${originContentRoot}`)
+
+    return (
+      this.isValidTabId(tabId) &&
+      this.isValidFrameId(frameId) &&
+      this.isFrameContentRoot(frameContentRoot) &&
+      this.isValidOriginContentRoot(originContentRoot)
+    )
+  }
 
   public async setStorageItem(keyName: string, keyValue: unknown): Promise<void> {
     const key = this.enrichStorageKey(keyName)
@@ -56,6 +85,24 @@ class DappSecurityContext {
   }
 }
 
+class ExtensionDappSecurityContext extends DappSecurityContext {
+  constructor() {
+    super('extension')
+  }
+
+  public isValid(sender: chrome.runtime.MessageSender): boolean {
+    return isSenderExtension(sender)
+  }
+
+  public setStorageItem(keyName: string, keyValue: unknown): Promise<void> {
+    throw new Error("ExtensionDappSecurityContext doesn't support extension storage functions")
+  }
+
+  public getStorageItem(keyName: string): Promise<unknown> {
+    throw new Error("ExtensionDappSecurityContext doesn't support extension storage functions")
+  }
+}
+
 export class DappSessionManager {
   private securityContexts: { [sessionId: string]: DappSecurityContext }
 
@@ -63,12 +110,20 @@ export class DappSessionManager {
     this.securityContexts = {}
   }
   public register(sessionId: string, sender: chrome.runtime.MessageSender): void {
-    const tabId = senderTabId(sender)
-    const frameId = senderFrameId(sender)
-    const frameContentRoot = senderFrameOrigin(sender)
-    const originContentRoot = senderContentOrigin(sender)
+    let context: DappSecurityContext | null = null
 
-    this.securityContexts[sessionId] = new DappSecurityContext(tabId, frameId, frameContentRoot, originContentRoot)
+    if (isSenderExtension(sender)) {
+      context = new ExtensionDappSecurityContext()
+    } else {
+      const tabId = senderTabId(sender)
+      const frameId = senderFrameId(sender)
+      const frameContentRoot = senderFrameOrigin(sender)
+      const originContentRoot = senderContentOrigin(sender)
+
+      context = new TabDappSecurityContext(tabId, frameId, frameContentRoot, originContentRoot)
+    }
+
+    this.securityContexts[sessionId] = context
     console.log(`dApp session "${sessionId}" has been initialized`, this.securityContexts[sessionId])
   }
 
@@ -80,19 +135,7 @@ export class DappSessionManager {
 
     if (!context) return false
 
-    const tabId = senderTabId(sender)
-    const frameId = senderFrameId(sender)
-    const frameContentRoot = senderFrameOrigin(sender)
-    const originContentRoot = senderContentOrigin(sender)
-
-    console.log(`tabid ${tabId} frameId ${frameId} frameconte ${frameContentRoot} originCon ${originContentRoot}`)
-
-    return (
-      context.isValidTabId(tabId) &&
-      context.isValidFrameId(frameId) &&
-      context.isFrameContentRoot(frameContentRoot) &&
-      context.isValidOriginContentRoot(originContentRoot)
-    )
+    return context.isValid(sender)
   }
 
   public getStorageItem(

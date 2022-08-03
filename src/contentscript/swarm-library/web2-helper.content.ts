@@ -15,33 +15,21 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
       target: 'content',
     }
 
-    return new Promise<string>((resolve, reject) => {
-      const handler = (response: MessageEvent<InterceptorResMessageFormat<string>>) => {
-        if (!this.validMessage(response, message.eventId)) return
+    return this.messageHandler<string>(message, 'Web2Helper')
+  }
 
-        // Remove listener since this was the response that we were looking for at this point
-        window.removeEventListener('message', handler)
+  /**
+   * Checks whether configured Bee API is available
+   */
+  public isBeeApiAvailable(): Promise<boolean> {
+    const message: InpageReqMessageFormat<undefined> = {
+      key: 'isBeeApiAvailable',
+      eventId: nanoid(),
+      sender: 'inpage',
+      target: 'content',
+    }
 
-        // handle message
-        if (response.data.error) reject(response.data.error)
-
-        if (response.data.answer === undefined) {
-          const errorMessage = `Web2Helper inpage request failed. It didn't get any answer. ID: ${response.data.eventId}`
-          console.error(errorMessage, response)
-          reject(errorMessage)
-        } else {
-          resolve(response.data.answer)
-        }
-      }
-
-      window.addEventListener('message', handler)
-      /**
-       * TODO: target by app origin
-       * origin is null because of the sandbox
-       */
-      const origin = '*'
-      window.postMessage(message, origin)
-    })
+    return this.messageHandler<boolean>(message, 'Web2Helper')
   }
 
   /**
@@ -56,7 +44,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
    * @returns Fake URL pointing to the BZZ endpoint of the Bee client
    */
   public fakeBzzAddress(reference: string): string {
-    return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`)
+    return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`, window.swarm.sessionId)
   }
 
   /**
@@ -68,7 +56,7 @@ export class Web2HelperContent extends MessengerInpage implements IWeb2HelperMes
    * @returns Fake Bee API URL that is directly callable from dApp side
    */
   public fakeBeeApiAddress(): string {
-    return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress)
+    return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress, window.swarm.sessionId)
   }
 }
 

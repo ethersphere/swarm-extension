@@ -2,6 +2,7 @@ import { createSubdomainUrl, isHostIpAddress, subdomainToBzzResource } from '../
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
+import { DEFAULT_BEE_API_ADDRESS } from '../constants/addresses'
 
 export class BeeApiListener {
   private _beeApiUrl: string
@@ -10,7 +11,7 @@ export class BeeApiListener {
   private _web2OriginEnabled: boolean
 
   public constructor(private storeObserver: StoreObserver) {
-    this._beeApiUrl = 'http://127.0.0.1:1633'
+    this._beeApiUrl = DEFAULT_BEE_API_ADDRESS
     this._globalPostageBatchEnabled = false
     this._web2OriginEnabled = false
     this._globalPostageBatchId = 'undefined' // it is not necessary to check later, if it is enabled it will insert

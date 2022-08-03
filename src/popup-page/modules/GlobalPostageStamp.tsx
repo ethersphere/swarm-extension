@@ -1,4 +1,4 @@
-import { PostageBatch } from '@ethersphere/bee-js'
+import { BatchId, PostageBatch } from '@ethersphere/bee-js'
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import { createUseStyles } from 'react-jss'
 
@@ -42,7 +42,16 @@ export default function GlobalPostageStamp(): ReactElement {
 
   const retrievePostageBatches = async () => {
     console.log('fetch postagethings')
-    setFetchedPostageBatches(await getPostageBatches(globalState.beeDebugApiUrl))
+    const postageBatches = await getPostageBatches(globalState.beeDebugApiUrl)
+    setFetchedPostageBatches(postageBatches)
+    const batchIds = postageBatches.map(batch => batch.batchID)
+
+    if (
+      (!globalState.postageBatchId || !batchIds.includes(globalState.postageBatchId as BatchId)) &&
+      postageBatches[0]
+    ) {
+      dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_SAVE', newValue: postageBatches[0].batchID })
+    }
   }
 
   const getPostageBatchUsage = (): string => {
