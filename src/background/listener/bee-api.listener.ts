@@ -280,6 +280,8 @@ export class BeeApiListener {
     let url: string
 
     if (isHostIpAddress(this._beeApiUrl)) {
+      url = `${this._beeApiUrl}/bzz/${bzzReference}`
+    } else {
       const [hash, path] = bzzReference.split(/\/(.*)/s)
       let subdomain = hash
 
@@ -287,9 +289,11 @@ export class BeeApiListener {
         subdomain = subdomain.substring(0, subdomain.length - 4)
       }
 
-      url = createSubdomainUrl(this._beeApiUrl, subdomain) + path
-    } else {
-      url = `${this._beeApiUrl}/bzz/${bzzReference}`
+      url = createSubdomainUrl(this._beeApiUrl, subdomain)
+
+      if (path) {
+        url += `/${path}`
+      }
     }
 
     console.log(`Fake URL redirection to ${url} on tabId ${tabId}`)
