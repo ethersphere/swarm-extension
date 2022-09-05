@@ -23,6 +23,7 @@
     "compile": "rimraf dist && npm run compile:deps -- --progress && npm run compile:main -- --progress",
     "compile:deps": "webpack --env buildDeps=true",
     "compile:main": "webpack",
+    "check:types": "tsc --project tsconfig.types.json",
     "test": "jest --config=jest.config.ts",
     "test:demo": "npm run test -- --demo=true --runInBand",
     "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
