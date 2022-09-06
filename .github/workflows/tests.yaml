@@ -44,9 +44,11 @@ jobs:
       - name: Compile
         run: npm run compile
 
-      # Start Bee Factory environment
-      - name: Start Bee Factory environment
-        run: npm run bee -- --detach
+      - name: Install fdp-play
+        run: npm install -g @fairdatasociety/fdp-play
+
+      - name: Run fdp-play
+        run: fdp-play start -d
 
       - name: Run tests
         uses: vojtechsimetka/puppeteer-headful@master
