@@ -2,7 +2,10 @@ const web2Helper = window.swarm.web2Helper
 const postageBatch = window.swarm.postageBatch
 
 function fetchBeeApiUrl() {
-  web2Helper.beeApiUrl().then(url => (document.getElementById('bee-api-url-placeholder').innerHTML = url))
+  web2Helper
+    .beeApiUrl()
+    .then(url => (document.getElementById('bee-api-url-placeholder').innerHTML = url))
+    .catch(error => (document.getElementById('bee-api-url-placeholder').innerHTML = JSON.stringify(error)))
 }
 
 function fetchGlobalPostageBatch() {
