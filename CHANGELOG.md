@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/ethersphere/swarm-extension/compare/v0.4.0...v0.5.0) (2022-07-06)
+
+
+### Features
+
+* add method to check if global postage batch is enabled ([#122](https://github.com/ethersphere/swarm-extension/issues/122)) ([#128](https://github.com/ethersphere/swarm-extension/issues/128)) ([b56536f](https://github.com/ethersphere/swarm-extension/commit/b56536f51266d223a1f22ad35d556f95d02e87b7))
+* e2e api ([#102](https://github.com/ethersphere/swarm-extension/issues/102)) ([f0091b2](https://github.com/ethersphere/swarm-extension/commit/f0091b2d4b545b00b8b5b2e2511449b6bbe76d7f))
+
 ## [0.4.0](https://github.com/ethersphere/swarm-extension/compare/v0.3.1...v0.4.0) (2022-06-30)
 
 

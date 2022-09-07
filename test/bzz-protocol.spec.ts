@@ -188,6 +188,7 @@ describe('BZZ protocol', () => {
   test('Fetch Real Bee API URL', async done => {
     await page.click('#button-fetch-real-bee-api-url')
     const placeHolderSelector = '#bee-api-url-placeholder'
+    await new Promise(resolve => setTimeout(resolve, 500))
     await page.waitForSelector(placeHolderSelector)
     const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
     expect(value).toBe(BEE_API_URL) //default value of Bee API URL in the extension
