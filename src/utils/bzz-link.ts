@@ -70,6 +70,12 @@ export function isHostIpAddress(url: string): boolean {
   return ipAsHostRegex.test(url)
 }
 
+export function isLocalhost(url: string): boolean {
+  const urlObject = new URL(url)
+
+  return urlObject.host === 'localhost'
+}
+
 export function createSubdomainUrl(beeApiUrl: string, subdomain: string): string {
   const [protocol, host] = beeApiUrl.split('://')
 

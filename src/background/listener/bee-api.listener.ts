@@ -1,4 +1,4 @@
-import { createSubdomainUrl, isHostIpAddress, subdomainToBzzResource } from '../../utils/bzz-link'
+import { createSubdomainUrl, isLocalhost, subdomainToBzzResource } from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
@@ -279,7 +279,7 @@ export class BeeApiListener {
   private redirectToBzzReference(bzzReference: string, tabId: number) {
     let url: string
 
-    if (isHostIpAddress(this._beeApiUrl)) {
+    if (!isLocalhost(this._beeApiUrl)) {
       url = `${this._beeApiUrl}/bzz/${bzzReference}`
     } else {
       const [hash, path] = bzzReference.split(/\/(.*)/s)
