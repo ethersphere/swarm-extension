@@ -71,7 +71,7 @@ export function isLocalhost(url: string): boolean {
 export function createSubdomainUrl(beeApiUrl: string, subdomain: string): string {
   const [protocol, host] = beeApiUrl.split('://')
 
-  return `${protocol}://${subdomain}.${host}`
+  return `${protocol}://${subdomain}.swarm.${host}`
 }
 
 export function bzzResourceToSubdomain(
