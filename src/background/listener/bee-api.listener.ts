@@ -159,8 +159,8 @@ export class BeeApiListener {
     chrome.webRequest.onBeforeRequest.addListener(
       (details: chrome.webRequest.WebRequestBodyDetails) => {
         console.log('Original BZZ Url', details.url)
-        const urlParams = new URLSearchParams(details.url)
-        const query = urlParams.get('oq')
+        const urlParams = new URLSearchParams(new URL(details.url).search)
+        const query = decodeURI(urlParams.get('oq') || urlParams.get('q') || '')
 
         if (!query || !query.startsWith('bzz://')) return
 
