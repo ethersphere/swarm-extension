@@ -1,10 +1,6 @@
 /** bzz.link CID implementaion */
 import * as swarmCid from '@ethersphere/swarm-cid'
 
-const ipAsHostRegex = RegExp(
-  '^http[s]?://((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])',
-)
-
 export function hashToCid(
   input: string,
   type: swarmCid.ReferenceType = swarmCid.ReferenceType.FEED,
@@ -64,10 +60,6 @@ export function subdomainToBzzResource(subdomain: string): string {
   }
 
   return `${subdomain}.eth`
-}
-
-export function isHostIpAddress(url: string): boolean {
-  return ipAsHostRegex.test(url)
 }
 
 export function isLocalhost(url: string): boolean {
