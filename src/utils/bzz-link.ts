@@ -63,9 +63,9 @@ export function subdomainToBzzResource(subdomain: string): string {
 }
 
 export function isLocalhost(url: string): boolean {
-  const urlObject = new URL(url)
+  const { host } = new URL(url)
 
-  return urlObject.host === 'localhost'
+  return host === 'localhost' || host.startsWith('localhost:')
 }
 
 export function createSubdomainUrl(beeApiUrl: string, subdomain: string): string {
