@@ -1,4 +1,4 @@
-import { createSubdomainUrl, isLocalhost, subdomainToBzzResource } from '../../utils/bzz-link'
+import { createSubdomainUrl, isLocalhost, isSubdomainUsed, subdomainToBzzResource } from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
@@ -58,7 +58,7 @@ export class BeeApiListener {
   ): void | chrome.webRequest.BlockingResponse => {
     console.log('web2OriginEnabled', this._web2OriginEnabled)
 
-    if (this._web2OriginEnabled) return { responseHeaders: details.responseHeaders }
+    if (this._web2OriginEnabled || isSubdomainUsed(details.url)) return { responseHeaders: details.responseHeaders }
 
     const urlArray = details.url.toString().split('/')
 
@@ -149,7 +149,7 @@ export class BeeApiListener {
         const bzzReference = subdomainToBzzResource(subdomain) + pathWithParams
         console.log('bzz link redirect', bzzReference, url, pathWithParams)
 
-        this.redirectToBzzReference(bzzReference, tabId)
+        this.redirectToBzzReference(bzzReference, tabId, true)
       },
       { url: [{ hostSuffix: '.bzz.link' }] },
     )
@@ -276,10 +276,10 @@ export class BeeApiListener {
    * @param bzzReference in form of $ROOT_HASH<$PATH><$QUERY>
    * @param tabId the tab will be navigated to the dApp page
    */
-  private redirectToBzzReference(bzzReference: string, tabId: number) {
+  private redirectToBzzReference(bzzReference: string, tabId: number, preventSubdomainRedirection = false) {
     let url: string
 
-    if (!isLocalhost(this._beeApiUrl)) {
+    if (preventSubdomainRedirection || !isLocalhost(this._beeApiUrl)) {
       url = `${this._beeApiUrl}/bzz/${bzzReference}`
     } else {
       const [hash, path] = bzzReference.split(/\/(.*)/s)
