@@ -1,4 +1,10 @@
-import { createSubdomainUrl, isLocalhost, isSubdomainUsed, subdomainToBzzResource } from '../../utils/bzz-link'
+import {
+  createSubdomainUrl,
+  hashToCid,
+  isLocalhost,
+  isSubdomainUsed,
+  subdomainToBzzResource,
+} from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
@@ -149,7 +155,7 @@ export class BeeApiListener {
         const bzzReference = subdomainToBzzResource(subdomain) + pathWithParams
         console.log('bzz link redirect', bzzReference, url, pathWithParams)
 
-        this.redirectToBzzReference(bzzReference, tabId, true)
+        this.redirectToBzzReference(bzzReference, tabId)
       },
       { url: [{ hostSuffix: '.bzz.link' }] },
     )
@@ -276,10 +282,10 @@ export class BeeApiListener {
    * @param bzzReference in form of $ROOT_HASH<$PATH><$QUERY>
    * @param tabId the tab will be navigated to the dApp page
    */
-  private redirectToBzzReference(bzzReference: string, tabId: number, preventSubdomainRedirection = false) {
+  private redirectToBzzReference(bzzReference: string, tabId: number) {
     let url: string
 
-    if (preventSubdomainRedirection || !isLocalhost(this._beeApiUrl)) {
+    if (!isLocalhost(this._beeApiUrl)) {
       url = `${this._beeApiUrl}/bzz/${bzzReference}`
     } else {
       const [hash, path] = bzzReference.split(/\/(.*)/s)
@@ -289,7 +295,7 @@ export class BeeApiListener {
         subdomain = subdomain.substring(0, subdomain.length - 4)
       }
 
-      url = createSubdomainUrl(this._beeApiUrl, subdomain)
+      url = createSubdomainUrl(this._beeApiUrl, hashToCid(subdomain).toString())
 
       if (path) {
         url += `/${path}`
