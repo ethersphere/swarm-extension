@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+import { DappSecurityContext } from '../background/model/dapp-security-context.model'
 
 interface Store {
   beeApiUrl: string
@@ -6,22 +7,19 @@ interface Store {
   web2OriginEnabled: boolean
   globalPostageBatch: string | null
   globalPostageStampEnabled: boolean
+  securityContexts: Record<string, DappSecurityContext>
 }
 
 type StoreKey = keyof Store
 
-export function getItem<T extends StoreKey>(key: T): Promise<Store[T]> {
-  return new Promise(resolve => {
-    chrome.storage.local.get(key, items => {
-      resolve(items[key])
-    })
-  })
+export async function getItem<T extends StoreKey>(key: T): Promise<Store[T]> {
+  const store = await chrome.storage.local.get(key)
+
+  return store[key]
 }
 
-export async function setItem<T extends StoreKey>(key: T, value: Store[T]): Promise<void> {
-  await new Promise(resolve => {
-    chrome.storage.local.set({ [key]: value }, () => resolve)
-  })
+export function setItem<T extends StoreKey>(key: T, value: Store[T]): Promise<void> {
+  return chrome.storage.local.set({ [key]: value })
 }
 
 type StoreChangeCallback<T> = (newValue: T, oldValue: T, namespace: 'sync' | 'local' | 'managed', key: string) => void

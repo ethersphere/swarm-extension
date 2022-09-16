@@ -12,30 +12,50 @@ export class LocalStorageFeeder {
     console.log('Register LocalStorageFeeder event listeners...')
 
     browser.runtime.onMessage.addListener(
-      (message: InterceptorReqMessageFormat, sender: chrome.runtime.MessageSender) => {
+      (
+        message: InterceptorReqMessageFormat,
+        sender: chrome.runtime.MessageSender,
+        sendResponse: (response?: any) => void,
+      ) => {
         if (!isInternalMessage(sender)) return
 
-        const { sessionId, key } = message
+        this.processLocalStorageRequest(message, sender, sendResponse)
 
-        if (!sessionId || !this.manager.isValidSession(sessionId, sender)) return
-
-        const response: ResponseMessageFormat = {
-          key,
-          sender: 'background',
-          target: 'content',
-        }
-
-        if (this.isSetItemRequest(message)) {
-          const { payload } = message
-
-          return this.setItem(sessionId, payload, response)
-        } else if (this.isGetItemRequest(message)) {
-          const { payload } = message
-
-          return this.getItem(sessionId, payload, response)
-        }
+        return true
       },
     )
+  }
+
+  private async processLocalStorageRequest(
+    message: InterceptorReqMessageFormat,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: any) => void,
+  ) {
+    const { sessionId, key } = message
+
+    if (!sessionId) return sendResponse({ error: 'Invalid session ID' })
+
+    const isValid = await this.manager.isValidSession(sessionId, sender)
+
+    if (!isValid) return sendResponse({ error: 'Invalid session' })
+
+    const response: ResponseMessageFormat = {
+      key,
+      sender: 'background',
+      target: 'content',
+    }
+
+    if (this.isSetItemRequest(message)) {
+      const { payload } = message
+
+      await this.setItem(sessionId, payload, response)
+    } else if (this.isGetItemRequest(message)) {
+      const { payload } = message
+
+      await this.getItem(sessionId, payload, response)
+    }
+
+    return sendResponse(response)
   }
 
   private isSetItemRequest(

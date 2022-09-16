@@ -1,10 +1,12 @@
 import { nanoid } from 'nanoid'
-import { bzzProtocolToFakeUrl } from '../../contentscript/swarm-library/bzz-link'
+import { BzzLink } from '../../../library/src/services/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem } from '../../utils/storage'
 import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
 import { DEFAULT_BEE_API_ADDRESS, DEFAULT_BEE_DEBUG_API_ADDRESS } from '../constants/addresses'
 import { DappSessionManager } from '../dapp-session.manager'
+
+const bzzLink = new BzzLink()
 
 enum Action {
   REGISTER = 'register',
@@ -128,7 +130,7 @@ export class E2ESessionFeeder {
       parameters: { url, newPage },
     } = request as BzzLinkProtocolToFakeUrlRequest
 
-    return bzzProtocolToFakeUrl(url, sessionId, newPage)
+    return bzzLink.bzzProtocolToFakeUrl(url, sessionId, newPage)
   }
 
   private handleBzzLinkUrlToFakeUrl(request: RequestType): string | null {
@@ -137,7 +139,7 @@ export class E2ESessionFeeder {
       parameters: { bzzLinkUrl, newPage },
     } = request as BzzLinkLinkUrlToFakeUrlRequest
 
-    return bzzProtocolToFakeUrl(bzzLinkUrl, sessionId, newPage)
+    return bzzLink.bzzProtocolToFakeUrl(bzzLinkUrl, sessionId, newPage)
   }
 
   private handleBzzUrlToFakeUrl(request: RequestType): string | null {
@@ -146,7 +148,7 @@ export class E2ESessionFeeder {
       parameters: { url, newPage },
     } = request as BzzLinkUrlToFakeUrlRequest
 
-    return bzzProtocolToFakeUrl(url, sessionId, newPage)
+    return bzzLink.bzzProtocolToFakeUrl(url, sessionId, newPage)
   }
 
   private handleWeb2FakeBeeApiAddress(request: RequestType): string {

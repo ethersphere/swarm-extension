@@ -1,3 +1,6 @@
+import { getItem, setItem } from '../utils/storage'
+import { DappSecurityContext as DappSecurityContextStorage } from './model/dapp-security-context.model'
+import { isExtensionDappSecurityContext, isTabDappSecurityContext } from './model/model-asserts'
 import { isSenderExtension, senderContentOrigin, senderFrameId, senderFrameOrigin, senderTabId } from './utils'
 
 type LocalStorage = {
@@ -21,6 +24,8 @@ abstract class DappSecurityContext {
   public abstract setStorageItem(keyName: string, keyValue: unknown): Promise<void>
 
   public abstract getStorageItem(keyName: string): Promise<unknown>
+
+  public abstract toStorage(): DappSecurityContextStorage
 }
 
 class TabDappSecurityContext extends DappSecurityContext {
@@ -80,6 +85,16 @@ class TabDappSecurityContext extends DappSecurityContext {
     )
   }
 
+  public toStorage(): DappSecurityContextStorage {
+    return {
+      type: 'tab',
+      tabId: this.tabId,
+      frameId: this.frameId,
+      frameContentRoot: this.frameContentRoot,
+      originContentRoot: this.originContentRoot,
+    }
+  }
+
   private enrichStorageKey(keyName: string): string {
     return `${this.storePrefix}-${keyName}`
   }
@@ -101,15 +116,21 @@ class ExtensionDappSecurityContext extends DappSecurityContext {
   public getStorageItem(keyName: string): Promise<unknown> {
     throw new Error("ExtensionDappSecurityContext doesn't support extension storage functions")
   }
+
+  public toStorage(): DappSecurityContextStorage {
+    return {
+      type: 'extension',
+    }
+  }
 }
 
 export class DappSessionManager {
-  private securityContexts: { [sessionId: string]: DappSecurityContext }
-
   public constructor() {
-    this.securityContexts = {}
+    chrome.runtime.onSuspend.addListener(() => {
+      setItem('securityContexts', {})
+    })
   }
-  public register(sessionId: string, sender: chrome.runtime.MessageSender): void {
+  public async register(sessionId: string, sender: chrome.runtime.MessageSender): Promise<void> {
     let context: DappSecurityContext | null = null
 
     if (isSenderExtension(sender)) {
@@ -123,26 +144,27 @@ export class DappSessionManager {
       context = new TabDappSecurityContext(tabId, frameId, frameContentRoot, originContentRoot)
     }
 
-    this.securityContexts[sessionId] = context
-    console.log(`dApp session "${sessionId}" has been initialized`, this.securityContexts[sessionId])
+    await this.setSecurityContext(sessionId, context)
+
+    console.log(`dApp session "${sessionId}" has been initialized`, context.toStorage())
   }
 
   /**
    * Checks the given sessionId and sender's data match with the DappSessionManager's records
    */
-  public isValidSession(sessionId: string, sender: chrome.runtime.MessageSender): boolean {
-    const context = this.securityContexts[sessionId]
+  public async isValidSession(sessionId: string, sender: chrome.runtime.MessageSender): Promise<boolean> {
+    const context = await this.getSecurityContext(sessionId)
 
     if (!context) return false
 
     return context.isValid(sender)
   }
 
-  public getStorageItem(
+  public async getStorageItem(
     sessionId: string,
     ...getStorageParams: Parameters<DappSecurityContext['getStorageItem']>
   ): ReturnType<DappSecurityContext['getStorageItem']> {
-    const context = this.getSecurityContext(sessionId)
+    const context = await this.getSecurityContext(sessionId)
 
     return context.getStorageItem(...getStorageParams)
   }
@@ -151,18 +173,39 @@ export class DappSessionManager {
     sessionId: string,
     ...setStorageParams: Parameters<DappSecurityContext['setStorageItem']>
   ): Promise<void> {
-    const context = this.getSecurityContext(sessionId)
+    const context = await this.getSecurityContext(sessionId)
 
     await context.setStorageItem(...setStorageParams)
   }
 
-  private getSecurityContext(sessionId: string): DappSecurityContext {
-    const securityContext = this.securityContexts[sessionId]
+  private async getSecurityContext(sessionId: string): Promise<DappSecurityContext> {
+    const securityContexts = (await getItem('securityContexts')) || {}
+    const securityContext = securityContexts[sessionId]
 
     if (!securityContext) {
       throw new Error(`DappSessionManager: There is no registered security context for session: ${sessionId}`)
     }
 
-    return securityContext
+    return this.convertDappSecurityContext(securityContext)
+  }
+
+  private async setSecurityContext(sessionId: string, context: DappSecurityContext): Promise<void> {
+    const securityContexts = (await getItem('securityContexts')) || {}
+    securityContexts[sessionId] = context.toStorage()
+    await setItem('securityContexts', securityContexts)
+  }
+
+  private convertDappSecurityContext(context: DappSecurityContextStorage): DappSecurityContext {
+    if (isExtensionDappSecurityContext(context)) {
+      return new ExtensionDappSecurityContext()
+    }
+
+    if (isTabDappSecurityContext(context)) {
+      const { tabId, frameId, frameContentRoot, originContentRoot } = context
+
+      return new TabDappSecurityContext(tabId, frameId, frameContentRoot, originContentRoot)
+    }
+
+    throw new Error('Invalid dapp security context')
   }
 }

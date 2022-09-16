@@ -479,7 +479,7 @@ export default (env?: Partial<WebpackEnvParams>): Configuration[] => {
   if (env?.buildDeps) {
     if (env?.mode === 'development') liveReloadServer = new Server({ port: DEPS_RELOAD_PORT })
 
-    baseConfig = [contentscript('swarm-library', env), contentscript('swarm-html', env)]
+    baseConfig = [contentscript('document-start', env)]
   } else {
     if (env?.mode === 'development') liveReloadServer = new Server({ port: MAIN_RELOAD_PORT })
 
