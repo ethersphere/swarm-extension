@@ -1,4 +1,10 @@
-import { subdomainToBzzResource } from '../../utils/bzz-link'
+import {
+  createSubdomainUrl,
+  hashToCid,
+  isLocalhost,
+  isSubdomainUsed,
+  subdomainToBzzResource,
+} from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
@@ -58,7 +64,7 @@ export class BeeApiListener {
   ): void | chrome.webRequest.BlockingResponse => {
     console.log('web2OriginEnabled', this._web2OriginEnabled)
 
-    if (this._web2OriginEnabled) return { responseHeaders: details.responseHeaders }
+    if (this._web2OriginEnabled || isSubdomainUsed(details.url)) return { responseHeaders: details.responseHeaders }
 
     const urlArray = details.url.toString().split('/')
 
@@ -159,8 +165,8 @@ export class BeeApiListener {
     chrome.webRequest.onBeforeRequest.addListener(
       (details: chrome.webRequest.WebRequestBodyDetails) => {
         console.log('Original BZZ Url', details.url)
-        const urlParams = new URLSearchParams(details.url)
-        const query = urlParams.get('oq')
+        const urlParams = new URLSearchParams(new URL(details.url).search)
+        const query = decodeURI(urlParams.get('oq') || urlParams.get('q') || '')
 
         if (!query || !query.startsWith('bzz://')) return
 
@@ -277,7 +283,24 @@ export class BeeApiListener {
    * @param tabId the tab will be navigated to the dApp page
    */
   private redirectToBzzReference(bzzReference: string, tabId: number) {
-    const url = `${this._beeApiUrl}/bzz/${bzzReference}`
+    let url: string
+
+    if (!isLocalhost(this._beeApiUrl)) {
+      url = `${this._beeApiUrl}/bzz/${bzzReference}`
+    } else {
+      const [hash, path] = bzzReference.split(/\/(.*)/s)
+      let subdomain = hash
+
+      if (subdomain.endsWith('.eth')) {
+        subdomain = subdomain.substring(0, subdomain.length - 4)
+      }
+
+      url = createSubdomainUrl(this._beeApiUrl, hashToCid(subdomain).toString())
+
+      if (path) {
+        url += `/${path}`
+      }
+    }
 
     console.log(`Fake URL redirection to ${url} on tabId ${tabId}`)
 

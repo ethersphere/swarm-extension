@@ -1,6 +1,8 @@
 /** bzz.link CID implementaion */
 import * as swarmCid from '@ethersphere/swarm-cid'
 
+const subdomainUsedRegex = RegExp('^.*\\.swarm\\.localhost(:\\d+)?$')
+
 export function hashToCid(
   input: string,
   type: swarmCid.ReferenceType = swarmCid.ReferenceType.FEED,
@@ -60,6 +62,24 @@ export function subdomainToBzzResource(subdomain: string): string {
   }
 
   return `${subdomain}.eth`
+}
+
+export function isLocalhost(url: string): boolean {
+  const { host } = new URL(url)
+
+  return host === 'localhost' || host.startsWith('localhost:')
+}
+
+export function isSubdomainUsed(url: string): boolean {
+  const { host } = new URL(url)
+
+  return subdomainUsedRegex.test(host)
+}
+
+export function createSubdomainUrl(beeApiUrl: string, subdomain: string): string {
+  const [protocol, host] = beeApiUrl.split('://')
+
+  return `${protocol}://${subdomain}.swarm.${host}`
 }
 
 export function bzzResourceToSubdomain(
