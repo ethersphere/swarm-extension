@@ -1,77 +1,102 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>First Direct BZZ address</title>
-  <link rel="stylesheet" href="index.css">
-  <script src="bee-js.min.js"></script>
-  <script src="index.js"></script>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <title>First Direct BZZ address</title>
+    <link rel="stylesheet" href="index.css" />
+    <script src="bee-js.min.js"></script>
+    <script src="swarm/index.js"></script>
+    <script src="index.js"></script>
+  </head>
 
-<body>
-  <h1 id="first-bzz-page-title">
-    Let's roll!
-  </h1>
-  <div id="test-cases">
-    <h2>BZZ Protocol</h2>
-    <div>
-      <h4>Local Iframe</h4>
-      <iframe id="localhost-inner-ref" referrerpolicy="unsafe-url" src="jinn-page/index.html"></iframe>
-    </div>
-    <div>
-      <h4>BZZ Protocol Iframe</h4>
-      <iframe id="bzz-iframe" is="swarm-iframe" referrerpolicy="unsafe-url" sandbox="allow-scripts" src="bzz://82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5"></iframe>
-    </div>
-    <div>
-      <h4>Same External Iframe refer with localhost:1633</h4>
-      <iframe id="localhost-iframe" referrerpolicy="unsafe-url" sandbox="allow-scripts" src="http://127.0.0.1:1633/bzz/3d74d939e67dd06fed437e3e34f045072abdd5d96b8bf9843126c8edce5c1440"></iframe>
-    </div>
-    <div>
-      <h4>External image refer by BZZ protocol</h4>
-      <img id="bzz-image" is="swarm-img" width="300" src="bzz://82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5/images/jinn.png" />
-    </div>
-    <div>
-      <h4>External image refer by bzz.link</h4>
-      <img id="bzz-image-2" is="swarm-img" width="300" src="https://bah5qcgzaqlphlkrojyt657b4ad243r5czn4hiauqnjzwbgad3yhoevqcwt2q.bzz.link/images/jinn.png" />
-    </div>
-    <h2>Injected Swarm Script and Fake URL samples</h2>
-    <div>
-      <h4>Fetch Real Bee API URL</h4>
-      <button id="button-fetch-real-bee-api-url" onclick="fetchBeeApiUrl()">Fetch</button>
-      <label id="bee-api-url-placeholder">[Bee API URL Placeholder]</label>
-    </div>
-    <div>
-      <h4>Check if Globa Postage Batch is enabled</h4>
-      <button id="button-check-global-postage-batch-enabled" onclick="fetchGlobalPostageBatch()">Fetch</button>
-      <label id="global-postage-batch-placeholder">[Globa Postage Batch Enabled Placeholder]</label>
-    </div>
-    <div>
-      <h4>Check if Real Bee API is available</h4>
-      <button id="button-check-real-bee-api-available" onclick="checkBeeApiAvailable()">Fetch</button>
-      <label id="bee-api-available-placeholder">[Bee API Available Placeholder]</label>
-    </div>
-    <div>
-      <h4>Link to other page via BZZ protocol</h4>
-      <a id="bzz-ext-ref" is="swarm-a" href="bzz://82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5">Jinn page link 1</a>
-    </div>
-    <div>
-      <h4>Fetch Jinn image via Fake URL with JavaScript</h4>
-      <button id="button-fetch-jinn-page" onclick="fetchJinnImage()">Fetch</button>
-      <div id="fake-url-fetch-jinn"></div>
-    </div>
-    <div>
-      <h4>Upload a file with BeeJS which is initialized by Fake URL</h4>
-      <button id="button-upload-fake-url-file" onclick="uploadFileWithBeeJs()">Upload</button>
-      <div id="fake-bzz-url-content-1"></div>
-    </div>
+  <body>
+    <h1 id="first-bzz-page-title">Let's roll!</h1>
+    <div id="test-cases">
+      <h2>BZZ Protocol</h2>
+      <div>
+        <h4>Local Iframe</h4>
+        <iframe id="localhost-inner-ref" referrerpolicy="unsafe-url" src="jinn-page/index.html"></iframe>
+      </div>
+      <div>
+        <h4>BZZ Protocol Iframe</h4>
+        <iframe
+          id="bzz-iframe"
+          is="swarm-iframe"
+          referrerpolicy="unsafe-url"
+          sandbox="allow-scripts"
+          src="bzz://82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5"
+        ></iframe>
+      </div>
+      <div>
+        <h4>Same External Iframe refer with localhost:1633</h4>
+        <iframe
+          id="localhost-iframe"
+          referrerpolicy="unsafe-url"
+          sandbox="allow-scripts"
+          src="http://127.0.0.1:1633/bzz/3d74d939e67dd06fed437e3e34f045072abdd5d96b8bf9843126c8edce5c1440"
+        ></iframe>
+      </div>
+      <div>
+        <h4>External image refer by BZZ protocol</h4>
+        <img
+          id="bzz-image"
+          is="swarm-img"
+          width="300"
+          src="bzz://82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5/images/jinn.png"
+        />
+      </div>
+      <div>
+        <h4>External image refer by bzz.link</h4>
+        <img
+          id="bzz-image-2"
+          is="swarm-img"
+          width="300"
+          src="https://bah5qcgzaqlphlkrojyt657b4ad243r5czn4hiauqnjzwbgad3yhoevqcwt2q.bzz.link/images/jinn.png"
+        />
+      </div>
+      <h2>Injected Swarm Script and Fake URL samples</h2>
+      <div>
+        <h4>Fetch Real Bee API URL</h4>
+        <button id="button-fetch-real-bee-api-url" onclick="fetchBeeApiUrl()">Fetch</button>
+        <label id="bee-api-url-placeholder">[Bee API URL Placeholder]</label>
+      </div>
+      <div>
+        <h4>Check if Globa Postage Batch is enabled</h4>
+        <button id="button-check-global-postage-batch-enabled" onclick="fetchGlobalPostageBatch()">Fetch</button>
+        <label id="global-postage-batch-placeholder">[Globa Postage Batch Enabled Placeholder]</label>
+      </div>
+      <div>
+        <h4>Check if Real Bee API is available</h4>
+        <button id="button-check-real-bee-api-available" onclick="checkBeeApiAvailable()">Fetch</button>
+        <label id="bee-api-available-placeholder">[Bee API Available Placeholder]</label>
+      </div>
+      <div>
+        <h4>Link to other page via BZZ protocol</h4>
+        <a id="bzz-ext-ref" is="swarm-a" href="bzz://82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5"
+          >Jinn page link 1</a
+        >
+      </div>
+      <div>
+        <h4>Fetch Jinn image via Fake URL with JavaScript</h4>
+        <button id="button-fetch-jinn-page" onclick="fetchJinnImage()">Fetch</button>
+        <div id="fake-url-fetch-jinn"></div>
+      </div>
+      <div>
+        <h4>Upload a file with BeeJS which is initialized by Fake URL</h4>
+        <button id="button-upload-fake-url-file" onclick="uploadFileWithBeeJs()">Upload</button>
+        <div id="fake-bzz-url-content-1"></div>
+      </div>
 
-    <h2>Local Storage handling</h2>
-    <div>
-      <h4>Local Storage handling in other dApp within iframe</h4>
-      <iframe id="localstorage-iframe" is="swarm-iframe" src="bzz://c946b39c82d85e2eef49321eac33d46bc00912b182f35476eadf1285800d7111"></iframe>
+      <h2>Local Storage handling</h2>
+      <div>
+        <h4>Local Storage handling in other dApp within iframe</h4>
+        <iframe
+          id="localstorage-iframe"
+          is="swarm-iframe"
+          src="bzz://c946b39c82d85e2eef49321eac33d46bc00912b182f35476eadf1285800d7111"
+        ></iframe>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
-

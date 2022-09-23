@@ -1,4 +1,4 @@
-export const SWARM_SESSION_ID_KEY = 'swarm-session-id'
+import { SWARM_SESSION_ID_KEY } from './swarm-session-id'
 
 /** API endpoints that the extension can serve out */
 class FakeUrl {
@@ -41,11 +41,11 @@ class FakeUrl {
 
     const baseUrlRegex = `^http\\://swarm\\.fakeurl\\.localhost`
     this.bzzProtocolRegex = baseUrlRegex + '/bzz/(.*)'
-    this.beeApiAddressRegex = baseUrlRegex + '/bee-api/(.*)'
+    this.beeApiAddressRegex = baseUrlRegex + '/bee-api.*'
 
-    const swarmSessionIdKey = `(__${SWARM_SESSION_ID_KEY}~.*__.*)`
+    const swarmSessionIdKey = `(__${SWARM_SESSION_ID_KEY}~.*__)`
     this.bzzProtocolRegexWithKey = this.bzzProtocolRegex + swarmSessionIdKey
-    this.beeApiAddressRegexWithKey = this.beeApiAddressRegex + swarmSessionIdKey
+    this.beeApiAddressRegexWithKey = baseUrlRegex + `/bee-api${swarmSessionIdKey}/?(.*)`
   }
 }
 

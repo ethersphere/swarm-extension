@@ -26,7 +26,7 @@ const config = (env: ENV) => {
       path: buildDir,
       sourceMapFilename: '[name][ext].map',
       libraryTarget: 'umd',
-      library: ['blossom'],
+      library: 'swarm',
       globalObject: 'this',
       clean: true,
     },

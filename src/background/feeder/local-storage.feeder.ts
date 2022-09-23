@@ -19,6 +19,10 @@ export class LocalStorageFeeder {
       ) => {
         if (!isInternalMessage(sender)) return
 
+        if (message.key !== 'setItem' && message.key !== 'getItem') {
+          return
+        }
+
         this.processLocalStorageRequest(message, sender, sendResponse)
 
         return true

@@ -2,7 +2,7 @@ import { isWebPageEnv } from '../utils/environment.util'
 import { SwarmMessages } from './swarm-messages'
 import { DappSwarmMessages } from './dapp-swarm-messages'
 
-export function createSwarmMessages(extensionId: string): SwarmMessages {
+export function createSwarmMessages(): SwarmMessages {
   if (isWebPageEnv()) {
     return new DappSwarmMessages()
   }

@@ -27,15 +27,24 @@ function newBzzPage(url: string): Promise<Page> {
     page.once('requestfailed', async request => {
       const errorText = request.failure()?.errorText
 
-      if (errorText === 'net::ERR_ABORTED') {
+      if (
+        errorText === 'net::ERR_ABORTED' ||
+        // errorText === 'net::ERR_UNKNOWN_URL_SCHEME' ||
+        // errorText === 'net::ERR_BLOCKED_BY_CLIENT'
+      ) {
         resolve(await getLastBzzPage())
       } else reject(errorText)
     })
 
     try {
-      await page.goto(url, { waitUntil: 'domcontentloaded' })
-    } catch {
-      //
+      console.log('newBzzPage opening page', url)
+
+      await page.goto(url, { waitUntil: ['domcontentloaded', 'networkidle0'] })
+
+      resolve(page)
+    } catch (error) {
+      console.error(error)
+      reject(error)
     }
   })
 }
@@ -44,7 +53,7 @@ async function openExtensionPage(): Promise<Page> {
   const extensionId = await getExtensionId()
   const extensionPage = await global.__BROWSER__.newPage()
   await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-    waitUntil: 'networkidle0',
+    waitUntil: ['domcontentloaded', 'networkidle0'],
   })
 
   return extensionPage
@@ -187,8 +196,7 @@ describe('BZZ protocol', () => {
 
   test('Fetch Real Bee API URL', async done => {
     await page.click('#button-fetch-real-bee-api-url')
-    const placeHolderSelector = '#bee-api-url-placeholder'
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const placeHolderSelector = '#bee-api-url-placeholder[complete="true"]'
     await page.waitForSelector(placeHolderSelector)
     const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
     expect(value).toBe(BEE_API_URL) //default value of Bee API URL in the extension
@@ -248,7 +256,7 @@ describe('BZZ protocol', () => {
 
   test('Upload file through Fake URL', async done => {
     page = await global.__BROWSER__.newPage()
-    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
+    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: ['domcontentloaded', 'networkidle0'] })
 
     await page.click('#button-upload-fake-url-file')
     const placeHolderSelector = '#fake-bzz-url-content-1 > a:first-child'
@@ -264,7 +272,7 @@ describe('BZZ protocol', () => {
 
   test('Fetch image via Fake URL', async done => {
     page = await global.__BROWSER__.newPage()
-    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
+    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: ['domcontentloaded', 'networkidle0'] })
 
     await page.click('#button-fetch-jinn-page')
     const placeHolderSelector = '#fake-url-fetch-jinn > img:first-child'
@@ -330,7 +338,9 @@ describe('BZZ protocol', () => {
     //test whether it had affect on routing
     const bzzPage = await newBzzPage(bzzReferenceByGoogle('nevermind-value'))
     // the expected error page URL is 'chrome-error://chromewebdata/' on wrong reference.
-    expect(bzzPage.url()).toBe('chrome-error://chromewebdata/')
+    await bzzPage.waitForSelector('pre')
+    const value = await bzzPage.$eval('pre', e => e.innerHTML)
+    expect(value).toContain('404')
     await bzzPage.close()
     //set back the original value
     await changeBeeApiUrl(originalUrlValue, extensionPage)

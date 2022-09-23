@@ -1,9 +1,11 @@
 import { fakeUrl } from './utils/fake-url'
+import { BzzLink } from './services/bzz-link'
+
+const bzzLink = new BzzLink()
 
 /** tries to transform the given URL to fake URL or return back the original URL  */
 function tryFakeUrlTransform(url: string, newPage = false): string | null {
-  // return window.swarm.bzzLink.urlToFakeUrl(url, newPage)
-  return null
+  return bzzLink.urlToFakeUrl(url, '', newPage)
 }
 
 export class SwarmImage extends HTMLImageElement {

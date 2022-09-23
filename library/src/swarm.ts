@@ -26,8 +26,8 @@ export class Swarm {
    *
    * @param extensionId The Swarm extension ID
    */
-  constructor(extensionId = 'afpgelfcknfbbfnipnomfdbbnbbemnia') {
-    this.messages = createSwarmMessages(extensionId)
+  constructor() {
+    this.messages = createSwarmMessages()
     this.bzzLink = new BzzLink()
     this.localStorage = new LocalStorage(this.messages)
     this.postageBatch = new PostageBatch(this.messages)

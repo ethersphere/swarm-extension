@@ -1,8 +1,9 @@
 import { subdomainToBzzResource } from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
-import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
 import { DEFAULT_BEE_API_ADDRESS } from '../constants/addresses'
+
+const bzzGoogleRedirectRegex = '^https\\:\\/\\/www\\.google\\.com\\/search\\?.*\\&o?q=bzz%3A%2F%2F([^\\&]+).*'
 
 export class BeeApiListener {
   private _beeApiUrl: string
@@ -17,6 +18,8 @@ export class BeeApiListener {
   protected static RESOURCE_LOADER_REDIRECT_ID = 5
   protected static BEE_API_BLOCKER_ID = 6
   protected static BEE_API_REDIRECT_ID = 7
+  protected static BZZ_GOOGLE_BLOCKER_ID = 8
+  protected static BZZ_GOOGLE_REDIRECT_ID = 9
 
   protected static RESOURCE_TYPE_ALL = [
     chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
@@ -151,23 +154,6 @@ export class BeeApiListener {
       { url: [{ hostSuffix: '.bzz.link' }] },
     )
 
-    // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
-    // NOTE: works only if google search is set as default search engine
-    chrome.webRequest.onBeforeRequest.addListener(
-      (details: chrome.webRequest.WebRequestBodyDetails) => {
-        console.log('Original BZZ Url', details.url)
-        const urlParams = new URLSearchParams(details.url)
-        const query = decodeURI(urlParams.get('oq') || '')
-
-        if (!query || !query.startsWith('bzz://')) return
-
-        this.redirectToBzzReference(query.substr(6), details.tabId)
-      },
-      {
-        urls: ['https://www.google.com/search?*'],
-      },
-    )
-
     chrome.declarativeNetRequest.updateSessionRules(
       {
         removeRuleIds: [
@@ -176,6 +162,8 @@ export class BeeApiListener {
           BeeApiListener.RESOURCE_LOADER_REDIRECT_ID,
           BeeApiListener.BEE_API_BLOCKER_ID,
           BeeApiListener.BEE_API_REDIRECT_ID,
+          BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
+          BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
         ],
         addRules: [
           /**
@@ -223,7 +211,7 @@ export class BeeApiListener {
             action: {
               type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
               redirect: {
-                regexSubstitution: `${this._beeApiUrl}/\\1\\2`,
+                regexSubstitution: `${this._beeApiUrl}/bzz/\\1`,
               },
             },
           },
@@ -250,7 +238,34 @@ export class BeeApiListener {
             action: {
               type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
               redirect: {
-                regexSubstitution: `${this._beeApiUrl}/\\1\\2`,
+                regexSubstitution: `${this._beeApiUrl}/\\2`,
+              },
+            },
+          },
+          {
+            id: BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
+            priority: 1,
+            condition: {
+              regexFilter: bzzGoogleRedirectRegex,
+              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+            },
+            action: {
+              type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+            },
+          },
+          // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
+          // NOTE: works only if google search is set as default search engine
+          {
+            id: BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
+            priority: 2,
+            condition: {
+              regexFilter: bzzGoogleRedirectRegex,
+              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+            },
+            action: {
+              type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+              redirect: {
+                regexSubstitution: `${this._beeApiUrl}/bzz/\\1`,
               },
             },
           },

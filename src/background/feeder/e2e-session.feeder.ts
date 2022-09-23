@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { BzzLink } from '../../../library/src/services/bzz-link'
+import { BzzLink } from '../../utils/bzz-link.class'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem } from '../../utils/storage'
 import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
