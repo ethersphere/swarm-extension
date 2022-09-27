@@ -29,8 +29,8 @@ function newBzzPage(url: string): Promise<Page> {
 
       if (
         errorText === 'net::ERR_ABORTED' ||
-        // errorText === 'net::ERR_UNKNOWN_URL_SCHEME' ||
-        // errorText === 'net::ERR_BLOCKED_BY_CLIENT'
+        errorText === 'net::ERR_UNKNOWN_URL_SCHEME' ||
+        errorText === 'net::ERR_BLOCKED_BY_CLIENT'
       ) {
         resolve(await getLastBzzPage())
       } else reject(errorText)
@@ -188,10 +188,11 @@ describe('BZZ protocol', () => {
     done()
   })
 
-  test('checks iframe has been loaded with web+bzz reference', async () => {
+  test('checks iframe has been loaded with web+bzz reference', async done => {
     const ref = await page.$('#bzz-iframe')
 
     checkJinnIframePage(ref)
+    done()
   })
 
   test('Fetch Real Bee API URL', async done => {

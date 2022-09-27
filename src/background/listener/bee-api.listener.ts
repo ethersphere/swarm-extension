@@ -3,7 +3,7 @@ import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { DEFAULT_BEE_API_ADDRESS } from '../constants/addresses'
 
-const bzzGoogleRedirectRegex = '^https\\:\\/\\/www\\.google\\.com\\/search\\?.*\\&o?q=bzz%3A%2F%2F([^\\&]+).*'
+const bzzGoogleRedirectRegex = '^https\\:\\/\\/www\\.google\\.com\\/search\\?.*o?q=bzz%3A%2F%2F([^\\&]+).*'
 
 export class BeeApiListener {
   private _beeApiUrl: string

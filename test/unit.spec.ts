@@ -3,7 +3,7 @@ import { fakeUrl as FakeUrl } from '../src/utils/fake-url'
 import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../src/utils/swarm-session-id'
 
 describe('Unit', () => {
-  const testBzzHash = '82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5'
+  const testBzzHash = '78e632d643b8ba7f67c495bd8a16092a0c380a23fa03444b923e193fabb79435'
 
   test('Unpack Swarm session ID from URL', () => {
     const fakeUrl = `${FakeUrl.beeApiAddress}/bzz/${testBzzHash}`
