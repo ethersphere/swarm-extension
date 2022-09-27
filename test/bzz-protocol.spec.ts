@@ -43,8 +43,9 @@ function newBzzPage(url: string): Promise<Page> {
 
       resolve(page)
     } catch (error) {
-      console.error(error)
-      reject(error)
+      if (String(error).includes('net::ERR_BLOCKED_BY_CLIENT')) {
+        resolve(await getLastBzzPage())
+      } else reject(error)
     }
   })
 }
