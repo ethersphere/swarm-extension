@@ -301,8 +301,9 @@ export class BeeApiListener {
       this._beeApiUrl = newValue
       this.setBeeNodeListeners()
     })
-    this.storeObserver.addListener('globalPostageStampEnabled', newValue => {
+    this.storeObserver.addListener('globalPostageStampEnabled', async newValue => {
       this._globalPostageBatchEnabled = Boolean(newValue)
+      this._globalPostageBatchId = (await getItem('globalPostageBatch')) as string
       this.setBeeNodeListeners()
     })
     this.storeObserver.addListener('globalPostageBatch', newValue => {
