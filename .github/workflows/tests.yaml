@@ -13,7 +13,7 @@ env:
   BEE_DEBUG_API_URL: 'http://172.18.0.1:1635'
   BEE_PEER_API_URL: 'http://172.18.0.1:11633'
   BEE_PEER_DEBUG_API_URL: 'http://172.18.0.1:11635'
-  BEE_VERSION: '1.6.2'
+  BEE_VERSION: '1.8.2'
 
 jobs:
   browser:
