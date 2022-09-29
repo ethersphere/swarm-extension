@@ -1,4 +1,4 @@
-import { subdomainToBzzResource } from '../../utils/bzz-link'
+import { createSubdomainUrl, hashToCid, isLocalhost, subdomainToBzzResource } from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
 import { DEFAULT_BEE_API_ADDRESS } from '../constants/addresses'
@@ -81,6 +81,7 @@ export class BeeApiListener {
         condition: {
           urlFilter: `${this._beeApiUrl}/bzz/*`,
           resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+          excludedRequestDomains: ['swarm.localhost'],
         },
         action: {
           type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
@@ -323,7 +324,24 @@ export class BeeApiListener {
    * @param tabId the tab will be navigated to the dApp page
    */
   private redirectToBzzReference(bzzReference: string, tabId: number) {
-    const url = `${this._beeApiUrl}/bzz/${bzzReference}`
+    let url: string
+
+    if (!isLocalhost(this._beeApiUrl)) {
+      url = `${this._beeApiUrl}/bzz/${bzzReference}`
+    } else {
+      const [hash, path] = bzzReference.split(/\/(.*)/s)
+      let subdomain = hash
+
+      if (subdomain.endsWith('.eth')) {
+        subdomain = subdomain.substring(0, subdomain.length - 4)
+      }
+
+      url = createSubdomainUrl(this._beeApiUrl, hashToCid(subdomain).toString())
+
+      if (path) {
+        url += `/${path}`
+      }
+    }
 
     console.log(`Fake URL redirection to ${url} on tabId ${tabId}`)
 
