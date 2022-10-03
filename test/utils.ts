@@ -65,6 +65,8 @@ export async function buyStamp(): Promise<string> {
   const beeDebug = new BeeDebug(BEE_DEBUG_API_URL)
 
   const batchId = await beeDebug.createPostageBatch('1', 20)
+  // TODO remove when https://github.com/ethersphere/bee/issues/3300 gets rsolved
+  await new Promise(resolve => setTimeout(resolve, 5000))
   let postageBatch: DebugPostageBatch
   do {
     postageBatch = await beeDebug.getPostageBatch(batchId)
