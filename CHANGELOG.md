@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/ethersphere/swarm-extension/compare/v0.5.0...v0.6.0) (2022-10-04)
+
+
+### Features
+
+* localhost subdomain redirection ([#136](https://github.com/ethersphere/swarm-extension/issues/136)) ([082f053](https://github.com/ethersphere/swarm-extension/commit/082f053dd9b59edff33e922898234a2820fdcc2e))
+
+
+### Bug Fixes
+
+* bee dashboard ([#143](https://github.com/ethersphere/swarm-extension/issues/143)) ([225aec5](https://github.com/ethersphere/swarm-extension/commit/225aec525c40dcf0199c30d8c9dce44feea17e41))
+
 ## [0.5.0](https://github.com/ethersphere/swarm-extension/compare/v0.4.0...v0.5.0) (2022-07-06)
 
 
