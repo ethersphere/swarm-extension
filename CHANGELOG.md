@@ -2,6 +2,11 @@
 
 ## [0.6.0](https://github.com/ethersphere/swarm-extension/compare/v0.5.0...v0.6.0) (2022-10-04)
 
+The bzz.link and bzz:// URLs will be redirected to the http://{cid}.localhost:{port} address in case of locally running Bee node.
+It allows to leverage the basic security context handling on subdomains for dApps that does not require sandbox rendering anymore.
+
+The Bee Dashboard recently released a new version that again supports running in browser environment.
+Because of that, this dependency has been updated in Swarm Extension that fixes some of the problems with older version.
 
 ### Features
 
