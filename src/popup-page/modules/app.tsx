@@ -122,6 +122,7 @@ export function App(): ReactElement {
           beeApiUrl={globalStateContext.state.beeApiUrl}
           beeDebugApiUrl={globalStateContext.state.beeDebugApiUrl}
           lockedApiSettings={true}
+          isDesktop={false}
         ></BeeDashboard>
       </div>
     </>

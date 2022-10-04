@@ -1,6 +1,6 @@
 {
   "name": "@ethersphere/swarm-extension",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Extension to properly handle Swarm dApps in browsers",
   "keywords": [
     "Swarm",
@@ -88,7 +88,7 @@
     "ws": "^7.4.4"
   },
   "dependencies": {
-    "@ethersphere/bee-dashboard": "^0.16.0",
+    "@ethersphere/bee-dashboard": "^0.20.2",
     "@ethersphere/bee-js": "^4.1.1",
     "@ethersphere/swarm-cid": "^0.1.0",
     "isarray": "^2.0.5",

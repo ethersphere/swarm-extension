@@ -359,14 +359,6 @@ const popupPage = (env?: Partial<WebpackEnvParams>): Configuration => {
           to: assetsPath,
         },
         {
-          from: 'node_modules/@ethersphere/bee-dashboard/lib/assets/*',
-          to: assetsPath + Path.sep + '[name].[ext]',
-        },
-        {
-          from: 'node_modules/@ethersphere/bee-dashboard/lib/assets/fonts/*',
-          to: Path.resolve(assetsPath, 'fonts') + Path.sep + '[name].[ext]',
-        },
-        {
           from: 'src/popup-page/index.html',
           to: () => {
             return `${path}/[name].[ext]`
