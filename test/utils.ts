@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import { readFile, writeFile } from 'fs'
 import { BeeDebug, DebugPostageBatch } from '@ethersphere/bee-js'
 import { ElementHandle, Page } from 'puppeteer'
 import { DEFAULT_BEE_API_ADDRESS, DEFAULT_BEE_DEBUG_API_ADDRESS } from '../src/background/constants/addresses'
@@ -88,4 +89,28 @@ export function getStamp(): string {
 
 function sleep(ms = 1000) {
   return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export function loadFile(filePath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    readFile(filePath, 'utf8', (error, data) => {
+      if (error) {
+        return reject(error)
+      }
+
+      resolve(data)
+    })
+  })
+}
+
+export function saveFile(filePath: string, data: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    writeFile(filePath, data, 'utf8', error => {
+      if (error) {
+        return reject(error)
+      }
+
+      resolve()
+    })
+  })
 }
