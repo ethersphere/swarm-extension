@@ -24,7 +24,7 @@
     "compile:deps": "webpack --env buildDeps=true",
     "compile:main": "webpack",
     "test:copy-lib": "./scripts/tests-copy-library.sh",
-    "test": "npm run test:copy-lib && jest --config=jest.config.ts --runInBand",
+    "test": "npm run test:copy-lib && jest --config=jest.config.ts",
     "test:demo": "npm run test:copy-lib && npm run test -- --demo=true --runInBand",
     "lint": "eslint --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:check": "eslint \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
