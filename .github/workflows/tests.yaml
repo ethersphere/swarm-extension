@@ -53,7 +53,7 @@ jobs:
         run: npm run build --prefix library
 
       - name: Whitelist bzz protocol
-        run: ./scripts/whitelist-bzz-protocol.sh
+        run: sudo ./scripts/whitelist-bzz-protocol.sh
 
       - name: Install fdp-play
         run: npm install -g @fairdatasociety/fdp-play
