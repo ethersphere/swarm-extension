@@ -206,6 +206,8 @@ describe('BZZ protocol', () => {
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
 
+    await new Promise(resolve => setTimeout(resolve, 10000))
+
     done()
   })
 
