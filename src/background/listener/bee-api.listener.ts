@@ -18,7 +18,8 @@ export class BeeApiListener {
   protected static RESOURCE_LOADER_REDIRECT_ID = 5
   protected static BEE_API_BLOCKER_ID = 6
   protected static BEE_API_REDIRECT_ID = 7
-  protected static BZZ_GOOGLE_REDIRECT_ID = 8
+  protected static BZZ_GOOGLE_BLOCKER_ID = 8
+  protected static BZZ_GOOGLE_REDIRECT_ID = 9
 
   protected static RESOURCE_TYPE_ALL = [
     chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
@@ -162,6 +163,7 @@ export class BeeApiListener {
           BeeApiListener.RESOURCE_LOADER_REDIRECT_ID,
           BeeApiListener.BEE_API_BLOCKER_ID,
           BeeApiListener.BEE_API_REDIRECT_ID,
+          BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
           BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
         ],
         addRules: [
@@ -241,11 +243,22 @@ export class BeeApiListener {
               },
             },
           },
+          {
+            id: BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
+            priority: 1,
+            condition: {
+              regexFilter: bzzGoogleRedirectRegex,
+              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+            },
+            action: {
+              type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+            },
+          },
           // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
           // NOTE: works only if google search is set as default search engine
           {
             id: BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
-            priority: 1,
+            priority: 2,
             condition: {
               regexFilter: bzzGoogleRedirectRegex,
               resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
