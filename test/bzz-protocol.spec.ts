@@ -35,7 +35,11 @@ function newBzzPage(url: string): Promise<Page> {
         errorText === 'net::ERR_BLOCKED_BY_CLIENT'
       ) {
         resolve(await getLastBzzPage())
-      } else reject(errorText)
+      } else {
+        console.log('Bzz page error', url, errorText)
+
+        reject(errorText)
+      }
     })
 
     try {
@@ -47,7 +51,11 @@ function newBzzPage(url: string): Promise<Page> {
     } catch (error) {
       if (String(error).includes('net::ERR_BLOCKED_BY_CLIENT')) {
         resolve(await getLastBzzPage())
-      } else reject(error)
+      } else {
+        console.log('Bzz page error', url, error)
+
+        reject(error)
+      }
     }
   })
 }
