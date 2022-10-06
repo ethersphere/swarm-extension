@@ -1,5 +1,5 @@
 export function isExtensionServiceWorkerEnv() {
-  return typeof importScripts === 'function' && Boolean(window.chrome)
+  return typeof importScripts === 'function' && typeof chrome === 'object'
 }
 
 export function isWebPageEnv() {

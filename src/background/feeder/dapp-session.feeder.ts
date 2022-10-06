@@ -1,5 +1,6 @@
 import { IDappSessionMessage } from '../../utils/message/dapp-session/dapp-session.message'
 import { InterceptorReqMessageFormat } from '../../utils/message/message-handler'
+import { MessageKeys } from '../constants/message-keys.enum'
 import { DappSessionManager } from '../dapp-session.manager'
 import { isInternalMessage, isTypedMessage } from '../utils'
 
@@ -14,7 +15,7 @@ export class DappSessionFeeder {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (!isInternalMessage(sender)) return
 
-      if (isTypedMessage<IDappSessionMessage>(message, 'registerDappSession')) {
+      if (isTypedMessage<IDappSessionMessage>(message, MessageKeys.REGISTER)) {
         this.register(message as unknown as InterceptorReqMessageFormat, sender, sendResponse)
 
         return true

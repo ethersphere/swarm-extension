@@ -11,6 +11,10 @@ export class Web2HelperContent implements IWeb2HelperMessage {
     return this.messages.sendMessage<string>('beeApiUrl')
   }
 
+  public beeApiUrls(): Promise<{ beeApiUrl: string; beeDebugApiUrl: string }> {
+    return this.messages.sendMessage('beeApiUrls')
+  }
+
   /**
    * Checks whether configured Bee API is available
    */
