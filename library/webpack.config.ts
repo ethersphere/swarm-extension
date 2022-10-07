@@ -20,6 +20,7 @@ const config = (env: ENV) => {
     },
     entry: {
       index: path.resolve(srcDir, 'index.ts'),
+      'swarm-html': path.resolve(srcDir, 'swarm-html.ts'),
     },
     output: {
       filename: '[name].js',

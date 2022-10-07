@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill'
 import { ILocalStorageMessage } from '../../utils/message/local-storage'
 import { InterceptorReqMessageFormat, ResponseMessageFormat } from '../../utils/message/message-handler'
+import { MessageKeys } from '../constants/message-keys.enum'
 import { DappSessionManager } from '../dapp-session.manager'
 import { isInternalMessage } from '../utils'
 
@@ -19,7 +20,7 @@ export class LocalStorageFeeder {
       ) => {
         if (!isInternalMessage(sender)) return
 
-        if (message.key !== 'setItem' && message.key !== 'getItem') {
+        if (message.key !== MessageKeys.SET_ITEM && message.key !== MessageKeys.GET_ITEM) {
           return
         }
 

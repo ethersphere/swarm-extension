@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "JavaScript library for interaction with the Swarm browser extension",
   "main": "build/index.js",
+  "types": "build/types/index.d.ts",
   "scripts": {
     "start": "webpack --watch --env mode=development",
     "build": "webpack --env mode=production",
