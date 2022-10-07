@@ -1,0 +1,25 @@
+# On each new commit to master, create/update a PR with release
+# automatically bumps version and creates changelog as per conventional commits
+# https://github.com/google-github-actions/release-please-action
+name: Release Github
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release-please-lib:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release-lib
+        with:
+          release-type: node
+          path: library
+          package-name: 'swarm-library'
+          changelog-path: 'CHANGELOG.md'
+          version-file: 'package.json'
+          pull-request-title-pattern: 'chore${scope}: release swarm-extension-library ${version}'
+          monorepo-tags: true
+          bump-minor-pre-major: true
