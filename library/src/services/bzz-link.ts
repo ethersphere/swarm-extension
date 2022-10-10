@@ -28,7 +28,9 @@ export class BzzLink {
         bzzReference += bzzLinkUrl.slice(firstSlash)
       }
 
-      const fakeUrlRef = newPage ? `${fakeUrl.openDapp}/${bzzReference}` : `${fakeUrl.bzzProtocol}/${bzzReference}`
+      const fakeUrlRef = newPage
+        ? `${fakeUrl.openDapp}/${bzzReference}`
+        : `${fakeUrl.bzzProtocol}/${bzzReference}`
 
       return appendSwarmSessionIdToUrl(fakeUrlRef, sessionId)
     }
@@ -38,7 +40,10 @@ export class BzzLink {
 
   /** transform the given URL to FakeURL or return null if it is not possible */
   public urlToFakeUrl(url: string, sessionId: string, newPage = false): string | null {
-    return this.bzzLinkUrlToFakeUrl(url, sessionId, newPage) || this.bzzProtocolToFakeUrl(url, sessionId, newPage) || null
+    return (
+      this.bzzLinkUrlToFakeUrl(url, sessionId, newPage) ||
+      this.bzzProtocolToFakeUrl(url, sessionId, newPage) ||
+      null
+    )
   }
 }
-

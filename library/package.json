@@ -8,8 +8,8 @@
     "start": "webpack --watch --env mode=development",
     "build": "webpack --env mode=production",
     "serve": "http-server",
-    "lint": "eslint --resolve-plugins-relative-to . --fix \"src/**/*.ts\" \"test/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint:check": "eslint --resolve-plugins-relative-to . \"src/**/*.ts\" \"test/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint --resolve-plugins-relative-to . --fix \"src/**/*.ts\" && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint:check": "eslint --resolve-plugins-relative-to . \"src/**/*.ts\" && prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "test": "jest --runInBand"
   },
   "repository": {
@@ -31,7 +31,7 @@
   "dependencies": {
     "@types/chrome": "^0.0.196",
     "@types/jest": "^29.0.0",
-    "@types/node": "^18.7.16",
+    "@types/node": "^18.8.3",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^8.5.0",

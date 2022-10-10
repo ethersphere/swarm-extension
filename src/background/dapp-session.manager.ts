@@ -1,6 +1,6 @@
 import { getItem, setItem } from '../utils/storage'
 import { DappSecurityContext as DappSecurityContextStorage } from './model/dapp-security-context.model'
-import { isExtensionDappSecurityContext, isTabDappSecurityContext } from './model/model-asserts'
+import { isExtensionDappSecurityContext, isTabDappSecurityContext } from './model/model-typeguards'
 import { isSenderExtension, senderContentOrigin, senderFrameId, senderFrameOrigin, senderTabId } from './utils'
 
 type LocalStorage = {

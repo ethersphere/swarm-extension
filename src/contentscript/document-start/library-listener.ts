@@ -36,7 +36,9 @@ function deserializeResponseMessage<T>(message: ResponseMessageFormat<T>): Respo
 /**
  * Utility function that creates a CustomEvent that sends response back to the library
  * @param eventId Request ID sent by the library
+ * @param key Event key
  * @param response MessageResponse object that is sent back
+ * @param error Optional error message
  */
 function createResponseEvent(
   eventId: string,

@@ -1,3 +1,3 @@
-import { FlavoredType } from "./flavored.type";
+import { FlavoredType } from './flavored.type'
 
 export type SessionId = FlavoredType<string, 'SessionId'>

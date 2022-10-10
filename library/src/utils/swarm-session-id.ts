@@ -16,7 +16,9 @@ export function unpackSwarmSessionIdFromUrl(bzzUrl: string): { sessionId: string
   const searchString = `__${SWARM_SESSION_ID_KEY}~`
   const sessionIdParamIndex = bzzUrl.indexOf(searchString)
 
-  if (sessionIdParamIndex === -1) throw new Error(`There is no ${SWARM_SESSION_ID_KEY} element in url ${bzzUrl}`)
+  if (sessionIdParamIndex === -1) {
+    throw new Error(`There is no ${SWARM_SESSION_ID_KEY} element in url ${bzzUrl}`)
+  }
 
   const sessionIdStartIndex = sessionIdParamIndex + searchString.length
   const sessionIdEndIndex = bzzUrl.indexOf('__', sessionIdStartIndex)

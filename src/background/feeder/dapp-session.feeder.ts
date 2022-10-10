@@ -33,7 +33,7 @@ export class DappSessionFeeder {
 
       sendResponse({ answer: true })
     } catch (error) {
-      sendResponse({ error })
+      sendResponse({ error: 'Error while registering new session' })
     }
   }
 }

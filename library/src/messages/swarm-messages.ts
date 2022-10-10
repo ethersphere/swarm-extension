@@ -1,7 +1,6 @@
-import { SessionId } from "../model/general.types";
+import { SessionId } from '../model/general.types'
 
 export abstract class SwarmMessages {
-
   private registrationPromise: Promise<SessionId> | null = null
   private _sessionId: SessionId | undefined
 
@@ -25,26 +24,33 @@ export abstract class SwarmMessages {
     return this.sendMessageInternal<Response>(key, this.sessionId, payload)
   }
 
-
   public abstract closeConnection(): void
-  
-  protected abstract sendMessageInternal<Response>(key: string, sessionId: string | undefined, payload?: unknown): Promise<Response>
-  
-  private async checkRegistration(): Promise<void> {
+
+  protected abstract sendMessageInternal<Response>(
+    key: string,
+    sessionId: string | undefined,
+    payload?: unknown,
+  ): Promise<Response>
+
+  public async checkRegistration(): Promise<SessionId> {
     try {
       if (this.sessionId) {
-        return
+        return this.sessionId
       }
 
       if (this.registrationPromise) {
         await this.registrationPromise
 
-        return
+        return this._sessionId as string
       }
 
-      this._sessionId = await (this.registrationPromise = this.sendMessageInternal<SessionId>('registerDappSession', undefined))
-      
-    } catch(error) {
+      this._sessionId = await (this.registrationPromise = this.sendMessageInternal<SessionId>(
+        'registerDappSession',
+        undefined,
+      ))
+
+      return this._sessionId
+    } catch (error) {
       this.registrationPromise = null
 
       throw error

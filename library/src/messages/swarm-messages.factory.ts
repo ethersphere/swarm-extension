@@ -7,6 +7,7 @@ export function createSwarmMessages(extensionId: string): SwarmMessages {
   if (isWebPageEnv()) {
     return new DappSwarmMessages()
   }
+
   if (isExtensionServiceWorkerEnv()) {
     return new E2ESwarmMessages(extensionId)
   }

@@ -4,7 +4,6 @@ import { appendSwarmSessionIdToUrl } from '../utils/swarm-session-id'
 import { SwarmMessages } from '../messages/swarm-messages'
 
 export class Web2HelperContent implements IWeb2HelperMessage {
-
   constructor(private messages: SwarmMessages) {}
   /** The real Bee API address that shouldn't be called directly by dApps */
   public beeApiUrl(): Promise<string> {

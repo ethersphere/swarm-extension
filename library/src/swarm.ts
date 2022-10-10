@@ -1,10 +1,10 @@
-import { SwarmMessages } from "./messages/swarm-messages";
-import { createSwarmMessages } from "./messages/swarm-messages.factory";
-import { SessionId } from './model/general.types';
-import { LocalStorage } from './services/local-storage';
+import { SwarmMessages } from './messages/swarm-messages'
+import { createSwarmMessages } from './messages/swarm-messages.factory'
+import { SessionId } from './model/general.types'
+import { LocalStorage } from './services/local-storage'
 import { BzzLink } from './services/bzz-link'
-import { PostageBatch } from "./services/postage-batch";
-import { Web2HelperContent } from "./services/web2-helper.content";
+import { PostageBatch } from './services/postage-batch'
+import { Web2HelperContent } from './services/web2-helper.content'
 
 /**
  * Interface of the Swarm browser extension
@@ -20,13 +20,11 @@ export class Swarm {
   public postageBatch: PostageBatch
 
   public web2Helper: Web2HelperContent
-
-
   /**
    *
    * @param extensionId The Swarm extension ID
    */
-  constructor(extensionId: string = 'afpgelfcknfbbfnipnomfdbbnbbemnia') {
+  constructor(extensionId = 'afpgelfcknfbbfnipnomfdbbnbbemnia') {
     this.messages = createSwarmMessages(extensionId)
     this.bzzLink = new BzzLink()
     this.localStorage = new LocalStorage(this.messages)
@@ -36,6 +34,10 @@ export class Swarm {
 
   public get sessionId(): SessionId | undefined {
     return this.messages.sessionId
+  }
+
+  public register(): Promise<SessionId> {
+    return this.messages.checkRegistration()
   }
 
   public closeConnection() {

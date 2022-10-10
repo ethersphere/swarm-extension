@@ -7,7 +7,7 @@ export class BzzLink {
   public bzzProtocolToFakeUrl(url: string, sessionId: string, newPage = false): string | null {
     if (!url.startsWith('bzz://')) return null
 
-    const bzzReference = url.substr('bzz://'.length)
+    const bzzReference = url.substring('bzz://'.length)
     const fakeUrlRef = newPage
       ? `${fakeUrl.openDapp}/${bzzReference}` // does not need sessionId because it force redirects
       : appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${bzzReference}`, sessionId)

@@ -30,7 +30,12 @@ function checkBeeApiAvailable() {
 }
 
 function fetchJinnImage() {
-  const bzzContentAddress = `${document.querySelector('#jinn-image-hash').value}/images/jinn.png`
+  const jinnImageHashElement = document.querySelector('#jinn-image-hash')
+
+  if (!jinnImageHashElement) {
+    throw new Error('#jinn-image-hash element not found')
+  }
+  const bzzContentAddress = `${jinnImageHashElement.value}/images/jinn.png`
   const jinnFakeUrl = web2Helper.fakeBzzAddress(bzzContentAddress)
   const imageNode = document.createElement('img')
   imageNode.src = jinnFakeUrl
