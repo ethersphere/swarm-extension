@@ -14,7 +14,6 @@ export abstract class SwarmMessages {
   /**
    * Sends a message to the Swarm extension and waits for response
    * @param key Method identifier of the Swarm extension
-   * @param sessionId Dapp session ID
    * @param payload Depends of the method
    * @returns Promise with response from the extension
    */

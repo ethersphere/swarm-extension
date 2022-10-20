@@ -8,7 +8,7 @@ const MESSAGE_TIMEOUT = 30000
  * Object that contains the resolve and reject functions of a promise
  */
 class PromiseHandles {
-  private timeoutHandle: NodeJS.Timeout | null = null
+  private timeoutHandle: ReturnType<typeof setTimeout> | null = null
   constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private resolveHandle: (data: any) => void,

@@ -23,7 +23,7 @@ export class DappSessionFeeder {
     })
   }
 
-  public async register(
+  private async register(
     message: InterceptorReqMessageFormat,
     sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void,

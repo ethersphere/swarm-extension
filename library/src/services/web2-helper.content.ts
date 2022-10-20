@@ -33,6 +33,9 @@ export class Web2HelperContent implements IWeb2HelperMessage {
    * @returns Fake URL pointing to the BZZ endpoint of the Bee client
    */
   public fakeBzzAddress(reference: string): string {
+    if (!this.messages.sessionId) {
+      throw new Error('Invalid session')
+    }
     return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`, this.messages.sessionId as string)
   }
 
@@ -45,6 +48,9 @@ export class Web2HelperContent implements IWeb2HelperMessage {
    * @returns Fake Bee API URL that is directly callable from dApp side
    */
   public fakeBeeApiAddress(): string {
+    if (!this.messages.sessionId) {
+      throw new Error('Invalid session')
+    }
     return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress, this.messages.sessionId as string)
   }
 }

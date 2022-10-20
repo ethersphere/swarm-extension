@@ -16,6 +16,6 @@
     "typeRoots": ["src/@types", "node_modules/@types"],
     "outDir": "build",
     "skipLibCheck": true,
-    "types": ["jest", "chrome", "node"]
+    "types": ["jest", "chrome"]
   }
 }
