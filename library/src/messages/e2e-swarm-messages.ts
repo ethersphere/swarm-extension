@@ -1,18 +1,17 @@
+import { SessionId } from '../model/general.types';
 import { SwarmMessages } from './swarm-messages'
 
 export class E2ESwarmMessages extends SwarmMessages {
-  constructor(protected extensionId: string) {
-    super()
+  constructor(protected extensionId: string, sessionId: SessionId) {
+    super(sessionId)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public closeConnection() {}
 
-  protected sendMessageInternal<Response>(
-    key: string,
-    sessionId: string | undefined,
-    payload?: unknown,
-  ): Promise<Response> {
+  public sendMessage<Response>(key: string, payload?: unknown): Promise<Response> {
+    const sessionId = this.sessionId
+
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(
         this.extensionId,

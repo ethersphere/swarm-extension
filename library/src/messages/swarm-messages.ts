@@ -1,58 +1,20 @@
 import { SessionId } from '../model/general.types'
 
 export abstract class SwarmMessages {
-  private registrationPromise: Promise<SessionId> | null = null
-  private _sessionId: SessionId | undefined
-
-  constructor() {
-    setTimeout(() => this.checkRegistration())
+  constructor(private _sessionId: SessionId) {
   }
 
-  public get sessionId(): SessionId | undefined {
+  public get sessionId(): SessionId {
     return this._sessionId
   }
+
   /**
    * Sends a message to the Swarm extension and waits for response
    * @param key Method identifier of the Swarm extension
    * @param payload Depends of the method
    * @returns Promise with response from the extension
    */
-  public async sendMessage<Response>(key: string, payload?: unknown): Promise<Response> {
-    await this.checkRegistration()
-
-    return this.sendMessageInternal<Response>(key, this.sessionId, payload)
-  }
+  public abstract sendMessage<Response>(key: string, payload?: unknown): Promise<Response>
 
   public abstract closeConnection(): void
-
-  protected abstract sendMessageInternal<Response>(
-    key: string,
-    sessionId: string | undefined,
-    payload?: unknown,
-  ): Promise<Response>
-
-  public async checkRegistration(): Promise<SessionId> {
-    try {
-      if (this.sessionId) {
-        return this.sessionId
-      }
-
-      if (this.registrationPromise) {
-        await this.registrationPromise
-
-        return this._sessionId as string
-      }
-
-      this._sessionId = await (this.registrationPromise = this.sendMessageInternal<SessionId>(
-        'registerDappSession',
-        undefined,
-      ))
-
-      return this._sessionId
-    } catch (error) {
-      this.registrationPromise = null
-
-      throw error
-    }
-  }
 }

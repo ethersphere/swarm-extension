@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid'
 import { IDappSessionMessage } from '../../utils/message/dapp-session/dapp-session.message'
 import {
   DirectMessageReq,
@@ -11,8 +10,6 @@ import {
 
 const SWARM_API_EVENT = 'swarm-api'
 const SWARM_API_RESPONSE_EVENT = 'swarm-api-response'
-
-const sessionId = nanoid()
 
 function validInpageMessage(message: InpageReqMessageFormat<unknown>): boolean {
   return Boolean(message.eventId && message.key && message.target === 'content' && message.sender === 'inpage')
@@ -61,7 +58,11 @@ function createResponseEvent(
 }
 
 async function handleRegistrationMessage(message: InpageReqMessageFormat) {
-  const { eventId, key } = message
+  const { eventId, key, sessionId } = message
+
+  if (!sessionId) {
+    throw new Error('Swarm: Invalid session ID')
+  }
 
   const messageToBackground: DirectMessageReq<IDappSessionMessage, 'registerDappSession'> = {
     key: 'registerDappSession',

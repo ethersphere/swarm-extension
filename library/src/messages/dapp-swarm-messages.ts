@@ -1,4 +1,5 @@
 import { SWARM_API_EVENT, SWARM_API_RESPONSE_EVENT } from '../constants/events'
+import { SessionId } from '../model/general.types'
 import { InpageReqMessageFormat, InterceptorResMessageFormat } from '../model/messages.model'
 import { getOnDocumentReadyPromise } from '../utils/window.util'
 import { SwarmMessages } from './swarm-messages'
@@ -47,13 +48,14 @@ export class DappSwarmMessages extends SwarmMessages {
   private listener: ((event: CustomEventInit<InterceptorResMessageFormat<string>>) => void) | undefined
   private onReady: Promise<void> = getOnDocumentReadyPromise()
 
-  constructor() {
-    super()
+  constructor(sessionId: SessionId) {
+    super(sessionId)
 
     this.setListener()
   }
 
-  protected sendMessageInternal<Response>(key: string, sessionId: string | undefined, payload?: unknown): Promise<Response> {
+  public sendMessage<Response>(key: string, payload?: unknown): Promise<Response> {
+    const sessionId = this.sessionId
     return new Promise<Response>(async (resolve, reject) => {
       if (!this.listener) {
         reject(new Error('Connection closed'))

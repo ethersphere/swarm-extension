@@ -5,6 +5,7 @@ import { LocalStorage } from './services/local-storage'
 import { BzzLink } from './services/bzz-link'
 import { PostageBatch } from './services/postage-batch'
 import { Web2HelperContent } from './services/web2-helper.content'
+import { register, sessionId } from './services/session'
 
 /**
  * Interface of the Swarm browser extension
@@ -13,31 +14,30 @@ import { Web2HelperContent } from './services/web2-helper.content'
 export class Swarm {
   private messages: SwarmMessages
 
-  public bzzLink: BzzLink
+  public readonly sessionId: SessionId
 
-  public localStorage: LocalStorage
+  public readonly bzzLink: BzzLink
 
-  public postageBatch: PostageBatch
+  public readonly localStorage: LocalStorage
 
-  public web2Helper: Web2HelperContent
+  public readonly postageBatch: PostageBatch
+
+  public readonly web2Helper: Web2HelperContent
   /**
    *
    * @param extensionId The Swarm extension ID
    */
   constructor(extensionId = 'afpgelfcknfbbfnipnomfdbbnbbemnia') {
-    this.messages = createSwarmMessages(extensionId)
+    this.sessionId = sessionId
+    this.messages = createSwarmMessages(extensionId, this.sessionId)
     this.bzzLink = new BzzLink()
     this.localStorage = new LocalStorage(this.messages)
     this.postageBatch = new PostageBatch(this.messages)
     this.web2Helper = new Web2HelperContent(this.messages)
   }
 
-  public get sessionId(): SessionId | undefined {
-    return this.messages.sessionId
-  }
-
-  public register(): Promise<SessionId> {
-    return this.messages.checkRegistration()
+  public register(): Promise<void> {
+    return register()
   }
 
   public closeConnection() {
