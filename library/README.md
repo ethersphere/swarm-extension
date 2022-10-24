@@ -64,7 +64,7 @@ swarm.closeConnection()
 
 ### Swarm HTML
 
-To enable Swarm HTML features, include the `swarm-html.js` script into HTML page.
+To enable Swarm HTML features, include the `swarm-html.js` script into HTML page. For more details check [Swarm HTML in the main readme](../README.md#swarm-html)
 
 ## Development
 

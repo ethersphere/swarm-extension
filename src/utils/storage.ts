@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { DappSecurityContext } from '../background/model/dapp-security-context.model'
+import { CommonDappSecurityContext } from '../background/model/dapp-security-context.model'
 
 interface Store {
   beeApiUrl: string
@@ -7,7 +7,7 @@ interface Store {
   web2OriginEnabled: boolean
   globalPostageBatch: string | null
   globalPostageStampEnabled: boolean
-  securityContexts: Record<string, DappSecurityContext>
+  securityContexts: Record<string, CommonDappSecurityContext>
 }
 
 type StoreKey = keyof Store

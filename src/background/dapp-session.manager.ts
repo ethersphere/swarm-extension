@@ -1,5 +1,9 @@
 import { getItem, setItem } from '../utils/storage'
-import { DappSecurityContext as DappSecurityContextStorage } from './model/dapp-security-context.model'
+import {
+  CommonDappSecurityContext,
+  TabDappSecurityContext as TabDappSecurityContextStorage,
+  ExtensionDappSecurityContext as ExtensionDappSecurityContextStorage,
+} from './model/dapp-security-context.model'
 import { isExtensionDappSecurityContext, isTabDappSecurityContext } from './model/model-typeguards'
 import { isSenderExtension, senderContentOrigin, senderFrameId, senderFrameOrigin, senderTabId } from './utils'
 
@@ -25,7 +29,7 @@ abstract class DappSecurityContext {
 
   public abstract getStorageItem(keyName: string): Promise<unknown>
 
-  public abstract toStorage(): DappSecurityContextStorage
+  public abstract toStorage(): CommonDappSecurityContext
 }
 
 class TabDappSecurityContext extends DappSecurityContext {
@@ -85,7 +89,7 @@ class TabDappSecurityContext extends DappSecurityContext {
     )
   }
 
-  public toStorage(): DappSecurityContextStorage {
+  public toStorage(): TabDappSecurityContextStorage {
     return {
       type: 'tab',
       tabId: this.tabId,
@@ -117,7 +121,7 @@ class ExtensionDappSecurityContext extends DappSecurityContext {
     throw new Error("ExtensionDappSecurityContext doesn't support extension storage functions")
   }
 
-  public toStorage(): DappSecurityContextStorage {
+  public toStorage(): ExtensionDappSecurityContextStorage {
     return {
       type: 'extension',
     }
@@ -131,7 +135,7 @@ export class DappSessionManager {
     })
   }
   public async register(sessionId: string, sender: chrome.runtime.MessageSender): Promise<void> {
-    let context: DappSecurityContext | null = null
+    let context: DappSecurityContext
 
     if (isSenderExtension(sender)) {
       context = new ExtensionDappSecurityContext()
@@ -195,7 +199,7 @@ export class DappSessionManager {
     await setItem('securityContexts', securityContexts)
   }
 
-  private convertDappSecurityContext(context: DappSecurityContextStorage): DappSecurityContext {
+  private convertDappSecurityContext(context: CommonDappSecurityContext): DappSecurityContext {
     if (isExtensionDappSecurityContext(context)) {
       return new ExtensionDappSecurityContext()
     }
