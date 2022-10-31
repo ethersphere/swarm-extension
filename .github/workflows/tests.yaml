@@ -50,7 +50,7 @@ jobs:
         run: cd library && npm ci && cd ..
 
       - name: Build library
-        run: npm run build --prefix library
+        run: cd library && npm run build && cd ..
 
       - name: Install fdp-play
         run: npm install -g @fairdatasociety/fdp-play

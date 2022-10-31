@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/nugaon/swarm-extension#readme",
   "dependencies": {
+    "@ethersphere/swarm-cid": "^0.1.0",
     "@types/chrome": "^0.0.196",
     "@types/jest": "^29.0.0",
     "@types/node": "^18.8.3",
