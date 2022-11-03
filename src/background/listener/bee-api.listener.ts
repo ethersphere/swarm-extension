@@ -154,7 +154,9 @@ export class BeeApiListener {
       },
       { url: [{ hostSuffix: '.bzz.link' }] },
     )
+  }
 
+  private setDeclarativeBzzListeners() {
     chrome.declarativeNetRequest.updateSessionRules(
       {
         removeRuleIds: [
@@ -294,6 +296,7 @@ export class BeeApiListener {
 
     // register listeners that have to be after async init
     this.setBeeNodeListeners()
+    this.setDeclarativeBzzListeners()
   }
 
   private addStoreListeners(): void {
@@ -301,6 +304,7 @@ export class BeeApiListener {
       console.log('Bee API URL changed to', newValue)
       this._beeApiUrl = newValue
       this.setBeeNodeListeners()
+      this.setDeclarativeBzzListeners()
     })
     this.storeObserver.addListener('globalPostageStampEnabled', async newValue => {
       this._globalPostageBatchEnabled = Boolean(newValue)
