@@ -49,13 +49,7 @@ function newBzzPage(url: string): Promise<Page> {
 
       resolve(page)
     } catch (error) {
-      if (String(error).includes('net::ERR_BLOCKED_BY_CLIENT')) {
-        resolve(await getLastBzzPage())
-      } else {
-        console.log('Bzz page error', url, error)
-
-        reject(error)
-      }
+      console.log('Bzz page error', url, error)
     }
   })
 }
@@ -203,6 +197,9 @@ describe('BZZ protocol', () => {
     await saveFile(rootIndexPath, patchedIndex)
 
     rootFolderReference = await uploadFilesFromDirectory('bzz-test-page')
+
+    await saveFile(rootIndexPath, originalIndex)
+
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
 
@@ -213,11 +210,6 @@ describe('BZZ protocol', () => {
 
   beforeEach(async done => {
     await new Promise(resolve => setTimeout(resolve, 1000))
-    done()
-  })
-
-  afterAll(async done => {
-    await saveFile(rootIndexPath, originalIndex)
     done()
   })
 
@@ -377,15 +369,21 @@ describe('BZZ protocol', () => {
     const testUrlValue = 'http://127.0.0.1:9999'
     const originalUrlValue = await changeBeeApiUrl(testUrlValue, extensionPage)
     //test whether it had affect on routing
-    const bzzPage = await newBzzPage(bzzReferenceByGoogle('nevermind-value'))
-    // the expected error page URL is 'chrome-error://chromewebdata/' on wrong reference.
-    await bzzPage.waitForSelector('pre')
-    const value = await bzzPage.$eval('pre', e => e.innerHTML)
-    expect(value).toContain('404')
-    await bzzPage.close()
+    let error = ''
+    try {
+      const bzzPage = await newBzzPage(bzzReferenceByGoogle('nevermind-value'))
+      await bzzPage.close()
+
+      throw new Error('Should throw an error')
+    } catch (e: any) {
+      console.log(e)
+
+      error = e.toString()
+    }
     //set back the original value
     await changeBeeApiUrl(originalUrlValue, extensionPage)
 
+    expect(error).toContain('net::ERR_CONNECTION_REFUSED')
     done()
   })
 
