@@ -22,9 +22,13 @@ class FakeUrl {
 
   public readonly bzzProtocolRegex: string
 
+  public readonly bzzSubdomainProtocolRegex: string
+
   public readonly beeApiAddressRegex: string
 
   public readonly bzzProtocolRegexWithKey: string
+
+  public readonly bzzSubdomainProtocolRegexWithKey: string
 
   public readonly beeApiAddressRegexWithKey: string
 
@@ -41,10 +45,12 @@ class FakeUrl {
 
     const baseUrlRegex = `^http\\://swarm\\.fakeurl\\.localhost`
     this.bzzProtocolRegex = baseUrlRegex + '/bzz/(.*)'
+    this.bzzSubdomainProtocolRegex = baseUrlRegex + '/bzz/(.*)\\.eth(.*)'
     this.beeApiAddressRegex = baseUrlRegex + '/bee-api.*'
 
     const swarmSessionIdKey = `(__${SWARM_SESSION_ID_KEY}~.*__)`
     this.bzzProtocolRegexWithKey = this.bzzProtocolRegex + swarmSessionIdKey
+    this.bzzSubdomainProtocolRegexWithKey = this.bzzSubdomainProtocolRegex + swarmSessionIdKey
     this.beeApiAddressRegexWithKey = baseUrlRegex + `/bee-api${swarmSessionIdKey}/?(.*)`
   }
 }
