@@ -289,7 +289,7 @@ export class BeeApiListener {
 
     if (isHostLocalhost) {
       addRules.push({
-        id: BeeApiListener.RESOURCE_LOADER_BLOCKER_ID,
+        id: BeeApiListener.RESOURCE_SUBDOMAIN_LOADER_BLOCKER_ID,
         priority: 1,
         condition: {
           regexFilter: fakeUrl.bzzSubdomainProtocolRegex,
@@ -304,7 +304,7 @@ export class BeeApiListener {
         // Used to load page resources like images
         // Always have to have session ID in the URL Param
         {
-          id: BeeApiListener.RESOURCE_LOADER_REDIRECT_ID,
+          id: BeeApiListener.RESOURCE_SUBDOMAIN_LOADER_REDIRECT_ID,
           priority: 2,
           condition: {
             regexFilter: fakeUrl.bzzSubdomainProtocolRegexWithKey,
