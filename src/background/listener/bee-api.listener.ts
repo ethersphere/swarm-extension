@@ -144,7 +144,7 @@ export class BeeApiListener {
 
         if (!query || !query.startsWith('bzz://')) return
 
-        this.redirectToBzzReference(query.substr(6), details.tabId)
+        this.redirectToBzzReference(query.substring(6), details.tabId)
       },
       {
         urls: ['https://www.google.com/search?*'],
@@ -394,7 +394,15 @@ export class BeeApiListener {
     if (!isLocalhost(this._beeApiUrl)) {
       url = `${this._beeApiUrl}/bzz/${bzzReference}`
     } else {
-      const [hash, path] = bzzReference.split(/\/(.*)/s)
+      let pathChar = '/'
+      let [hash, path] = bzzReference.split(/\/(.*)/s)
+
+      if (!path) {
+        const parts = bzzReference.split(/\#(.*)/s)
+        hash = parts[0]
+        path = parts[1]
+        pathChar = '#'
+      }
       let subdomain = hash
 
       if (subdomain.endsWith('.eth')) {
@@ -404,7 +412,7 @@ export class BeeApiListener {
       url = createSubdomainUrl(this._beeApiUrl, hashToCid(subdomain).toString())
 
       if (path) {
-        url += `/${path}`
+        url += `${pathChar}${path}`
       }
     }
 
