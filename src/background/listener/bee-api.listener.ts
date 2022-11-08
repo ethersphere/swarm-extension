@@ -4,6 +4,8 @@ import { getItem, StoreObserver } from '../../utils/storage'
 import { DEFAULT_BEE_API_ADDRESS } from '../constants/addresses'
 
 const bzzGoogleRedirectRegex = '^https\\:\\/\\/www\\.google\\.com\\/search\\?.*o?q=bzz%3A%2F%2F([^\\&]+).*'
+const bzzSubdomainGoogleRedirectRegex =
+  '^https\\:\\/\\/www\\.google\\.com\\/search\\?.*o?q=bzz%3A%2F%2F(.*)\\.eth([^\\&]*).*'
 
 export class BeeApiListener {
   private _beeApiUrl: string
@@ -16,10 +18,12 @@ export class BeeApiListener {
   protected static BZZ_LINK_BLOCKER_ID = 3
   protected static RESOURCE_LOADER_BLOCKER_ID = 4
   protected static RESOURCE_LOADER_REDIRECT_ID = 5
-  protected static BEE_API_BLOCKER_ID = 6
-  protected static BEE_API_REDIRECT_ID = 7
-  protected static BZZ_GOOGLE_BLOCKER_ID = 8
-  protected static BZZ_GOOGLE_REDIRECT_ID = 9
+  protected static RESOURCE_SUBDOMAIN_LOADER_BLOCKER_ID = 6
+  protected static RESOURCE_SUBDOMAIN_LOADER_REDIRECT_ID = 7
+  protected static BEE_API_BLOCKER_ID = 8
+  protected static BEE_API_REDIRECT_ID = 9
+  protected static BZZ_GOOGLE_BLOCKER_ID = 10
+  protected static BZZ_GOOGLE_REDIRECT_ID = 11
 
   protected static RESOURCE_TYPE_ALL = [
     chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
@@ -130,6 +134,23 @@ export class BeeApiListener {
       { urls: [`${fakeUrl.openDapp}/*`] },
     )
 
+    // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
+    // NOTE: works only if google search is set as default search engine
+    chrome.webRequest.onBeforeRequest.addListener(
+      (details: chrome.webRequest.WebRequestBodyDetails) => {
+        console.log('Original BZZ Url', details.url)
+        const urlParams = new URLSearchParams(new URL(details.url).search)
+        const query = decodeURI(urlParams.get('oq') || urlParams.get('q') || '')
+
+        if (!query || !query.startsWith('bzz://')) return
+
+        this.redirectToBzzReference(query.substring(6), details.tabId)
+      },
+      {
+        urls: ['https://www.google.com/search?*'],
+      },
+    )
+
     /**
      * {contentReference}.bzz.link has two ways to request:
      *
@@ -157,122 +178,162 @@ export class BeeApiListener {
   }
 
   private setDeclarativeBzzListeners() {
+    const isHostLocalhost = isLocalhost(this._beeApiUrl)
+    const [protocol, host] = this._beeApiUrl.split('://')
+
+    const addRules: chrome.declarativeNetRequest.Rule[] = [
+      /**
+       * {contentReference}.bzz.link has two ways to request:
+       *
+       * 1. typing to address bar
+       * 2. can be referred from dApp
+       */
+
+      /**
+       * this listener automatically cancels all requests towards .bzz.link URLs
+       * it relates to the 2nd scenario
+       */
+      {
+        id: BeeApiListener.BZZ_LINK_BLOCKER_ID,
+        priority: 1,
+        condition: {
+          regexFilter: '^(https?\\://)?.*\\.bzz\\.link/.*',
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+        },
+      },
+      {
+        id: BeeApiListener.RESOURCE_LOADER_BLOCKER_ID,
+        priority: 1,
+        condition: {
+          regexFilter: fakeUrl.bzzProtocolRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+        },
+      },
+      // Used to load page resources like images
+      // Always have to have session ID in the URL Param
+      {
+        id: BeeApiListener.RESOURCE_LOADER_REDIRECT_ID,
+        priority: 2,
+        condition: {
+          regexFilter: fakeUrl.bzzProtocolRegexWithKey,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+          redirect: {
+            regexSubstitution: `${this._beeApiUrl}/bzz/\\1`,
+          },
+        },
+      },
+      {
+        id: BeeApiListener.BEE_API_BLOCKER_ID,
+        priority: 1,
+        condition: {
+          regexFilter: fakeUrl.beeApiAddressRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+        },
+      },
+      {
+        // Redirect the Bee API calls with swarm-session-id query param
+        // The swarm-session-id query parameter can be between the path and the host
+        id: BeeApiListener.BEE_API_REDIRECT_ID,
+        priority: 2,
+        condition: {
+          regexFilter: fakeUrl.beeApiAddressRegexWithKey,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+          redirect: {
+            regexSubstitution: `${this._beeApiUrl}/\\2`,
+          },
+        },
+      },
+      {
+        id: BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
+        priority: 1,
+        condition: {
+          regexFilter: isHostLocalhost ? bzzSubdomainGoogleRedirectRegex : bzzGoogleRedirectRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+        },
+      },
+      // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
+      // NOTE: works only if google search is set as default search engine
+      {
+        id: BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
+        priority: 2,
+        condition: {
+          regexFilter: isHostLocalhost ? bzzSubdomainGoogleRedirectRegex : bzzGoogleRedirectRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+          redirect: {
+            regexSubstitution: isHostLocalhost ? `${protocol}://\\1.swarm.${host}\\2` : `${this._beeApiUrl}/bzz/\\1`,
+          },
+        },
+      },
+    ]
+
+    if (isHostLocalhost) {
+      addRules.push({
+        id: BeeApiListener.RESOURCE_SUBDOMAIN_LOADER_BLOCKER_ID,
+        priority: 1,
+        condition: {
+          regexFilter: fakeUrl.bzzSubdomainProtocolRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+        },
+      })
+
+      addRules.push(
+        // Used to load page resources like images
+        // Always have to have session ID in the URL Param
+        {
+          id: BeeApiListener.RESOURCE_SUBDOMAIN_LOADER_REDIRECT_ID,
+          priority: 2,
+          condition: {
+            regexFilter: fakeUrl.bzzSubdomainProtocolRegexWithKey,
+            resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+          },
+          action: {
+            type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+            redirect: {
+              regexSubstitution: `${protocol}://\\1.swarm.${host}\\2`,
+            },
+          },
+        },
+      )
+    }
+
     chrome.declarativeNetRequest.updateSessionRules(
       {
         removeRuleIds: [
           BeeApiListener.BZZ_LINK_BLOCKER_ID,
           BeeApiListener.RESOURCE_LOADER_BLOCKER_ID,
           BeeApiListener.RESOURCE_LOADER_REDIRECT_ID,
+          BeeApiListener.RESOURCE_SUBDOMAIN_LOADER_BLOCKER_ID,
+          BeeApiListener.RESOURCE_SUBDOMAIN_LOADER_REDIRECT_ID,
           BeeApiListener.BEE_API_BLOCKER_ID,
           BeeApiListener.BEE_API_REDIRECT_ID,
           BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
           BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
         ],
-        addRules: [
-          /**
-           * {contentReference}.bzz.link has two ways to request:
-           *
-           * 1. typing to address bar
-           * 2. can be referred from dApp
-           */
-
-          /**
-           * this listener automatically cancels all requests towards .bzz.link URLs
-           * it relates to the 2nd scenario
-           */
-          {
-            id: BeeApiListener.BZZ_LINK_BLOCKER_ID,
-            priority: 1,
-            condition: {
-              regexFilter: '^(https?\\://)?.*\\.bzz\\.link/.*',
-              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
-            },
-            action: {
-              type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
-            },
-          },
-          {
-            id: BeeApiListener.RESOURCE_LOADER_BLOCKER_ID,
-            priority: 1,
-            condition: {
-              regexFilter: fakeUrl.bzzProtocolRegex,
-              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
-            },
-            action: {
-              type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
-            },
-          },
-          // Used to load page resources like images
-          // Always have to have session ID in the URL Param
-          {
-            id: BeeApiListener.RESOURCE_LOADER_REDIRECT_ID,
-            priority: 2,
-            condition: {
-              regexFilter: fakeUrl.bzzProtocolRegexWithKey,
-              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
-            },
-            action: {
-              type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
-              redirect: {
-                regexSubstitution: `${this._beeApiUrl}/bzz/\\1`,
-              },
-            },
-          },
-          {
-            id: BeeApiListener.BEE_API_BLOCKER_ID,
-            priority: 1,
-            condition: {
-              regexFilter: fakeUrl.beeApiAddressRegex,
-              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
-            },
-            action: {
-              type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
-            },
-          },
-          {
-            // Redirect the Bee API calls with swarm-session-id query param
-            // The swarm-session-id query parameter can be between the path and the host
-            id: BeeApiListener.BEE_API_REDIRECT_ID,
-            priority: 2,
-            condition: {
-              regexFilter: fakeUrl.beeApiAddressRegexWithKey,
-              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
-            },
-            action: {
-              type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
-              redirect: {
-                regexSubstitution: `${this._beeApiUrl}/\\2`,
-              },
-            },
-          },
-          {
-            id: BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
-            priority: 1,
-            condition: {
-              regexFilter: bzzGoogleRedirectRegex,
-              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
-            },
-            action: {
-              type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
-            },
-          },
-          // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
-          // NOTE: works only if google search is set as default search engine
-          {
-            id: BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
-            priority: 2,
-            condition: {
-              regexFilter: bzzGoogleRedirectRegex,
-              resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
-            },
-            action: {
-              type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
-              redirect: {
-                regexSubstitution: `${this._beeApiUrl}/bzz/\\1`,
-              },
-            },
-          },
-        ],
+        addRules,
       },
       () => {
         console.log('Bzz listeners set')
@@ -333,7 +394,15 @@ export class BeeApiListener {
     if (!isLocalhost(this._beeApiUrl)) {
       url = `${this._beeApiUrl}/bzz/${bzzReference}`
     } else {
-      const [hash, path] = bzzReference.split(/\/(.*)/s)
+      let pathChar = '/'
+      let [hash, path] = bzzReference.split(/\/(.*)/s)
+
+      if (!path) {
+        const parts = bzzReference.split(/\#(.*)/s)
+        hash = parts[0]
+        path = parts[1]
+        pathChar = '#'
+      }
       let subdomain = hash
 
       if (subdomain.endsWith('.eth')) {
@@ -343,7 +412,7 @@ export class BeeApiListener {
       url = createSubdomainUrl(this._beeApiUrl, hashToCid(subdomain).toString())
 
       if (path) {
-        url += `/${path}`
+        url += `${pathChar}${path}`
       }
     }
 

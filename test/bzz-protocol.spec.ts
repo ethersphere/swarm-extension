@@ -369,21 +369,13 @@ describe('BZZ protocol', () => {
     const testUrlValue = 'http://127.0.0.1:9999'
     const originalUrlValue = await changeBeeApiUrl(testUrlValue, extensionPage)
     //test whether it had affect on routing
-    let error = ''
-    try {
-      const bzzPage = await newBzzPage(bzzReferenceByGoogle('nevermind-value'))
-      await bzzPage.close()
-
-      throw new Error('Should throw an error')
-    } catch (e: any) {
-      console.log(e)
-
-      error = e.toString()
-    }
+    const bzzPage = await newBzzPage(bzzReferenceByGoogle('nevermind-value'))
+    // the expected error page URL is 'chrome-error://chromewebdata/' on wrong reference.
+    expect(bzzPage.url()).toBe('chrome-error://chromewebdata/')
+    await bzzPage.close()
     //set back the original value
     await changeBeeApiUrl(originalUrlValue, extensionPage)
 
-    expect(error).toContain('net::ERR_CONNECTION_REFUSED')
     done()
   })
 
