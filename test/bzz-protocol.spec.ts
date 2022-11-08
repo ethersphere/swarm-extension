@@ -227,6 +227,16 @@ describe('BZZ protocol', () => {
     done()
   })
 
+  test('Check connection', async done => {
+    await page.click('#button-echo')
+    const placeHolderSelector = '#echo-placeholder[complete="true"]'
+    await page.waitForSelector(placeHolderSelector)
+    const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
+    expect(value).toBe('Works')
+
+    done()
+  })
+
   test('Fetch Real Bee API URL', async done => {
     await page.click('#button-fetch-real-bee-api-url')
     const placeHolderSelector = '#bee-api-url-placeholder[complete="true"]'
