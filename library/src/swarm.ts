@@ -40,6 +40,15 @@ export class Swarm {
     return register()
   }
 
+  /**
+   * Test function, to check communication with the extension
+   * @param data Any data
+   * @returns The same data
+   */
+  public echo<Data>(data: Data): Promise<Data> {
+    return this.messages.sendMessage<Data>('echo', data)
+  }
+
   public closeConnection() {
     this.messages.closeConnection()
   }

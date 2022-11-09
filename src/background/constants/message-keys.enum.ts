@@ -6,4 +6,5 @@ export enum MessageKeys {
   BEE_API_URL = 'beeApiUrl',
   BEE_API_URLS = 'beeApiUrls',
   IS_BEE_API_AVAILABLE = 'isBeeApiAvailable',
+  ECHO = 'echo',
 }

@@ -49,6 +49,8 @@ export class E2ESessionFeeder {
             response.data = this.handleRegistration(sender)
           } else if (action === MessageKeys.BEE_API_URLS) {
             response.data = await this.handleWeb2BeeAddress()
+          } else if (action === MessageKeys.ECHO) {
+            response.data = request.parameters
           } else {
             throw new Error(`E2E Session Feeder: Unknown action ${action}`)
           }
