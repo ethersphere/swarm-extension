@@ -34,7 +34,7 @@ const swarm = new Swarm('Swarm Extension ID...') // Using custom Swarm ID
 To test if connection with the Swarm extension is established, call the `echo` method:
 
 ```typescript
-const text = await blossom.echo<string>('test')
+const text = await swarm.echo<string>('test')
 console.log(text) // 'test'
 ```
 
