@@ -8,6 +8,7 @@ import { PostageBatchFeeder } from './feeder/postage-batch.feeder'
 import { BeeApiListener } from './listener/bee-api.listener'
 import { DebugListener } from './listener/debug.listener'
 import { setupLiveReload } from './live-reload/live-reload'
+import { DebugFeeder } from './feeder/debug.feeder'
 
 console.log('Swarm Backend script started...')
 const storeObserver = new StoreObserver()
@@ -19,5 +20,6 @@ new LocalStorageFeeder(dappSessionManager)
 new DebugListener()
 new Web2HelperFeeder(beeApiListener)
 new PostageBatchFeeder()
+new DebugFeeder()
 
 if (process.env.SWARM_DEVELOPMENT) setupLiveReload()

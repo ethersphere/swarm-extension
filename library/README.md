@@ -31,6 +31,13 @@ const swarm = new Swarm() // Using the default Swarm ID from the Google store
 const swarm = new Swarm('Swarm Extension ID...') // Using custom Swarm ID
 ```
 
+To test if connection with the Swarm extension is established, call the `echo` method:
+
+```typescript
+const text = await swarm.echo<string>('test')
+console.log(text) // 'test'
+```
+
 ### Swarm class functionalities
 
 Before interacting with the library, Dapp should register new session by calling:

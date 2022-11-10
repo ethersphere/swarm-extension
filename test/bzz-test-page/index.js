@@ -4,6 +4,14 @@ window.swarmObject = swarm
 const web2Helper = swarm.web2Helper
 const postageBatch = swarm.postageBatch
 
+function echo() {
+  swarm
+    .echo('Works')
+    .then(data => (document.getElementById('echo-placeholder').innerHTML = data))
+    .catch(error => (document.getElementById('echo-placeholder').innerHTML = JSON.stringify(error)))
+    .finally(() => document.getElementById('echo-placeholder').setAttribute('complete', 'true'))
+}
+
 function fetchBeeApiUrl() {
   web2Helper
     .beeApiUrl()
