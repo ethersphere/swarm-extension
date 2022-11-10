@@ -73,6 +73,10 @@ There will be need for other Swarm specific protocols (or extend the current one
 
 You can read about it in more detail in the following section
 
+## JS Library
+
+dApps should interact with the extension using the [Swarm Extension Library](library/README.md).
+
 ### Swarm HTML
 
 You can refer to any `bzz` resource in html if you add attribute `is=swarm-X` to your html element, where `X` is the name of the HTML tag element, such as `<img is="swarm-img" src="https://{cid-or-ens-name}.bzz.link" />`.
