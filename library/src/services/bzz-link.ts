@@ -1,6 +1,5 @@
 import { getSubdomain, subdomainToBzzResource } from '../utils/bzz-link'
 import { fakeUrl } from '../utils/fake-url'
-import { appendSwarmSessionIdToUrl } from '../utils/swarm-session-id'
 
 export class BzzLink {
   /** gives back the fake URL of the BZZ protocol reference or null if the first parameter is not a valid BZZ protocol reference */
@@ -9,8 +8,8 @@ export class BzzLink {
 
     const bzzReference = url.substr('bzz://'.length)
     const fakeUrlRef = newPage
-      ? `${fakeUrl.openDapp}/${bzzReference}` // does not need sessionId because it force redirects
-      : appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${bzzReference}`, sessionId)
+      ? `${fakeUrl.openDapp}/${bzzReference}`
+      : `${fakeUrl.bzzProtocol}/${bzzReference}`
 
     return fakeUrlRef
   }
@@ -32,7 +31,7 @@ export class BzzLink {
         ? `${fakeUrl.openDapp}/${bzzReference}`
         : `${fakeUrl.bzzProtocol}/${bzzReference}`
 
-      return appendSwarmSessionIdToUrl(fakeUrlRef, sessionId)
+      return fakeUrlRef
     }
 
     return null

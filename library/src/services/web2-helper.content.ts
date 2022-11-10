@@ -1,6 +1,5 @@
 import { fakeUrl } from '../utils/fake-url'
 import { IWeb2HelperMessage } from '../model/web2-helper.interface'
-import { appendSwarmSessionIdToUrl } from '../utils/swarm-session-id'
 import { SwarmMessages } from '../messages/swarm-messages'
 
 export class Web2HelperContent implements IWeb2HelperMessage {
@@ -36,7 +35,8 @@ export class Web2HelperContent implements IWeb2HelperMessage {
     if (!this.messages.sessionId) {
       throw new Error('Invalid session')
     }
-    return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`, this.messages.sessionId as string)
+
+    return `${fakeUrl.bzzProtocol}/${reference}`
   }
 
   /**
@@ -51,6 +51,7 @@ export class Web2HelperContent implements IWeb2HelperMessage {
     if (!this.messages.sessionId) {
       throw new Error('Invalid session')
     }
-    return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress, this.messages.sessionId as string)
+
+    return fakeUrl.beeApiAddress
   }
 }
