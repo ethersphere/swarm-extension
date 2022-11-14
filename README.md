@@ -2,6 +2,9 @@
 
 **Warning: This project has Proof of Concept state now. There will be breaking changes continuously in the future. Also, no guarantees can be made about its stability, efficiency, and security at this stage. It only provides a platform currently to show workarounds and examples for the current problems in dApp environments top on Swarm**
 
+
+**Info: For manifest v3 version of the extension, dApps should interact with the extension using the `Swarm Extension Library`. Check how it works [here](library/README.md).**
+
 This browser extension provides an alternative to have a web3 environment in a web2 browser for users and dApps.
 
 Users can interact with the Swarm network in two ways: by running their own Bee client or using a gateway solution.
@@ -26,6 +29,15 @@ npm run compile
 ```
 
 commands. If everything went right, then a `dist` folder appeared in the root of the project folder. That folder has to be [added to your browser extensions](chrome://extensions/) as an unpacked extension. You can load unpacked extensions only if you checked in the `Developer mode` (top-right corner).
+
+## Manifest V3 Changes
+
+Since manifest v2 extensions won't be allowed from June 2023, the Swarm Extension now supports manifest v3. But that brings some limitations, not present in v2. Here are the key changes in v3:
+
+- The `swarm` object won't be injected into dApp pages. Instead each dApp should include the [Swarm Extension Library](library/README.md) into its code to comunicate with the extension.
+- Blocking interceptors are not allowed in manifest v3, so the new implementation uses the [Declarative Network Request API](https://developer.chrome.com/docs/extensions/reference/declarativeNetRequest/). This requirement prevents the extension from checking session ID for fake URL requests. That means the extension cannot check the security context of the links that are being accessed.
+- If bee URL is set to `localhost`, then fake URL links are redirected to subdomain based bee URLs. For example, trying to access the `bzz://site.eth` URL will result in accessing the `http://site.swarm.localhost:1633/` URL.
+
 
 ## Fake URL
 
@@ -72,10 +84,6 @@ It is injected to every page basically, so any frontend application can utilize 
 There will be need for other Swarm specific protocols (or extend the current one), which handle different type of feeds and mutable content.
 
 You can read about it in more detail in the following section
-
-## JS Library
-
-dApps should interact with the extension using the [Swarm Extension Library](library/README.md).
 
 ### Swarm HTML
 
