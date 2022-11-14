@@ -1,5 +1,3 @@
-import { SWARM_SESSION_ID_KEY } from './swarm-session-id'
-
 /** API endpoints that the extension can serve out */
 class FakeUrl {
   /**
@@ -24,10 +22,6 @@ class FakeUrl {
 
   public readonly beeApiAddressRegex: string
 
-  public readonly bzzProtocolRegexWithKey: string
-
-  public readonly beeApiAddressRegexWithKey: string
-
   constructor() {
     // bee default API address, which is reserved on this localhost port number,
     // should not overlap with any other service
@@ -42,10 +36,6 @@ class FakeUrl {
     const baseUrlRegex = `^http\\://swarm\\.fakeurl\\.localhost`
     this.bzzProtocolRegex = baseUrlRegex + '/bzz/(.*)'
     this.beeApiAddressRegex = baseUrlRegex + '/bee-api.*'
-
-    const swarmSessionIdKey = `(__${SWARM_SESSION_ID_KEY}~.*__)`
-    this.bzzProtocolRegexWithKey = this.bzzProtocolRegex + swarmSessionIdKey
-    this.beeApiAddressRegexWithKey = baseUrlRegex + `/bee-api${swarmSessionIdKey}/?(.*)`
   }
 }
 
