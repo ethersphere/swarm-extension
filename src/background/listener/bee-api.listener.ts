@@ -359,7 +359,10 @@ export class BeeApiListener {
 
       if (!path) {
         const parts = bzzReference.split(/\#(.*)/s)
-        hash = parts[0]
+
+        if (!hash) {
+          hash = parts[0]
+        }
         path = parts[1]
         pathChar = '#'
       }
