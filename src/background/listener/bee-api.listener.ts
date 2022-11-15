@@ -21,6 +21,7 @@ export class BeeApiListener {
   protected static BEE_API_REDIRECT_ID = 6
   protected static BZZ_GOOGLE_BLOCKER_ID = 7
   protected static BZZ_GOOGLE_REDIRECT_ID = 8
+  protected static CORS_HEADER_ID = 9
 
   protected static RESOURCE_TYPE_ALL = [
     chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
@@ -260,6 +261,23 @@ export class BeeApiListener {
           },
         },
       },
+      {
+        id: BeeApiListener.CORS_HEADER_ID,
+        condition: {
+          urlFilter: `${this._beeApiUrl}/*`,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+          responseHeaders: [
+            {
+              header: 'Access-Control-Allow-Origin',
+              operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+              value: '*',
+            },
+          ],
+        },
+      },
     ]
 
     if (isHostLocalhost) {
@@ -292,6 +310,7 @@ export class BeeApiListener {
           BeeApiListener.BEE_API_REDIRECT_ID,
           BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
           BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
+          BeeApiListener.CORS_HEADER_ID,
         ],
         addRules,
       },
