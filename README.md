@@ -104,7 +104,7 @@ The consequence of this behaviour the dApps which use external bzz.link referenc
 
 ## dApp origin instead of host-based origin
 
-All Swarm content that the extension renders, wihtout using subdomain, will be put into _sandbox_ mode even in root level by _Content Security Policy_ headers.
+All Swarm content that the extension renders, without using subdomain, will be put into _sandbox_ mode even in root level by _Content Security Policy_ headers.
 It means dApps will act like a different, distinct webpage from the Bee host that serves those.
 Therefore no traditional _cookies_ or _localStorage_ is available for dApps, but equivalent services of those are.
 
