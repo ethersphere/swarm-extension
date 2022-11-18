@@ -1,0 +1,46 @@
+name: Build and publish JS library
+
+on:
+  release:
+    types: [published]
+    tags-ignore:
+      - swarm-extension*
+  workflow_dispatch:
+
+jobs:
+  publish-lib:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Cache library node modules
+        id: cache-npm-lib
+        uses: actions/cache@v3
+        with:
+          path: library/node_modules
+          key: ${{ runner.os }}-lib-${{ matrix.node }}-${{ hashFiles('**/library/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-lib-${{ matrix.node }}-${{ env.cache-name }}-
+            ${{ runner.OS }}-lib-${{ matrix.node }}-
+
+      - name: Install library dependencies
+        run: npm ci --prefix library
+        if: ${{ steps.cache-npm-lib.outputs.cache-hit != 'true' }}
+
+      - name: Build
+        run: npm run build --prefix library
+
+      - name: Publish
+        run: cd library && npm publish --access public && cd ..
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

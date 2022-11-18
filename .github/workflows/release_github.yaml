@@ -17,4 +17,6 @@ jobs:
           token: ${{ secrets.GHA_PAT_BASIC }}
           release-type: node
           package-name: swarm-extension
+          monorepo-tags: true
           bump-minor-pre-major: true
+          pull-request-title-pattern: 'chore${scope}: release swarm-extension ${version}'
