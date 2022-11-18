@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.0 (2022-11-18)
+
+Since manifest v2 extensions won't be allowed from June 2023, the Swarm Extension now supports manifest v3. But that brings some limitations, not present in v2. Here are the key changes in v3:
+
+- The `swarm` object won't be injected into dApp pages. Instead each dApp should include the [Swarm Extension Library](library/README.md) into its code to comunicate with the extension.
+- Blocking interceptors are not allowed in manifest v3, so the new implementation uses the [Declarative Network Request API](https://developer.chrome.com/docs/extensions/reference/declarativeNetRequest/). This requirement prevents the extension from checking session ID for fake URL requests. That means the extension cannot check the security context of the links that are being accessed.
+- If bee URL is set to `localhost`, then links are redirected to subdomain based bee URLs. For example, trying to access the `bzz://site.eth` URL will result in accessing the `http://site.swarm.localhost:1633/` URL.
+
+### Features
+
+* manifest v3 ([#142](https://github.com/ethersphere/swarm-extension/issues/142)) ([287edee](https://github.com/ethersphere/swarm-extension/commit/287edee31a0cc85e1803aba121d22383389333e6))
+  * remove session-id from url ([#150](https://github.com/ethersphere/swarm-extension/pull/150))
+  * add subdomain redirection ([#147](https://github.com/ethersphere/swarm-extension/pull/147))
+
 ## [0.6.0](https://github.com/ethersphere/swarm-extension/compare/v0.5.0...v0.6.0) (2022-10-04)
 
 The bzz.link and bzz:// URLs will be redirected to the http://{cid}.localhost:{port} address in case of locally running Bee node.

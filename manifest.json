@@ -1,7 +1,7 @@
 {
   "name": "Ethereum Swarm Extension",
   "short_name": "Swarm Extension",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "manifest_version": 3,
   "permissions": ["webRequest", "declarativeNetRequest", "tabs", "storage", "webNavigation"],
   "author": "nugaon",
