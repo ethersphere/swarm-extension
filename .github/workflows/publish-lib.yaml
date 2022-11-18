@@ -17,10 +17,10 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 16
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16
           registry-url: 'https://registry.npmjs.org'
 
       - name: Cache library node modules
