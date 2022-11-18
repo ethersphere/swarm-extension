@@ -1,6 +1,6 @@
 # Swarm Browser Extension JS Library
 
-Library for interaction with the Swarm Browser Extension, from Dapps or other browser extensions.
+Library for interaction with the Swarm Browser Extension, from dApps or other browser extensions.
 
 ## Installation
 
