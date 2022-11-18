@@ -11,7 +11,9 @@ import {
   getElementBySelector,
   getExtensionId,
   getStamp,
+  loadFile,
   replaceInputValue,
+  saveFile,
 } from './utils'
 
 async function getLastBzzPage(): Promise<Page> {
@@ -27,15 +29,27 @@ function newBzzPage(url: string): Promise<Page> {
     page.once('requestfailed', async request => {
       const errorText = request.failure()?.errorText
 
-      if (errorText === 'net::ERR_ABORTED') {
+      if (
+        errorText === 'net::ERR_ABORTED' ||
+        errorText === 'net::ERR_UNKNOWN_URL_SCHEME' ||
+        errorText === 'net::ERR_BLOCKED_BY_CLIENT'
+      ) {
         resolve(await getLastBzzPage())
-      } else reject(errorText)
+      } else {
+        console.log('Bzz page error', url, errorText)
+
+        reject(errorText)
+      }
     })
 
     try {
-      await page.goto(url, { waitUntil: 'domcontentloaded' })
-    } catch {
-      //
+      console.log('newBzzPage opening page', url)
+
+      await page.goto(url, { waitUntil: ['domcontentloaded', 'networkidle0'] })
+
+      resolve(page)
+    } catch (error) {
+      console.log('Bzz page error', url, error)
     }
   })
 }
@@ -44,7 +58,7 @@ async function openExtensionPage(): Promise<Page> {
   const extensionId = await getExtensionId()
   const extensionPage = await global.__BROWSER__.newPage()
   await extensionPage.goto(`chrome-extension://${extensionId}/popup-page/index.html`, {
-    waitUntil: 'networkidle0',
+    waitUntil: ['domcontentloaded', 'networkidle0'],
   })
 
   return extensionPage
@@ -112,6 +126,8 @@ async function changeBeeDebugApiUrl(newBeeDebugApiUrl: string, extensionPage?: P
   return originalUrlValue
 }
 
+const rootIndexPath = join(__dirname, 'bzz-test-page', 'index.html')
+
 describe('BZZ protocol', () => {
   let page: Page
   let extensionPage: Page
@@ -119,6 +135,7 @@ describe('BZZ protocol', () => {
   let rootFolderReference: string
   let extensionId: string
   let localStorageReferece: string
+  let originalIndex: string
 
   const checkJinnIframePage = async (element: ElementHandle<Element> | null) => {
     expect(element).toBeTruthy()
@@ -160,9 +177,33 @@ describe('BZZ protocol', () => {
     console.log('Jinn and Jafar page has been uploaded', jinnHash, jafarHash)
     localStorageReferece = await uploadFilesFromDirectory('bzz-test-page', 'local-storage')
     console.log('Local Storage handler page has been uploaded', localStorageReferece)
+
+    originalIndex = await loadFile(rootIndexPath)
+
+    let patchedIndex = originalIndex.replace(
+      /78e632d643b8ba7f67c495bd8a16092a0c380a23fa03444b923e193fabb79435/g,
+      jinnHash,
+    )
+    patchedIndex = patchedIndex.replace(/bd7da6a18921725b1c003d678d1030cf4b4e8bb05e1452848a71f090e0daeb9b/g, jafarHash)
+    patchedIndex = patchedIndex.replace(
+      /248493b1cf4c9ed29f550d3c2d89d79f6358d35c7eea014bf7517f81d0f578a3/g,
+      localStorageReferece,
+    )
+    patchedIndex = patchedIndex.replace(
+      /bah5qcgzapdtdfvsdxc5h6z6esw6yufqjfigdqcrd7ibuis4shymt7k5xsq2q/g,
+      bzzResourceToSubdomain(jinnHash) as string,
+    )
+
+    await saveFile(rootIndexPath, patchedIndex)
+
     rootFolderReference = await uploadFilesFromDirectory('bzz-test-page')
+
+    await saveFile(rootIndexPath, originalIndex)
+
     page = await global.__BROWSER__.newPage()
     await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
+
+    await new Promise(resolve => setTimeout(resolve, 10000))
 
     done()
   })
@@ -179,16 +220,26 @@ describe('BZZ protocol', () => {
     done()
   })
 
-  test('checks iframe has been loaded with web+bzz reference', async () => {
+  test('checks iframe has been loaded with web+bzz reference', async done => {
     const ref = await page.$('#bzz-iframe')
 
     checkJinnIframePage(ref)
+    done()
+  })
+
+  test('Check connection', async done => {
+    await page.click('#button-echo')
+    const placeHolderSelector = '#echo-placeholder[complete="true"]'
+    await page.waitForSelector(placeHolderSelector)
+    const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
+    expect(value).toBe('Works')
+
+    done()
   })
 
   test('Fetch Real Bee API URL', async done => {
     await page.click('#button-fetch-real-bee-api-url')
-    const placeHolderSelector = '#bee-api-url-placeholder'
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const placeHolderSelector = '#bee-api-url-placeholder[complete="true"]'
     await page.waitForSelector(placeHolderSelector)
     const value = await page.$eval(placeHolderSelector, e => e.innerHTML)
     expect(value).toBe(BEE_API_URL) //default value of Bee API URL in the extension
@@ -248,7 +299,7 @@ describe('BZZ protocol', () => {
 
   test('Upload file through Fake URL', async done => {
     page = await global.__BROWSER__.newPage()
-    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
+    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: ['domcontentloaded', 'networkidle0'] })
 
     await page.click('#button-upload-fake-url-file')
     const placeHolderSelector = '#fake-bzz-url-content-1 > a:first-child'
@@ -264,7 +315,7 @@ describe('BZZ protocol', () => {
 
   test('Fetch image via Fake URL', async done => {
     page = await global.__BROWSER__.newPage()
-    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: 'networkidle0' })
+    await page.goto(`${BEE_API_URL}/bzz/${rootFolderReference}`, { waitUntil: ['domcontentloaded', 'networkidle0'] })
 
     await page.click('#button-fetch-jinn-page')
     const placeHolderSelector = '#fake-url-fetch-jinn > img:first-child'

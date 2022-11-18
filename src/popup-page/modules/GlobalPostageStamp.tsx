@@ -24,12 +24,11 @@ export default function GlobalPostageStamp(): ReactElement {
     if (globalState.globalPostageBatchEnabled) retrievePostageBatches()
   }, [globalState.globalPostageBatchEnabled])
 
-  const handleUseGlobalPostageBatch = (checked: boolean): void => {
-    dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE', newValue: checked })
-
+  const handleUseGlobalPostageBatch = async (checked: boolean) => {
     if (checked) {
-      retrievePostageBatches()
+      await retrievePostageBatches()
     }
+    dispatchGlobalState({ type: 'GLOBAL_POSTAGE_BATCH_ENABLED_SAVE', newValue: checked })
   }
 
   const truncatePostageBatchId = (postageBatchId: string) => {

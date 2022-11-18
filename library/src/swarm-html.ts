@@ -1,8 +1,11 @@
-import { fakeUrl } from '../../utils/fake-url'
+import { fakeUrl } from './utils/fake-url'
+import { BzzLink } from './services/bzz-link'
+
+const bzzLink = new BzzLink()
 
 /** tries to transform the given URL to fake URL or return back the original URL  */
 function tryFakeUrlTransform(url: string, newPage = false): string | null {
-  return window.swarm.bzzLink.urlToFakeUrl(url, newPage)
+  return bzzLink.urlToFakeUrl(url, '', newPage)
 }
 
 export class SwarmImage extends HTMLImageElement {
@@ -125,8 +128,22 @@ export class SwarmAnchor extends HTMLAnchorElement {
   }
 }
 
-window.customElements.define('swarm-img', SwarmImage, { extends: 'img' })
-window.customElements.define('swarm-iframe', SwarmFrame, { extends: 'iframe' })
-window.customElements.define('swarm-a', SwarmAnchor, { extends: 'a' })
-window.customElements.define('swarm-video', SwarmVideo, { extends: 'video' })
-window.customElements.define('swarm-source', SwarmSource, { extends: 'source' })
+if (window.customElements.get('swarm-img') === undefined) {
+  window.customElements.define('swarm-img', SwarmImage, { extends: 'img' })
+}
+
+if (window.customElements.get('swarm-iframe') === undefined) {
+  window.customElements.define('swarm-iframe', SwarmFrame, { extends: 'iframe' })
+}
+
+if (window.customElements.get('swarm-a') === undefined) {
+  window.customElements.define('swarm-a', SwarmAnchor, { extends: 'a' })
+}
+
+if (window.customElements.get('swarm-video') === undefined) {
+  window.customElements.define('swarm-video', SwarmVideo, { extends: 'video' })
+}
+
+if (window.customElements.get('swarm-source') === undefined) {
+  window.customElements.define('swarm-source', SwarmSource, { extends: 'source' })
+}

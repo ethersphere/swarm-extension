@@ -1,22 +1,10 @@
 import { nanoid } from 'nanoid'
-import { bzzProtocolToFakeUrl } from '../../contentscript/swarm-library/bzz-link'
-import { fakeUrl } from '../../utils/fake-url'
 import { getItem } from '../../utils/storage'
-import { appendSwarmSessionIdToUrl } from '../../utils/swarm-session-id'
 import { DEFAULT_BEE_API_ADDRESS, DEFAULT_BEE_DEBUG_API_ADDRESS } from '../constants/addresses'
+import { MessageKeys } from '../constants/message-keys.enum'
 import { DappSessionManager } from '../dapp-session.manager'
 
-enum Action {
-  REGISTER = 'register',
-  BZZ_LINK_PROTOCOL_TO_FAKE_URL = 'bzzLink.bzzProtocolToFakeUrl',
-  BZZ_LINK_LINK_URL_TO_FAKE_URL = 'bzzLink.bzzLinkUrlToFakeUrl',
-  BZZ_LINK_URL_TO_FAKE_URL = 'bzzLink.urlToFakeUrl',
-  WEB2_HELPER_FAKE_BEE_API_ADDRESS = 'web2Helper.fakeBeeApiAddress',
-  WEB2_HELPER_FAKE_BZZ_ADDRESS = 'web2Helper.fakeBzzAddress',
-  WEB2_HELPER_BEE_ADDRESS = 'web2Helper.beeAddress',
-}
-
-interface Request<A extends Action, P> {
+interface Request<A extends MessageKeys, P> {
   action: A
   sessionId: string
   parameters: P
@@ -28,25 +16,10 @@ interface Response {
   error?: string
 }
 
-type RegisterRequest = Request<Action.REGISTER, void>
-type BzzLinkProtocolToFakeUrlRequest = Request<Action.BZZ_LINK_PROTOCOL_TO_FAKE_URL, { url: string; newPage: boolean }>
-type BzzLinkLinkUrlToFakeUrlRequest = Request<
-  Action.BZZ_LINK_LINK_URL_TO_FAKE_URL,
-  { bzzLinkUrl: string; newPage: boolean }
->
-type BzzLinkUrlToFakeUrlRequest = Request<Action.BZZ_LINK_URL_TO_FAKE_URL, { url: string; newPage: boolean }>
-type Web2HelperFakeBeeApiAddressRequesst = Request<Action.WEB2_HELPER_FAKE_BEE_API_ADDRESS, void>
-type Web2HelprFakeBzzAddressRequest = Request<Action.WEB2_HELPER_FAKE_BZZ_ADDRESS, { reference: string }>
-type Web2HelperBeeAddress = Request<Action.WEB2_HELPER_BEE_ADDRESS, void>
+type RegisterRequest = Request<MessageKeys.REGISTER, void>
+type Web2HelperBeeAddress = Request<MessageKeys.BEE_API_URLS, void>
 
-type RequestType =
-  | RegisterRequest
-  | BzzLinkProtocolToFakeUrlRequest
-  | BzzLinkLinkUrlToFakeUrlRequest
-  | BzzLinkUrlToFakeUrlRequest
-  | Web2HelperFakeBeeApiAddressRequesst
-  | Web2HelprFakeBzzAddressRequest
-  | Web2HelperBeeAddress
+type RequestType = RegisterRequest | Web2HelperBeeAddress
 
 export class E2ESessionFeeder {
   constructor(private manager: DappSessionManager) {
@@ -72,20 +45,12 @@ export class E2ESessionFeeder {
             throw new Error('E2E Session Feeder: Extension ID is undefined.')
           }
 
-          if (action === Action.REGISTER) {
+          if (action === MessageKeys.REGISTER) {
             response.data = this.handleRegistration(sender)
-          } else if (action === Action.WEB2_HELPER_FAKE_BEE_API_ADDRESS) {
-            response.data = this.handleWeb2FakeBeeApiAddress(request)
-          } else if (action === Action.WEB2_HELPER_FAKE_BZZ_ADDRESS) {
-            response.data = this.handleWeb2FakeBzzAddress(request)
-          } else if (action === Action.WEB2_HELPER_BEE_ADDRESS) {
+          } else if (action === MessageKeys.BEE_API_URLS) {
             response.data = await this.handleWeb2BeeAddress()
-          } else if (action === Action.BZZ_LINK_PROTOCOL_TO_FAKE_URL) {
-            response.data = this.handleBzzLinkProtocolToFakeUrl(request)
-          } else if (action === Action.BZZ_LINK_LINK_URL_TO_FAKE_URL) {
-            response.data = this.handleBzzLinkUrlToFakeUrl(request)
-          } else if (action === Action.BZZ_LINK_URL_TO_FAKE_URL) {
-            response.data = this.handleBzzUrlToFakeUrl(request)
+          } else if (action === MessageKeys.ECHO) {
+            response.data = request.parameters
           } else {
             throw new Error(`E2E Session Feeder: Unknown action ${action}`)
           }
@@ -100,7 +65,7 @@ export class E2ESessionFeeder {
 
   private handleResponse(
     response: Response | null,
-    action: Action,
+    action: MessageKeys,
     senderId: string,
     sendResponse: (response?: Response) => void,
   ) {
@@ -120,48 +85,6 @@ export class E2ESessionFeeder {
     this.manager.register(sessionId, sender)
 
     return sessionId
-  }
-
-  private handleBzzLinkProtocolToFakeUrl(request: RequestType): string | null {
-    const {
-      sessionId,
-      parameters: { url, newPage },
-    } = request as BzzLinkProtocolToFakeUrlRequest
-
-    return bzzProtocolToFakeUrl(url, sessionId, newPage)
-  }
-
-  private handleBzzLinkUrlToFakeUrl(request: RequestType): string | null {
-    const {
-      sessionId,
-      parameters: { bzzLinkUrl, newPage },
-    } = request as BzzLinkLinkUrlToFakeUrlRequest
-
-    return bzzProtocolToFakeUrl(bzzLinkUrl, sessionId, newPage)
-  }
-
-  private handleBzzUrlToFakeUrl(request: RequestType): string | null {
-    const {
-      sessionId,
-      parameters: { url, newPage },
-    } = request as BzzLinkUrlToFakeUrlRequest
-
-    return bzzProtocolToFakeUrl(url, sessionId, newPage)
-  }
-
-  private handleWeb2FakeBeeApiAddress(request: RequestType): string {
-    const { sessionId } = request
-
-    return appendSwarmSessionIdToUrl(fakeUrl.beeApiAddress, sessionId)
-  }
-
-  private handleWeb2FakeBzzAddress(request: RequestType): string {
-    const {
-      sessionId,
-      parameters: { reference },
-    } = request as Web2HelprFakeBzzAddressRequest
-
-    return appendSwarmSessionIdToUrl(`${fakeUrl.bzzProtocol}/${reference}`, sessionId)
   }
 
   private async handleWeb2BeeAddress(): Promise<{ beeApiUrl: string; beeDebugApiUrl: string }> {

@@ -1,20 +1,41 @@
-import {
-  createSubdomainUrl,
-  hashToCid,
-  isLocalhost,
-  isSubdomainUsed,
-  subdomainToBzzResource,
-} from '../../utils/bzz-link'
+import { createSubdomainUrl, hashToCid, isLocalhost, subdomainToBzzResource } from '../../utils/bzz-link'
 import { fakeUrl } from '../../utils/fake-url'
 import { getItem, StoreObserver } from '../../utils/storage'
-import { SWARM_SESSION_ID_KEY, unpackSwarmSessionIdFromUrl } from '../../utils/swarm-session-id'
 import { DEFAULT_BEE_API_ADDRESS } from '../constants/addresses'
+
+const bzzGoogleRedirectRegex = '^https\\:\\/\\/www\\.google\\.com\\/search\\?.*o?q=bzz%3A%2F%2F([^\\&]+).*'
+const bzzSubdomainGoogleRedirectRegex =
+  '^https\\:\\/\\/www\\.google\\.com\\/search\\?.*o?q=bzz%3A%2F%2F(.*)\\.eth([^\\&]*).*'
 
 export class BeeApiListener {
   private _beeApiUrl: string
   private _globalPostageBatchEnabled: boolean
   private _globalPostageBatchId: string
   private _web2OriginEnabled: boolean
+
+  protected static POSTAGE_BATCH_RULE_ID = 1
+  protected static WEB2_ORIGIN_RULE_ID = 2
+  protected static BZZ_LINK_BLOCKER_ID = 3
+  protected static RESOURCE_LOADER_REDIRECT_ID = 4
+  protected static RESOURCE_SUBDOMAIN_LOADER_REDIRECT_ID = 5
+  protected static BEE_API_REDIRECT_ID = 6
+  protected static BZZ_GOOGLE_BLOCKER_ID = 7
+  protected static BZZ_GOOGLE_REDIRECT_ID = 8
+  protected static CORS_HEADER_ID = 9
+
+  protected static RESOURCE_TYPE_ALL = [
+    chrome.declarativeNetRequest.ResourceType.MAIN_FRAME,
+    chrome.declarativeNetRequest.ResourceType.SUB_FRAME,
+    chrome.declarativeNetRequest.ResourceType.STYLESHEET,
+    chrome.declarativeNetRequest.ResourceType.SCRIPT,
+    chrome.declarativeNetRequest.ResourceType.IMAGE,
+    chrome.declarativeNetRequest.ResourceType.FONT,
+    chrome.declarativeNetRequest.ResourceType.OBJECT,
+    chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
+    chrome.declarativeNetRequest.ResourceType.MEDIA,
+    chrome.declarativeNetRequest.ResourceType.WEBSOCKET,
+    chrome.declarativeNetRequest.ResourceType.OTHER,
+  ]
 
   public constructor(private storeObserver: StoreObserver) {
     this._beeApiUrl = DEFAULT_BEE_API_ADDRESS
@@ -30,75 +51,62 @@ export class BeeApiListener {
     return this._beeApiUrl
   }
 
-  /**
-   * Handles postage batch id header replacement with global batch id
-   */
-  private globalPostageStampHeaderListener = (
-    details: chrome.webRequest.WebRequestHeadersDetails,
-  ): void | chrome.webRequest.BlockingResponse => {
-    if (!this._globalPostageBatchEnabled || !details.requestHeaders) return
+  private setBeeNodeListeners() {
+    const rules: chrome.declarativeNetRequest.Rule[] = []
 
-    try {
-      const postageBatchIdHeader = details.requestHeaders.find(
-        header => header.name.toLowerCase() === 'swarm-postage-batch-id',
-      )
-
-      if (!postageBatchIdHeader) return
-
-      console.log(
-        `Postage Batch: ${this._globalPostageBatchId} Batch ID will be used instead of ` + postageBatchIdHeader.value,
-      )
-
-      postageBatchIdHeader.value = this._globalPostageBatchId
-
-      return { requestHeaders: details.requestHeaders }
-    } catch (e) {
-      console.error(`request header error problem`, e, details.requestHeaders)
-
-      return
-    }
-  }
-
-  private sandboxListener = (
-    details: chrome.webRequest.WebResponseHeadersDetails,
-  ): void | chrome.webRequest.BlockingResponse => {
-    console.log('web2OriginEnabled', this._web2OriginEnabled)
-
-    if (this._web2OriginEnabled || isSubdomainUsed(details.url)) return { responseHeaders: details.responseHeaders }
-
-    const urlArray = details.url.toString().split('/')
-
-    if (urlArray[3] === 'bzz' && urlArray[4]) {
-      details.responseHeaders?.push({
-        name: 'Content-Security-Policy',
-        value: 'sandbox allow-scripts allow-modals allow-popups allow-forms',
+    /**
+     * Handles postage batch id header replacement with global batch id
+     */
+    if (this._globalPostageBatchEnabled) {
+      rules.push({
+        id: BeeApiListener.POSTAGE_BATCH_RULE_ID,
+        condition: {
+          urlFilter: `${this._beeApiUrl}/*`,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+          requestHeaders: [
+            {
+              header: 'swarm-postage-batch-id',
+              operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+              value: this._globalPostageBatchId,
+            },
+          ],
+        },
       })
     }
-    console.log('responseHeaders', details.responseHeaders)
 
-    return { responseHeaders: details.responseHeaders }
-  }
+    if (!this._web2OriginEnabled) {
+      rules.push({
+        id: BeeApiListener.WEB2_ORIGIN_RULE_ID,
+        condition: {
+          urlFilter: `${this._beeApiUrl}/bzz/*`,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+          excludedRequestDomains: ['swarm.localhost'],
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+          responseHeaders: [
+            {
+              header: 'Content-Security-Policy',
+              operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+              value: 'sandbox allow-scripts allow-modals allow-popups allow-forms',
+            },
+          ],
+        },
+      })
+    }
 
-  private addBeeNodeListeners(beeApiUrl: string) {
-    chrome.webRequest.onBeforeSendHeaders.addListener(
-      this.globalPostageStampHeaderListener,
+    chrome.declarativeNetRequest.updateSessionRules(
       {
-        urls: [`${beeApiUrl}/*`],
+        removeRuleIds: [BeeApiListener.POSTAGE_BATCH_RULE_ID, BeeApiListener.WEB2_ORIGIN_RULE_ID],
+        addRules: rules,
       },
-      ['blocking', 'requestHeaders'],
-    )
-    chrome.webRequest.onHeadersReceived.addListener(
-      this.sandboxListener,
-      {
-        urls: [`${beeApiUrl}/*`],
+      () => {
+        console.log('Bee node listeners updated')
       },
-      ['blocking', 'responseHeaders', 'extraHeaders'],
     )
-  }
-
-  private removeBeeNodeListeners() {
-    console.log('remove bee node listeners')
-    chrome.webRequest.onBeforeSendHeaders.removeListener(this.globalPostageStampHeaderListener)
   }
 
   private addBzzListeners() {
@@ -124,23 +132,29 @@ export class BeeApiListener {
       { urls: [`${fakeUrl.openDapp}/*`] },
     )
 
+    // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
+    // NOTE: works only if google search is set as default search engine
+    chrome.webRequest.onBeforeRequest.addListener(
+      (details: chrome.webRequest.WebRequestBodyDetails) => {
+        console.log('Original BZZ Url', details.url)
+        const urlParams = new URLSearchParams(new URL(details.url).search)
+        const query = decodeURI(urlParams.get('oq') || urlParams.get('q') || '')
+
+        if (!query || !query.startsWith('bzz://')) return
+
+        this.redirectToBzzReference(query.substring(6), details.tabId)
+      },
+      {
+        urls: ['https://www.google.com/search?*'],
+      },
+    )
+
     /**
      * {contentReference}.bzz.link has two ways to request:
      *
      * 1. typing to address bar
      * 2. can be referred from dApp
      */
-
-    /**
-     * this listener automatically cancels all requests towards .bzz.link URLs
-     * it relates to the 2nd scenario
-     */
-    chrome.webRequest.onBeforeRequest.addListener(
-      () => {
-        return { cancel: true }
-      },
-      { urls: ['https://*.bzz.link/*', 'http://*.bzz.link/*'] },
-    )
 
     /**
      * it force-redirects to the fakeURL of the bzz resource.
@@ -159,83 +173,150 @@ export class BeeApiListener {
       },
       { url: [{ hostSuffix: '.bzz.link' }] },
     )
+  }
 
-    // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
-    // NOTE: works only if google search is set as default search engine
-    chrome.webRequest.onBeforeRequest.addListener(
-      (details: chrome.webRequest.WebRequestBodyDetails) => {
-        console.log('Original BZZ Url', details.url)
-        const urlParams = new URLSearchParams(new URL(details.url).search)
-        const query = decodeURI(urlParams.get('oq') || urlParams.get('q') || '')
+  private setDeclarativeBzzListeners() {
+    const isHostLocalhost = isLocalhost(this._beeApiUrl)
+    const [protocol, host] = this._beeApiUrl.split('://')
 
-        if (!query || !query.startsWith('bzz://')) return
+    const addRules: chrome.declarativeNetRequest.Rule[] = [
+      /**
+       * {contentReference}.bzz.link has two ways to request:
+       *
+       * 1. typing to address bar
+       * 2. can be referred from dApp
+       */
 
-        this.redirectToBzzReference(query.substr(6), details.tabId)
+      /**
+       * this listener automatically cancels all requests towards .bzz.link URLs
+       * it relates to the 2nd scenario
+       */
+      {
+        id: BeeApiListener.BZZ_LINK_BLOCKER_ID,
+        priority: 1,
+        condition: {
+          regexFilter: '^(https?\\://)?.*\\.bzz\\.link/.*',
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+        },
+      },
+      // Used to load page resources like images
+      // Always have to have session ID in the URL Param
+      {
+        id: BeeApiListener.RESOURCE_LOADER_REDIRECT_ID,
+        priority: 2,
+        condition: {
+          regexFilter: fakeUrl.bzzProtocolRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+          redirect: {
+            regexSubstitution: `${this._beeApiUrl}/bzz/\\1`,
+          },
+        },
       },
       {
-        urls: ['https://www.google.com/search?*'],
+        // Redirect the Bee API calls with swarm-session-id query param
+        // The swarm-session-id query parameter can be between the path and the host
+        id: BeeApiListener.BEE_API_REDIRECT_ID,
+        priority: 2,
+        condition: {
+          regexFilter: fakeUrl.beeApiAddressRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+          redirect: {
+            regexSubstitution: `${this._beeApiUrl}/\\1`,
+          },
+        },
       },
-    )
-
-    // Used to load page resources like images
-    // Always have to have session ID in the URL Param
-    chrome.webRequest.onBeforeRequest.addListener(
-      details => {
-        let { url } = details
-
-        let swarmSessionId: string
-        try {
-          const { sessionId, originalUrl } = unpackSwarmSessionIdFromUrl(url)
-          swarmSessionId = sessionId
-          url = originalUrl
-        } catch (e) {
-          console.error(`There is no valid '${SWARM_SESSION_ID_KEY}' passed to the bzz reference: ${url}`)
-
-          return {
-            cancel: true,
-          }
-        }
-        // get the full referenced BZZ address from the modified url (without bzz address)
-        const urlArray = url.toString().split(`${fakeUrl.bzzProtocol}/`)
-        const redirectUrl = `${this._beeApiUrl}/bzz/${urlArray[1]}`
-        console.log(`bzz redirect to ${redirectUrl} from ${details.url}. Session ID: ${swarmSessionId}`)
-
-        return {
-          redirectUrl,
-        }
+      {
+        id: BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
+        priority: 1,
+        condition: {
+          regexFilter: isHostLocalhost ? bzzSubdomainGoogleRedirectRegex : bzzGoogleRedirectRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
+        },
       },
-      { urls: [`${fakeUrl.bzzProtocol}/*`] },
-      ['blocking'],
-    )
-
-    // Redirect the Bee API calls with swarm-session-id query param
-    // The swarm-session-id query parameter can be between the path and the host
-    chrome.webRequest.onBeforeRequest.addListener(
-      details => {
-        let { url } = details
-
-        try {
-          const { originalUrl } = unpackSwarmSessionIdFromUrl(url)
-          url = originalUrl
-        } catch (e) {
-          console.error(`There is no valid '${SWARM_SESSION_ID_KEY}' passed to the bzz reference: ${url}`)
-
-          return {
-            cancel: true,
-          }
-        }
-
-        // get the full referenced BZZ address from the modified url (without bzz address)
-        const urlArray = url.split(`${fakeUrl.beeApiAddress}/`)
-        const redirectUrl = `${this._beeApiUrl}/${urlArray[1]}`
-        console.log(`Bee API client request redirect to ${redirectUrl} from ${url}`)
-
-        return {
-          redirectUrl,
-        }
+      // 'bzz://{content-address}' URI in search bar triggers redirect to gateway BZZ address
+      // NOTE: works only if google search is set as default search engine
+      {
+        id: BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
+        priority: 2,
+        condition: {
+          regexFilter: isHostLocalhost ? bzzSubdomainGoogleRedirectRegex : bzzGoogleRedirectRegex,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+          redirect: {
+            regexSubstitution: isHostLocalhost ? `${protocol}://\\1.swarm.${host}\\2` : `${this._beeApiUrl}/bzz/\\1`,
+          },
+        },
       },
-      { urls: [`${fakeUrl.beeApiAddress}*`] },
-      ['blocking'],
+      {
+        id: BeeApiListener.CORS_HEADER_ID,
+        condition: {
+          urlFilter: `${this._beeApiUrl}/*`,
+          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+        },
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+          responseHeaders: [
+            {
+              header: 'Access-Control-Allow-Origin',
+              operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+              value: '*',
+            },
+          ],
+        },
+      },
+    ]
+
+    if (isHostLocalhost) {
+      addRules.push(
+        // Used to load page resources like images
+        // Always have to have session ID in the URL Param
+        {
+          id: BeeApiListener.RESOURCE_SUBDOMAIN_LOADER_REDIRECT_ID,
+          priority: 2,
+          condition: {
+            regexFilter: fakeUrl.bzzSubdomainProtocolRegex,
+            resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
+          },
+          action: {
+            type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+            redirect: {
+              regexSubstitution: `${protocol}://\\1.swarm.${host}\\2`,
+            },
+          },
+        },
+      )
+    }
+
+    chrome.declarativeNetRequest.updateSessionRules(
+      {
+        removeRuleIds: [
+          BeeApiListener.BZZ_LINK_BLOCKER_ID,
+          BeeApiListener.RESOURCE_LOADER_REDIRECT_ID,
+          BeeApiListener.RESOURCE_SUBDOMAIN_LOADER_REDIRECT_ID,
+          BeeApiListener.BEE_API_REDIRECT_ID,
+          BeeApiListener.BZZ_GOOGLE_BLOCKER_ID,
+          BeeApiListener.BZZ_GOOGLE_REDIRECT_ID,
+          BeeApiListener.CORS_HEADER_ID,
+        ],
+        addRules,
+      },
+      () => {
+        console.log('Bzz listeners set')
+      },
     )
   }
 
@@ -254,18 +335,21 @@ export class BeeApiListener {
     if (storedWeb2OriginEnabled) this._web2OriginEnabled = storedWeb2OriginEnabled
 
     // register listeners that have to be after async init
-    this.addBeeNodeListeners(this._beeApiUrl)
+    this.setBeeNodeListeners()
+    this.setDeclarativeBzzListeners()
   }
 
   private addStoreListeners(): void {
     this.storeObserver.addListener('beeApiUrl', newValue => {
       console.log('Bee API URL changed to', newValue)
       this._beeApiUrl = newValue
-      this.removeBeeNodeListeners()
-      this.addBeeNodeListeners(this._beeApiUrl)
+      this.setBeeNodeListeners()
+      this.setDeclarativeBzzListeners()
     })
-    this.storeObserver.addListener('globalPostageStampEnabled', newValue => {
+    this.storeObserver.addListener('globalPostageStampEnabled', async newValue => {
       this._globalPostageBatchEnabled = Boolean(newValue)
+      this._globalPostageBatchId = (await getItem('globalPostageBatch')) as string
+      this.setBeeNodeListeners()
     })
     this.storeObserver.addListener('globalPostageBatch', newValue => {
       this._globalPostageBatchId = newValue
@@ -273,6 +357,7 @@ export class BeeApiListener {
     this.storeObserver.addListener<boolean>('web2OriginEnabled', newValue => {
       console.log('web2OriginEnabled changed to', newValue)
       this._web2OriginEnabled = newValue
+      this.setBeeNodeListeners()
     })
   }
 
@@ -288,7 +373,18 @@ export class BeeApiListener {
     if (!isLocalhost(this._beeApiUrl)) {
       url = `${this._beeApiUrl}/bzz/${bzzReference}`
     } else {
-      const [hash, path] = bzzReference.split(/\/(.*)/s)
+      let pathChar = '/'
+      let [hash, path] = bzzReference.split(/\/(.*)/s)
+
+      if (!path) {
+        const parts = bzzReference.split(/\#(.*)/s)
+
+        if (!hash) {
+          hash = parts[0]
+        }
+        path = parts[1]
+        pathChar = '#'
+      }
       let subdomain = hash
 
       if (subdomain.endsWith('.eth')) {
@@ -298,7 +394,7 @@ export class BeeApiListener {
       url = createSubdomainUrl(this._beeApiUrl, hashToCid(subdomain).toString())
 
       if (path) {
-        url += `/${path}`
+        url += `${pathChar}${path}`
       }
     }
 

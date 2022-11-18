@@ -1,0 +1,21 @@
+{
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "target": "es6",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Node",
+    "module": "CommonJS",
+    "strict": true,
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationDir": "./build/types",
+    "typeRoots": ["src/@types", "node_modules/@types"],
+    "outDir": "build",
+    "skipLibCheck": true,
+    "types": ["jest", "chrome"]
+  }
+}

@@ -26,3 +26,6 @@ extension.zip
 
 # Dependency directory
 node_modules
+
+# test library
+test/**/swarm

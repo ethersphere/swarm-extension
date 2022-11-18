@@ -2,6 +2,9 @@
 
 **Warning: This project has Proof of Concept state now. There will be breaking changes continuously in the future. Also, no guarantees can be made about its stability, efficiency, and security at this stage. It only provides a platform currently to show workarounds and examples for the current problems in dApp environments top on Swarm**
 
+
+**Info: For manifest v3 version of the extension, dApps should interact with the extension using the `Swarm Extension Library`. Check how it works [here](library/README.md).**
+
 This browser extension provides an alternative to have a web3 environment in a web2 browser for users and dApps.
 
 Users can interact with the Swarm network in two ways: by running their own Bee client or using a gateway solution.
@@ -27,6 +30,15 @@ npm run compile
 
 commands. If everything went right, then a `dist` folder appeared in the root of the project folder. That folder has to be [added to your browser extensions](chrome://extensions/) as an unpacked extension. You can load unpacked extensions only if you checked in the `Developer mode` (top-right corner).
 
+## Manifest V3 Changes
+
+Since manifest v2 extensions won't be allowed from June 2023, the Swarm Extension now supports manifest v3. But that brings some limitations, not present in v2. Here are the key changes in v3:
+
+- The `swarm` object won't be injected into dApp pages. Instead each dApp should include the [Swarm Extension Library](library/README.md) into its code to comunicate with the extension.
+- Blocking interceptors are not allowed in manifest v3, so the new implementation uses the [Declarative Network Request API](https://developer.chrome.com/docs/extensions/reference/declarativeNetRequest/). This requirement prevents the extension from checking session ID for fake URL requests. That means the extension cannot check the security context of the links that are being accessed.
+- If bee URL is set to `localhost`, then fake URL links are redirected to subdomain based bee URLs. For example, trying to access the `bzz://site.eth` URL will result in accessing the `http://site.swarm.localhost:1633/` URL.
+
+
 ## Fake URL
 
 There is a need to separate dApp context from the user context in order to restrict dApp actions work with keys and resources of the user.
@@ -42,8 +54,6 @@ The extension can keep these keys and configurations on the side of the user
 and it does not expose the secrets to the applications that initialize the call.
 In this sense it also works like a `proxy`.
 
-During the redirection, the extension creates separated context by `root content IDs` and performs the action according to that.
-(E.g. restrict calls towards the targeted service, cache the returned cookies from the response in the content context, etc.)
 This architecture also allows changing the default URLs of decentralized services (Bee) to any arbitrary one,
 meanwhile dApps do not have to guess this address.
 For example Bee client has default `http://127.0.0.1:1633`, user can change it to any other port or even other gateway host,
@@ -64,10 +74,6 @@ If the user changes their Bee API address, these endpoints still remain the same
 The Swarm protocol to address other P2P content is `bzz`. It makes a redirection to the BZZ endpoint of the Bee node.
 If you type `bzz://{content-address}` into the address bar, the page will be redirected to `http(s)://{your-bzz-node-host}/bzz/{content-address}`. This requires the default search engine of the browser to be set to Google.
 It also behaves the same on simple google searches on `https://google.com`.
-
-Additionally, the extension currently [injects a script](src/contentscript/index.ts) on document load so that dApp pages could refer any other P2P resources.
-These references will request the configured Bee client of the user.
-It is injected to every page basically, so any frontend application can utilize this feature.
 
 There will be need for other Swarm specific protocols (or extend the current one), which handle different type of feeds and mutable content.
 
@@ -96,14 +102,11 @@ All requests towards the `bzz.link` gateways will be cancelled and tunneled to t
 
 The consequence of this behaviour the dApps which use external bzz.link references in their HTML code and want to available via both bzz.link gateways and private extension connections have to use [Swarm HTML elements](#Swarm-HTML).
 
-Additinonally, the extension provides an injected library `swarm.bzzLink` to get CID of a swarm content hash (and vica versa).
-
 ## dApp origin instead of host-based origin
 
-All Swarm content that the extension renders will be put into _sandbox_ mode even in root level by _Content Security Policy_ headers.
+All Swarm content that the extension renders, without using subdomain, will be put into _sandbox_ mode even in root level by _Content Security Policy_ headers.
 It means dApps will act like a different, distinct webpage from the Bee host that serves those.
 Therefore no traditional _cookies_ or _localStorage_ is available for dApps, but equivalent services of those are.
-(Cookie support is planned in the future, it is possible by this current architecture).
 
 In order to substitue these traditional stateful behaviours of the applications with something else, the Swarm Extension introduces
 the `dApp Security Context` as a new abstraction of origins.
@@ -118,7 +121,7 @@ the handling of `localStorage` method happens based on the `sessionId` of the dA
 
 Thereby even if the user changes its P2P client host, the state and their session will remain - unlike using only subdomain content address URLs with the traditional `localStorage`.
 
-Of course, it is not necessary to set any ID manually, just call the usual `localStorage` methods but under the `swarm` object:
+Of course, it is not necessary to set any ID manually, just call the usual `localStorage` methods but under the `swarm` object, created as an instance of the [Swarm Class](library/README.md#swarm-class):
 instead of `window.localStorage.setItem('swarm', 'bzz')` you can call `swarm.localStorage.setItem('swarm', 'bzz')` in order to persist data in the browser.
 
 The `setItem` and `getItem` methods here are `async` methods, so these return with `Promise`.
@@ -170,5 +173,6 @@ In its [index page](test/bzz-test-page/index.html), you see how you can refer to
 
 - [nugaon](https://github.com/nugaon)
 - [Cafe137](https://github.com/Cafe137)
+- [tomicvladan](https://github.com/tomicvladan)
 
 See what "Maintainer" means [here](https://github.com/ethersphere/repo-maintainer).

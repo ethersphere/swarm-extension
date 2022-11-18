@@ -1,47 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Local Storage handling</title>
-  <script>
-  async function saveWithSwarmLocalStorage() {
-    const keyName = document.getElementById('save-localstorage-key-name').value
-    const keyValue = document.getElementById('save-localstorage-key-value').value
-    await window.swarm.localStorage.setItem(keyName, keyValue)
-  }
+  <head>
+    <meta charset="utf-8" />
+    <title>Local Storage handling</title>
+    <script src="swarm/swarm-html.js"></script>
+    <script src="swarm/index.js"></script>
+    <script>
+      const swarm = new window.swarm.Swarm()
 
-  async function loadWithSwarmLocalStorage() {
-    const keyName = document.getElementById('load-localstorage-key-name').value
-    const keyValue = await window.swarm.localStorage.getItem(keyName)
-    document.getElementById('load-localstorage-key-value').innerHTML = keyValue
-  }
-  </script>
-</head>
+      async function saveWithSwarmLocalStorage() {
+        const keyName = document.getElementById('save-localstorage-key-name').value
+        const keyValue = document.getElementById('save-localstorage-key-value').value
+        await swarm.localStorage.setItem(keyName, keyValue)
+      }
 
-<body>
-  <h2 id="title">
-    Local Storage handling
-  </h2>
-  <div>
-    <h4>Save data with Swarm localStorage</h4>
-    <div id="form-save-localstorage">
-      <label for="save-localstorage-key-name">Key:</label>
-      <input type="text" id="save-localstorage-key-name" name="save-localstorage-key-name"/><br><br>
-      <label for="save-localstorage-key-value">Value:</label>
-      <input type="text" id="save-localstorage-key-value" name="save-localstorage-key-value">
+      async function loadWithSwarmLocalStorage() {
+        const keyName = document.getElementById('load-localstorage-key-name').value
+        const keyValue = await swarm.localStorage.getItem(keyName)
+        document.getElementById('load-localstorage-key-value').innerHTML = keyValue
+      }
+    </script>
+  </head>
+
+  <body>
+    <h2 id="title">Local Storage handling</h2>
+    <div>
+      <h4>Save data with Swarm localStorage</h4>
+      <div id="form-save-localstorage">
+        <label for="save-localstorage-key-name">Key:</label>
+        <input type="text" id="save-localstorage-key-name" name="save-localstorage-key-name" /><br /><br />
+        <label for="save-localstorage-key-value">Value:</label>
+        <input type="text" id="save-localstorage-key-value" name="save-localstorage-key-value" />
+      </div>
+      <button id="button-save-swarm-localstorage" class="block-element" onclick="saveWithSwarmLocalStorage()">
+        Save with swarm.localStorage
+      </button>
     </div>
-    <button id="button-save-swarm-localstorage" class="block-element" onclick="saveWithSwarmLocalStorage()">Save with swarm.localStorage</button>
-  </div>
-  <div>
-    <h4>Load data with Swarm localStorage</h4>
-    <div id="form-load-localstorage">
-      <label for="load-localstorage-key-name">Key:</label>
-      <input type="text" id="load-localstorage-key-name" name="load-localstorage-key-name"/><br><br>
-      <label for="load-localstorage-key-value">Value:</label>
-      <span id="load-localstorage-key-value"></span>
+    <div>
+      <h4>Load data with Swarm localStorage</h4>
+      <div id="form-load-localstorage">
+        <label for="load-localstorage-key-name">Key:</label>
+        <input type="text" id="load-localstorage-key-name" name="load-localstorage-key-name" /><br /><br />
+        <label for="load-localstorage-key-value">Value:</label>
+        <span id="load-localstorage-key-value"></span>
+      </div>
+      <button id="button-load-swarm-localstorage" class="block-element" onclick="loadWithSwarmLocalStorage()">
+        Load with swarm.localStorage
+      </button>
     </div>
-    <button id="button-load-swarm-localstorage" class="block-element" onclick="loadWithSwarmLocalStorage()">Load with swarm.localStorage</button>
-  </div>
-</body>
+  </body>
 </html>

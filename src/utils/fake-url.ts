@@ -18,6 +18,12 @@ class FakeUrl {
   /** Append neccessary keys to the Bee client requests in the future */
   public readonly beeApiAddress: string
 
+  public readonly bzzProtocolRegex: string
+
+  public readonly bzzSubdomainProtocolRegex: string
+
+  public readonly beeApiAddressRegex: string
+
   constructor() {
     // bee default API address, which is reserved on this localhost port number,
     // should not overlap with any other service
@@ -28,6 +34,11 @@ class FakeUrl {
     this.bzzProtocol = `${this.baseUrl}/bzz`
     this.beeApiAddress = `${this.baseUrl}/bee-api`
     this.openDapp = `${this.baseUrl}/open-dapp`
+
+    const baseUrlRegex = `^http\\://swarm\\.fakeurl\\.localhost`
+    this.bzzProtocolRegex = baseUrlRegex + '/bzz/(.*)'
+    this.bzzSubdomainProtocolRegex = baseUrlRegex + '/bzz/(.*)\\.eth(.*)'
+    this.beeApiAddressRegex = baseUrlRegex + '/bee-api/?(.*)'
   }
 }
 

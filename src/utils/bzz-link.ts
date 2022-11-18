@@ -54,16 +54,6 @@ export function getSubdomain(url: string): string | null {
   return subdomainSlashArray[subdomainSlashArray.length - 1]
 }
 
-export function subdomainToBzzResource(subdomain: string): string {
-  if (isSwarmCid(subdomain)) {
-    const contentHash = CidToHash(subdomain)
-
-    return contentHash
-  }
-
-  return `${subdomain}.eth`
-}
-
 export function isLocalhost(url: string): boolean {
   const { host } = new URL(url)
 
@@ -80,6 +70,16 @@ export function createSubdomainUrl(beeApiUrl: string, subdomain: string): string
   const [protocol, host] = beeApiUrl.split('://')
 
   return `${protocol}://${subdomain}.swarm.${host}`
+}
+
+export function subdomainToBzzResource(subdomain: string): string {
+  if (isSwarmCid(subdomain)) {
+    const contentHash = CidToHash(subdomain)
+
+    return contentHash
+  }
+
+  return `${subdomain}.eth`
 }
 
 export function bzzResourceToSubdomain(

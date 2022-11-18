@@ -1,11 +1,23 @@
-const web2Helper = window.swarm.web2Helper
-const postageBatch = window.swarm.postageBatch
+const swarm = new window.swarm.Swarm()
+window.swarmObject = swarm
+
+const web2Helper = swarm.web2Helper
+const postageBatch = swarm.postageBatch
+
+function echo() {
+  swarm
+    .echo('Works')
+    .then(data => (document.getElementById('echo-placeholder').innerHTML = data))
+    .catch(error => (document.getElementById('echo-placeholder').innerHTML = JSON.stringify(error)))
+    .finally(() => document.getElementById('echo-placeholder').setAttribute('complete', 'true'))
+}
 
 function fetchBeeApiUrl() {
   web2Helper
     .beeApiUrl()
     .then(url => (document.getElementById('bee-api-url-placeholder').innerHTML = url))
     .catch(error => (document.getElementById('bee-api-url-placeholder').innerHTML = JSON.stringify(error)))
+    .finally(() => document.getElementById('bee-api-url-placeholder').setAttribute('complete', 'true'))
 }
 
 function fetchGlobalPostageBatch() {
@@ -26,7 +38,12 @@ function checkBeeApiAvailable() {
 }
 
 function fetchJinnImage() {
-  const bzzContentAddress = '82de75aa2e4e27eefc3c00f5cdc7a2cb787402906a73609803de0ee25602b4f5/images/jinn.png'
+  const jinnImageHashElement = document.querySelector('#jinn-image-hash')
+
+  if (!jinnImageHashElement) {
+    throw new Error('#jinn-image-hash element not found')
+  }
+  const bzzContentAddress = `${jinnImageHashElement.value}/images/jinn.png`
   const jinnFakeUrl = web2Helper.fakeBzzAddress(bzzContentAddress)
   const imageNode = document.createElement('img')
   imageNode.src = jinnFakeUrl

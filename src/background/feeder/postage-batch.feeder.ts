@@ -1,5 +1,6 @@
 import { InterceptorReqMessageFormat, ResponseMessageFormat } from '../../utils/message/message-handler'
 import { getItem } from '../../utils/storage'
+import { MessageKeys } from '../constants/message-keys.enum'
 
 export class PostageBatchFeeder {
   constructor() {
@@ -9,7 +10,7 @@ export class PostageBatchFeeder {
     console.log('Register PostageBatchFeeder event listeners...')
 
     chrome.runtime.onMessage.addListener((message: InterceptorReqMessageFormat<string>, sender, sendResponse) => {
-      if (message.key === 'isGlobalPostageBatchEnabled') {
+      if (message.key === MessageKeys.IS_GLOBAL_POSTAGE_BATCH_ENABLED) {
         console.log('PostageBatchFeeder:isGlobalPostageBatchEnabled got aimed message from content script', message)
 
         const response: ResponseMessageFormat = {
