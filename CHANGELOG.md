@@ -10,8 +10,6 @@ Since manifest v2 extensions won't be allowed from June 2023, the Swarm Extensio
 
 ### Features
 
-Closes #151 
-
 * manifest v3 ([#142](https://github.com/ethersphere/swarm-extension/issues/142)) ([287edee](https://github.com/ethersphere/swarm-extension/commit/287edee31a0cc85e1803aba121d22383389333e6))
   * remove session-id from url ([#150](https://github.com/ethersphere/swarm-extension/pull/150))
   * add subdomain redirection ([#147](https://github.com/ethersphere/swarm-extension/pull/147))
