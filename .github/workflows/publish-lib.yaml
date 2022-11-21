@@ -40,6 +40,9 @@ jobs:
       - name: Build
         run: npm run build --prefix library
 
+      - name: Npm login
+        run: npm login
+
       - name: Publish
         run: cd library && npm publish --access public && cd ..
         env:
