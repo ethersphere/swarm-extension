@@ -242,7 +242,9 @@ export class BeeApiListener {
         action: {
           type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
           redirect: {
-            regexSubstitution: isHostLocalhost ? `${protocol}://\\1.swarm.${host}\\2` : `${this._beeApiUrl}/bzz/\\1`,
+            regexSubstitution: isHostLocalhost
+              ? `${protocol}://\\1.eth.swarm.${host}\\2`
+              : `${this._beeApiUrl}/bzz/\\1`,
           },
         },
       },
