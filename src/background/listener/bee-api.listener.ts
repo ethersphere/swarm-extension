@@ -187,21 +187,6 @@ export class BeeApiListener {
        * 2. can be referred from dApp
        */
 
-      /**
-       * this listener automatically cancels all requests towards .bzz.link URLs
-       * it relates to the 2nd scenario
-       */
-      {
-        id: BeeApiListener.BZZ_LINK_BLOCKER_ID,
-        priority: 1,
-        condition: {
-          regexFilter: '^(https?\\://)?.*\\.bzz\\.link/.*',
-          resourceTypes: BeeApiListener.RESOURCE_TYPE_ALL,
-        },
-        action: {
-          type: chrome.declarativeNetRequest.RuleActionType.BLOCK,
-        },
-      },
       // Used to load page resources like images
       // Always have to have session ID in the URL Param
       {
