@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.1](https://github.com/ethersphere/swarm-extension/compare/swarm-extension-v0.7.0...swarm-extension-v0.7.1) (2022-11-24)
+
+
+### Bug Fixes
+
+* bzz.link redirection subdomain logic ([66ad510](https://github.com/ethersphere/swarm-extension/commit/66ad510aa837510e79b1b9860034f39abe68888b))
+* subdomain redirection ([#158](https://github.com/ethersphere/swarm-extension/issues/158)) ([#160](https://github.com/ethersphere/swarm-extension/issues/160)) ([76718e2](https://github.com/ethersphere/swarm-extension/commit/76718e2be5226002ff62ced44d4bae2dba28232e))
+
 ## 0.7.0 (2022-11-18)
 
 Since manifest v2 extensions won't be allowed from June 2023, the Swarm Extension now supports manifest v3. But that brings some limitations, not present in v2. Here are the key changes in v3:
