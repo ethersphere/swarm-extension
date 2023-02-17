@@ -44,7 +44,6 @@ export class BeeApiListener {
     this._globalPostageBatchId = 'undefined' // it is not necessary to check later, if it is enabled it will insert
     this.addStoreListeners()
     this.asyncInit()
-    this.addBzzListeners()
   }
 
   public get beeApiUrl(): string {
@@ -334,6 +333,7 @@ export class BeeApiListener {
     // register listeners that have to be after async init
     this.setBeeNodeListeners()
     this.setDeclarativeBzzListeners()
+    this.addBzzListeners()
   }
 
   private addStoreListeners(): void {
